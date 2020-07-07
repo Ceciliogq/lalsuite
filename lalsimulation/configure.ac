@@ -6,6 +6,8 @@ AC_CONFIG_AUX_DIR([gnuscripts])
 AC_CONFIG_MACRO_DIR([gnuscripts])
 AC_CONFIG_FILES([ \
   Makefile \
+  conda/Makefile \
+  conda/meta.yaml.in \
   debian/Makefile \
   debian/control \
   doxygen/Makefile \
@@ -23,7 +25,8 @@ AC_CONFIG_FILES([ \
   lib/Makefile \
   lib/seobnrv3_opt_exactderivs/Makefile \
   lib/mathematica_codes/Makefile \
-  lib/version.c \
+  bin/Makefile \
+  bin/version.c \
   swig/Makefile \
   test/Makefile \
   test/python/Makefile \

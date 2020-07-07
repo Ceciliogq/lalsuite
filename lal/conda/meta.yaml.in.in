@@ -5,7 +5,7 @@
 # production-ready at any time.
 
 {% set name = "lal" %}
-{% set version = "@VERSION@" %}
+{% set version = "@VERSION@".replace('-', '.') %}
 {% set url = "file://@TARBALL@" %}
 {% set sha256 = "@SHA256@" %}
 
@@ -89,7 +89,7 @@ outputs:
         - hdf5  # [linux]
         - {{ pin_subpackage('lal', exact=True) }}
         - ligo-segments
-        - lscsoft-glue
+        - lscsoft-glue >=@MIN_GLUE_VERSION@
         - mkl  # [fft_impl == "mkl"]
         - {{ pin_compatible('numpy') }}
         - python

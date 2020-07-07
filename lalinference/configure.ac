@@ -6,6 +6,8 @@ AC_CONFIG_AUX_DIR([gnuscripts])
 AC_CONFIG_MACRO_DIR([gnuscripts])
 AC_CONFIG_FILES([ \
   Makefile \
+  conda/Makefile \
+  conda/meta.yaml.in \
   debian/Makefile \
   debian/control \
   doxygen/Makefile \
@@ -25,8 +27,9 @@ AC_CONFIG_FILES([ \
   lib/LALInferenceVCSInfo.c \
   lib/LALInferenceVCSInfo.h \
   lib/Makefile \
-  lib/mpi/Makefile \
-  lib/version.c \
+  bin/Makefile \
+  bin/mpi/Makefile \
+  bin/version.c \
   swig/Makefile \
   test/Makefile \
   test/python/Makefile \
