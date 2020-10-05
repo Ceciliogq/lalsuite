@@ -231,6 +231,9 @@ int XLALSimIMRPhenomXPHM(
   if(mass_ratio > 1000. && fabs(mass_ratio - 1000) > 1e-12) { XLAL_ERROR(XLAL_EDOM, "ERROR: Model not valid at mass ratios beyond 1000.\n"); } // The 1e-12 is to avoid rounding errors
   if(fabs(chi1z) > 0.99 || fabs(chi2z) > 0.99) { XLAL_PRINT_WARNING("Warning: Extrapolating to extremal spins, model is not trusted.\n"); }
 
+  /* Check that the modes chosen are available for the model */
+  XLAL_CHECK(check_input_mode_array(lalParams) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+  
   /* If no reference frequency is given, set it to the starting gravitational wave frequency. */
   REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
 
@@ -409,6 +412,9 @@ int XLALSimIMRPhenomXPHMFromModes(
   if(mass_ratio > 1000. && fabs(mass_ratio - 1000) > 1e-12) { XLAL_ERROR(XLAL_EDOM, "ERROR: Model not valid at mass ratios beyond 1000."); } // The 1e-12 is to avoid rounding errors
   if(fabs(chi1z) > 0.99 || fabs(chi2z) > 0.99) { XLAL_PRINT_WARNING("Warning: Extrapolating to extremal spins, model is not trusted."); }
 
+  /* Check that the modes chosen are available for the model */
+  XLAL_CHECK(check_input_mode_array(lalParams) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+  
   /* If no reference frequency is given, set it to the starting gravitational wave frequency */
   REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
 
@@ -569,6 +575,9 @@ int XLALSimIMRPhenomXPHMFromModes(
   if(mass_ratio > 1000. && fabs(mass_ratio - 1000) > 1e-12) { XLAL_ERROR(XLAL_EDOM, "ERROR: Model not valid at mass ratios beyond 1000."); } // The 1e-12 is to avoid rounding errors
   if(fabs(chi1z) > 0.99 || fabs(chi2z) > 0.99) { XLAL_PRINT_INFO("Warning: Extrapolating to extremal spins, model is not trusted."); }
 
+  /* Check that the modes chosen are available for the model */
+  XLAL_CHECK(check_input_mode_array(lalParams) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+  
   /* If no reference frequency is given, set it to the starting gravitational wave frequency */
   REAL8 fRef = (fRef_In == 0.0) ? freqs->data[0] : fRef_In; //It is giving valgrind error, but it is not needed. f_ref = f_min in WaveformCache.c and SimInspiral.c.
 
@@ -1652,6 +1661,10 @@ static int IMRPhenomXPHMTwistUp(
 *
 * All the flags for IMRPhenomXP apply here plus the following ones:
 *
+*   TwistPhenomHM: option to twist-up the AS model PhenomHM instead of PhenomXHM. It is only available for the polarizations, not for individual modes.
+*       - 0: (DEFAULT) twist-up PhenomXHM
+*       - 1: twist-up PhenomHM
+*
 *   UseModes: Determine how the polarizations hp, hc are computed.
 *       - 0: (DEFAULT) Compute the non-precessing modes once and do the twistin up as in eq. 3.5-3.7 in the Precessing paper.
 *       - 1: Compute first the individual precessing modes in the inertial J-frame and sum them to get the polarizations.
@@ -1666,8 +1679,9 @@ static int IMRPhenomXPHMTwistUp(
 *
 * Multibanding flags:
 *
-*   PrecThresholdMband: Determines the accuracy and speed of the Multibanding algorithm for the Euler angles.
-*        - 0: Switch off the multibanding. Default threshold is set to 0.001 for MSA angles and 0.0001 for NNLO.
+*   PrecThresholdMband: Determines the accuracy and speed of the Multibanding algorithm for the Euler angles. The higher the threshold the faster is the algorithm but also less accurate.
+*        - 0.001 (DEFAULT)
+*        - 0: Switch off the multibanding.
 *
 *   MBandPrecVersion: Determines the algorithm to build the non-uniform frequency grid for the Euler angles.
 *        - 0: (DEFAULT) Not use multibanding.  Activated to 1 when PrecThresholdMband is non-zero.
