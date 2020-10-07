@@ -62,6 +62,8 @@
 //#include "LALSimIMRPhenomX_tidal.c"
 #include "LALSimIMRPhenomX_precession.c"
 
+#include "LALSimIMRPhenomX_shared.hh"
+
 /* Note: This is declared in LALSimIMRPhenomX_internals.c and avoids namespace clashes */
 IMRPhenomX_UsefulPowers powers_of_lalpi;
 
@@ -203,6 +205,10 @@ int XLALSimIMRPhenomXASGenerateFD(
   if(f_max    <  0.0) { XLAL_ERROR(XLAL_EDOM, "f_max must be non-negative.\n");                      }
   if(distance <  0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
 
+  printf("\nSimIMRPhenomXtest\n");
+  //SimIMRPhenomXprueba();
+  printf("\nSimIMRPhenomXtest\n");
+    
   /*
   	Perform a basic sanity check on the region of the parameter space in which model is evaluated. Behaviour is as follows:
   		- For mass ratios <= 20.0 and spins <= 0.99: no warning messages.

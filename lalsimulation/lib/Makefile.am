@@ -147,7 +147,9 @@ pkginclude_HEADERS = \
 	LALSimulationVCSInfoHeader.h \
 	LALSimUniversalRelations.h \
 	LALSimInspiralEOS.h \
-	LALSimInspiralFDPrecAngles.h
+	LALSimInspiralFDPrecAngles.h \
+	LALSimIMRPhenomP_shared.hh \
+    LALSimIMRPhenomX_shared.hh 
 
 noinst_HEADERS = \
 	LALSimIMRSpinEOBHcapExactDerivativePrec_v3opt.c \
@@ -295,6 +297,7 @@ liblalsimulation_la_SOURCES = \
 	LALSimIMRPhenomInternalUtils.c \
 	LALSimIMRPhenomUtils.c \
 	LALSimIMRPhenomX.c \
+        LALSimIMRPhenomX_shared.cu \
 	LALSimIMRPhenomXUtilities.c \
 	LALSimIMRPhenomXHM.c \
 	LALSimIMRPSpinInspiralRD.c \
@@ -359,7 +362,9 @@ liblalsimulation_la_SOURCES = \
 	LALSimInspiralFDPrecAngles.c \
 	LALSimNRSurRemnantUtils.c \
 	LALSimNRSur7dq4Remnant.c \
-	LALSimNRSur3dq8Remnant.c
+	LALSimNRSur3dq8Remnant.c \
+	LALSimIMRPhenomP_shared_cuda.cu
+
 
 nodist_liblalsimulation_la_SOURCES = \
 	LALSimulationBuildInfoHeader.h \
