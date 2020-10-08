@@ -14,6 +14,7 @@ extern "C" {
 #include "LALSimIMRPhenomX_internals.h"
 #include "LALSimIMRPhenomXUtilities.h"
 
+void IMRPhenomX_FillArray(int n, float *x, float *y);
     
 int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22, 
                      REAL8Sequence *freqs, 

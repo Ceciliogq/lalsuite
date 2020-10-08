@@ -4,7 +4,7 @@
 #include "LALSimIMRPhenomX_shared.h"
 
 
-__global__ void IMRPhenomX_FillArray(int n, float *x, float *y)
+void IMRPhenomX_FillArray(int n, float *x, float *y)
 {
   for (int i = 0; i < n; i++)
       y[i] = x[i] + y[i];
@@ -21,11 +21,11 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
 {
 
   int N = freqs->length;
-  float *x, *y;
+  float *x = NULL, *y = NULL;
 
   // Allocate Unified Memory – accessible from CPU or GPU
-  cudaMallocManaged(&x, N*sizeof(float));
-  cudaMallocManaged(&y, N*sizeof(float));
+  //cudaMallocManaged(&x, N*sizeof(float));
+  //cudaMallocManaged(&y, N*sizeof(float));
 
   // initialize x and y arrays on the host
   for (int i = 0; i < N; i++) {
@@ -34,21 +34,21 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
   }
 
   // Run kernel on 1M elements on the GPU
-  IMRPhenomX_FillArray<<<1, 1>>>(N, x, y);
+  //IMRPhenomX_FillArray<<<1, 1>>>(N, x, y);
 
   // Wait for GPU to finish before accessing on host
-  cudaDeviceSynchronize();
+  //cudaDeviceSynchronize();
     
   for (UINT4 idx = 0; idx < freqs->length; idx++)
   {
 	  /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
-      ((*htilde22)->data->data)[idx] = x[idx] + y[idx];
-    }
+      ((*htilde22)->data->data)[idx] = pWF->amp0 + pAmp22->fAmpMatchIN + pPhase22->C1Int + x[idx] + y[idx] + offset;
   }
   
+  
   // Free memory
-  cudaFree(x);
-  cudaFree(y);
+  //cudaFree(x);
+  //cudaFree(y);
     
   return XLAL_SUCCESS;
 }
