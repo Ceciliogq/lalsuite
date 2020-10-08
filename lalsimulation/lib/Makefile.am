@@ -147,9 +147,7 @@ pkginclude_HEADERS = \
 	LALSimulationVCSInfoHeader.h \
 	LALSimUniversalRelations.h \
 	LALSimInspiralEOS.h \
-	LALSimInspiralFDPrecAngles.h \
-	LALSimIMRPhenomP_shared.hh \
-    LALSimIMRPhenomX_shared.hh 
+	LALSimInspiralFDPrecAngles.h 
 
 noinst_HEADERS = \
 	LALSimIMRSpinEOBHcapExactDerivativePrec_v3opt.c \
@@ -191,6 +189,8 @@ noinst_HEADERS = \
 	LALSimIMRPhenomX_ringdown.h \
 	LALSimIMRPhenomX_precession.c \
 	LALSimIMRPhenomX_precession.h \
+    LALSimIMRPhenomX_shared.cu \
+    LALSimIMRPhenomX_shared.h \
 	LALSimIMRPhenomXHM.h \
 	LALSimIMRPhenomXHM_internals.c \
 	LALSimIMRPhenomXHM_internals.h \
@@ -297,8 +297,7 @@ liblalsimulation_la_SOURCES = \
 	LALSimIMRPhenomInternalUtils.c \
 	LALSimIMRPhenomUtils.c \
 	LALSimIMRPhenomX.c \
-        LALSimIMRPhenomX_shared.cu \
-	LALSimIMRPhenomXUtilities.c \
+   	LALSimIMRPhenomXUtilities.c \
 	LALSimIMRPhenomXHM.c \
 	LALSimIMRPSpinInspiralRD.c \
 	LALSimPhenSpinRingDown.c \
@@ -362,8 +361,7 @@ liblalsimulation_la_SOURCES = \
 	LALSimInspiralFDPrecAngles.c \
 	LALSimNRSurRemnantUtils.c \
 	LALSimNRSur7dq4Remnant.c \
-	LALSimNRSur3dq8Remnant.c \
-	LALSimIMRPhenomP_shared_cuda.cu
+	LALSimNRSur3dq8Remnant.c 
 
 
 nodist_liblalsimulation_la_SOURCES = \
