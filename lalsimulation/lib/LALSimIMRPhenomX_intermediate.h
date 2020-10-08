@@ -42,28 +42,28 @@ extern "C" {
 
 
 /********************************* IMRPhenomX: Amplitude Functions *********************************/
-static double IMRPhenomX_Intermediate_Amp_22_vA(double eta, double S, double dchi, double delta, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_v2(double eta, double S, double dchi, double delta, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_v3(double eta, double S, double dchi, double delta, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_vA(double eta, double S, double dchi, double delta, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_v2(double eta, double S, double dchi, double delta, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_v3(double eta, double S, double dchi, double delta, int IntAmpFlag);
 
-static double IMRPhenomX_Intermediate_Amp_22_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_delta1(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_delta2(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_delta3(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_delta4(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
-static double IMRPhenomX_Intermediate_Amp_22_delta5(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta1(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta2(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta3(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta4(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
+ double IMRPhenomX_Intermediate_Amp_22_delta5(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
 
-static double IMRPhenomX_Intermediate_Amp_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
+ double IMRPhenomX_Intermediate_Amp_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
 
 /********************************* IMRPhenomX: Phase Functions *********************************/
-static double IMRPhenomX_Intermediate_Phase_22_v2( double eta, double S, double dchi, double delta, int IntPhaseFlag);
-UNUSED static double IMRPhenomX_Intermediate_Phase_22_v3( double eta, double S, double dchi, double delta, int IntPhaseFlag);
-static double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag);
-static double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag);
-static double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double dchi, double delta, int IntPhaseFlag);
+ double IMRPhenomX_Intermediate_Phase_22_v2( double eta, double S, double dchi, double delta, int IntPhaseFlag);
+UNUSED  double IMRPhenomX_Intermediate_Phase_22_v3( double eta, double S, double dchi, double delta, int IntPhaseFlag);
+ double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag);
+ double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag);
+ double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double dchi, double delta, int IntPhaseFlag);
 
-static double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
-static double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
+ double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
+ double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 
 #ifdef __cplusplus
 }

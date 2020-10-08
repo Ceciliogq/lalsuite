@@ -41,24 +41,24 @@ extern "C" {
 #include "LALSimIMRPhenomXUtilities.h"
 
 /********************************* IMRPhenomX: Amplitude Functions *********************************/
-static double IMRPhenomX_Ringdown_Amp_22_v1(double eta, double S, double dchi, double delta, int RDAmpFlag);
-static double IMRPhenomX_Ringdown_Amp_22_gamma2(double eta, double S, double dchi, double delta, int RDAmpFlag);
-static double IMRPhenomX_Ringdown_Amp_22_gamma3(double eta, double S, double dchi, double delta, int RDAmpFlag);
+  double IMRPhenomX_Ringdown_Amp_22_v1(double eta, double S, double dchi, double delta, int RDAmpFlag);
+  double IMRPhenomX_Ringdown_Amp_22_gamma2(double eta, double S, double dchi, double delta, int RDAmpFlag);
+  double IMRPhenomX_Ringdown_Amp_22_gamma3(double eta, double S, double dchi, double delta, int RDAmpFlag);
 
-static double IMRPhenomX_Ringdown_Amp_22_PeakFrequency(double gamma2,double gamma3,double fRING,double fDAMP,int IMRPhenomXRingdownAmpVersion);
+  double IMRPhenomX_Ringdown_Amp_22_PeakFrequency(double gamma2,double gamma3,double fRING,double fDAMP,int IMRPhenomXRingdownAmpVersion);
 
-static double IMRPhenomX_Ringdown_Amp_22_Ansatz( double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
-static double IMRPhenomX_Ringdown_Amp_22_DAnsatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
+  double IMRPhenomX_Ringdown_Amp_22_Ansatz( double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
+  double IMRPhenomX_Ringdown_Amp_22_DAnsatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
 
 /********************************* IMRPhenomX: Phase Functions *********************************/
-static double IMRPhenomX_Ringdown_Phase_22_v4(double eta, double S, double dchi, double delta, int RDPhaseFlag);
-static double IMRPhenomX_Ringdown_Phase_22_d12(double eta, double S, double dchi, double delta, int RDPhaseFlag);
-static double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi, double delta, int RDPhaseFlag);
-static double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi, double delta, int RDPhaseFlag);
-static double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi, double delta, int RDPhaseFlag);
+  double IMRPhenomX_Ringdown_Phase_22_v4(double eta, double S, double dchi, double delta, int RDPhaseFlag);
+  double IMRPhenomX_Ringdown_Phase_22_d12(double eta, double S, double dchi, double delta, int RDPhaseFlag);
+  double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi, double delta, int RDPhaseFlag);
+  double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi, double delta, int RDPhaseFlag);
+  double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi, double delta, int RDPhaseFlag);
 
-static double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
-static double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
+  double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
+  double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 
 #ifdef __cplusplus
 }

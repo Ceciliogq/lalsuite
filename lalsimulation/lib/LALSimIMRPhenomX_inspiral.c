@@ -39,7 +39,7 @@
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Amp_22_v2(double eta, double S, double dchi, double delta, int InsAmpFlag){
+ double IMRPhenomX_Inspiral_Amp_22_v2(double eta, double S, double dchi, double delta, int InsAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -78,7 +78,7 @@ static double IMRPhenomX_Inspiral_Amp_22_v2(double eta, double S, double dchi, d
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Amp_22_v3(double eta, double S, double dchi, double delta, int InsAmpFlag){
+ double IMRPhenomX_Inspiral_Amp_22_v3(double eta, double S, double dchi, double delta, int InsAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -114,7 +114,7 @@ static double IMRPhenomX_Inspiral_Amp_22_v3(double eta, double S, double dchi, d
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Amp_22_v4(double eta, double S, double dchi, double delta, int InsAmpFlag){
+ double IMRPhenomX_Inspiral_Amp_22_v4(double eta, double S, double dchi, double delta, int InsAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -162,7 +162,7 @@ static double IMRPhenomX_Inspiral_Amp_22_v4(double eta, double S, double dchi, d
 */
 
 /* Get Pseudo PN coefficient at f^(7/3) */
-static double IMRPhenomX_Inspiral_Amp_22_rho1(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
+ double IMRPhenomX_Inspiral_Amp_22_rho1(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
 {
   double retVal;
 
@@ -201,7 +201,7 @@ static double IMRPhenomX_Inspiral_Amp_22_rho1(double v1, double v2, double v3, d
 }
 
 /* Get Pseudo PN coefficient at f^(8/3) */
-static double IMRPhenomX_Inspiral_Amp_22_rho2(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
+ double IMRPhenomX_Inspiral_Amp_22_rho2(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
 {
   double retVal;
 
@@ -237,7 +237,7 @@ static double IMRPhenomX_Inspiral_Amp_22_rho2(double v1, double v2, double v3, d
 }
 
 /* Get Pseudo PN coefficient at f^(9/3) */
-static double IMRPhenomX_Inspiral_Amp_22_rho3(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
+ double IMRPhenomX_Inspiral_Amp_22_rho3(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag)
 {
   double retVal;
 
@@ -279,7 +279,7 @@ static double IMRPhenomX_Inspiral_Amp_22_rho3(double v1, double v2, double v3, d
 /*
  *  TaylorF2 PN Amplitude + pseudo-PN coefficients
  */
-static double IMRPhenomX_Inspiral_Amp_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp)
+ double IMRPhenomX_Inspiral_Amp_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp)
 {
   double pnAmp;
 
@@ -320,7 +320,7 @@ static double IMRPhenomX_Inspiral_Amp_22_Ansatz(double Mf, IMRPhenomX_UsefulPowe
 /*
  *  Derivative of TaylorF2 PN Amplitude + pseudo-PN coefficients
  */
-static double IMRPhenomX_Inspiral_Amp_22_DAnsatz(double Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp) {
+ double IMRPhenomX_Inspiral_Amp_22_DAnsatz(double Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp) {
 
   double DAmpIns;
 
@@ -393,7 +393,7 @@ static double IMRPhenomX_Inspiral_Amp_22_DAnsatz(double Mf, IMRPhenomXWaveformSt
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Phase_22_v3(double eta, double S, double dchi, double delta, int InspPhaseFlag){
+ double IMRPhenomX_Inspiral_Phase_22_v3(double eta, double S, double dchi, double delta, int InspPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -463,7 +463,7 @@ static double IMRPhenomX_Inspiral_Phase_22_v3(double eta, double S, double dchi,
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Phase_22_d13(double eta, double S, double dchi, double delta, int InspPhaseFlag){
+ double IMRPhenomX_Inspiral_Phase_22_d13(double eta, double S, double dchi, double delta, int InspPhaseFlag){
 
 	double eta2 = eta*eta;
 	double eta3 = eta2*eta;
@@ -531,7 +531,7 @@ static double IMRPhenomX_Inspiral_Phase_22_d13(double eta, double S, double dchi
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Phase_22_d23(double eta, double S, double dchi, double delta, int InspPhaseFlag){
+ double IMRPhenomX_Inspiral_Phase_22_d23(double eta, double S, double dchi, double delta, int InspPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -600,7 +600,7 @@ static double IMRPhenomX_Inspiral_Phase_22_d23(double eta, double S, double dchi
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Phase_22_d43(double eta, double S, double dchi, double delta, int InspPhaseFlag){
+ double IMRPhenomX_Inspiral_Phase_22_d43(double eta, double S, double dchi, double delta, int InspPhaseFlag){
 
 	double eta2 = eta*eta;
 	double eta3 = eta2*eta;
@@ -667,7 +667,7 @@ static double IMRPhenomX_Inspiral_Phase_22_d43(double eta, double S, double dchi
    
     Effective spin parameterization used = chiPNHat
 */
-static double IMRPhenomX_Inspiral_Phase_22_d53(double eta, double S, double dchi, double delta, int InspPhaseFlag){
+ double IMRPhenomX_Inspiral_Phase_22_d53(double eta, double S, double dchi, double delta, int InspPhaseFlag){
 
 	double eta2 = eta*eta;
 	double eta3 = eta2*eta;
@@ -731,7 +731,7 @@ static double IMRPhenomX_Inspiral_Phase_22_d53(double eta, double S, double dchi
 
 		Phase Derivative: TaylorF2 + pseudo-PN coefficients
 */
-static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
+ double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
 {
     double phaseIN;
 
@@ -767,7 +767,7 @@ static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPo
  * Ansatz for the inspiral phase.
  * The TaylorF2 coefficients are defined elsewhere.
  */
-static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
+ double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
 {
 
   // Assemble PN phasing series

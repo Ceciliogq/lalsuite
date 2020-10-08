@@ -62,7 +62,7 @@
 //#include "LALSimIMRPhenomX_tidal.c"
 #include "LALSimIMRPhenomX_precession.c"
 
-#include "LALSimIMRPhenomX_shared.hh"
+#include "LALSimIMRPhenomX_shared.cu"
 
 /* Note: This is declared in LALSimIMRPhenomX_internals.c and avoids namespace clashes */
 IMRPhenomX_UsefulPowers powers_of_lalpi;
@@ -570,9 +570,21 @@ int IMRPhenomXASGenerateFD(
   /* Calculate phase at reference frequency: phifRef = 2.0*phi0 + LAL_PI_4 + PhenomXPhase(fRef) */
   pWF->phifRef = -(inveta * IMRPhenomX_Phase_22(pWF->MfRef, &powers_of_MfRef, pPhase22, pWF) + linb*pWF->MfRef + lina) + 2.0*pWF->phi0 + LAL_PI_4;
 
+
+  #ifdef LAL_CUDA_ENABLED
+    
+    IMRPhenomX_Frequency_Loop(htilde22, freqs, pWF, pAmp22, pPhase22, offset);
+    IMRPhenomX_Ringdown_Amp_22_v1(0.25, 0, 0, 0, pWF->IMRPhenomXRingdownAmpVersion);
+    printf("%i", offset);
+    
+  #else
+    
+  /* initial_status used to track  */
+  UINT4 initial_status = XLAL_SUCCESS;
+    
   /*
-      Here we declare explicit REAL8 variables for main loop in order to avoid numerous
-      pointer calls.
+  Here we declare explicit REAL8 variables for main loop in order to avoid numerous
+  pointer calls.
   */
   //REAL8 MfRef     = pWF->MfRef;
   REAL8 Msec      = pWF->M_sec;
@@ -599,10 +611,7 @@ int IMRPhenomXASGenerateFD(
   }
 
   REAL8 Amp0      = pWF->amp0 * pWF->ampNorm;
-
-  /* initial_status used to track  */
-  UINT4 initial_status = XLAL_SUCCESS;
-
+    
   /* Now loop over main driver to generate waveform:  h(f) = A(f) * Exp[I phi(f)] */
   #pragma omp parallel for
   for (UINT4 idx = 0; idx < freqs->length; idx++)
@@ -661,7 +670,8 @@ int IMRPhenomXASGenerateFD(
       ((*htilde22)->data->data)[jdx] = Amp0 * powers_of_Mf.m_seven_sixths * amp * cexp(I * phi);
     }
   }
-
+  #endif
+    
   // Free allocated memory
   LALFree(pAmp22);
   LALFree(pPhase22);

@@ -41,7 +41,7 @@
    
     Effective spin parameterization used = StotR
 */
-static double IMRPhenomX_Intermediate_Amp_22_vA(double eta, double S, double dchi, double delta, int IntAmpFlag){
+ double IMRPhenomX_Intermediate_Amp_22_vA(double eta, double S, double dchi, double delta, int IntAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -80,7 +80,7 @@ static double IMRPhenomX_Intermediate_Amp_22_vA(double eta, double S, double dch
    
     Effective spin parameterization used = StotR
 */
-static double IMRPhenomX_Intermediate_Amp_22_v2(double eta, double S, double dchi, double delta, int IntAmpFlag){
+ double IMRPhenomX_Intermediate_Amp_22_v2(double eta, double S, double dchi, double delta, int IntAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -120,7 +120,7 @@ static double IMRPhenomX_Intermediate_Amp_22_v2(double eta, double S, double dch
    
     Effective spin parameterization used = StotR
 */
-static double IMRPhenomX_Intermediate_Amp_22_v3(double eta, double S, double dchi, double delta, int IntAmpFlag){
+ double IMRPhenomX_Intermediate_Amp_22_v3(double eta, double S, double dchi, double delta, int IntAmpFlag){
 
   double eta2 = (eta*eta);
   double eta3 = (eta2*eta);
@@ -154,7 +154,7 @@ static double IMRPhenomX_Intermediate_Amp_22_v3(double eta, double S, double dch
 
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -311,7 +311,7 @@ static double IMRPhenomX_Intermediate_Amp_22_delta0(double d1, double d4, double
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta1(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta1(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -475,7 +475,7 @@ static double IMRPhenomX_Intermediate_Amp_22_delta1(double d1, double d4, double
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta2(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta2(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -643,7 +643,7 @@ return retVal;
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta3(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta3(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -807,7 +807,7 @@ static double IMRPhenomX_Intermediate_Amp_22_delta3(double d1, double d4, double
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta4(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta4(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -964,7 +964,7 @@ static double IMRPhenomX_Intermediate_Amp_22_delta4(double d1, double d4, double
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_delta5(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
+ double IMRPhenomX_Intermediate_Amp_22_delta5(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag)
 {
   double retVal;
 
@@ -1049,7 +1049,7 @@ static double IMRPhenomX_Intermediate_Amp_22_delta5(double d1, double d4, double
 }
 
 /* Solves system of equations for 5th order polynomial ansatz. Section VI.B, Eq. 6.5 of arXiv:2001.11412. Note that \alpha in paper are \delta in code here. */
-static double IMRPhenomX_Intermediate_Amp_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp)
+ double IMRPhenomX_Intermediate_Amp_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp)
 {
 	double a0         = pAmp->delta0;
     double a1         = pAmp->delta1;
@@ -1099,7 +1099,7 @@ static double IMRPhenomX_Intermediate_Amp_22_Ansatz(double ff, IMRPhenomX_Useful
 /******************************* Phase Functions: Merger   *******************************/
 
 /* Intermediate phase collocation point v3. See Section VII.B of arXiv:2001.11412.  */
-UNUSED static double IMRPhenomX_Intermediate_Phase_22_v3(double eta, double S, double dchi, double delta, int IntPhaseFlag){
+UNUSED  double IMRPhenomX_Intermediate_Phase_22_v3(double eta, double S, double dchi, double delta, int IntPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -1144,7 +1144,7 @@ UNUSED static double IMRPhenomX_Intermediate_Phase_22_v3(double eta, double S, d
 }
 
 /* Intermediate phase collocation point v2. See Section VII.B of arXiv:2001.11412.  */
-static double IMRPhenomX_Intermediate_Phase_22_v2(double eta, double S, double dchi, double delta, int IntPhaseFlag){
+ double IMRPhenomX_Intermediate_Phase_22_v2(double eta, double S, double dchi, double delta, int IntPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -1188,7 +1188,7 @@ static double IMRPhenomX_Intermediate_Phase_22_v2(double eta, double S, double d
 }
 
 /* v2mRDv4 = vIM2 - vRD4. See Section VII.B of arXiv:2001.11412.  */
-static double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag){
+ double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -1230,7 +1230,7 @@ static double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, dou
 }
 
 /* v3mRDv4 = vIM3 - vRD4. See Section VII.B of arXiv:2001.11412.  */
-static double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag){
+ double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -1274,7 +1274,7 @@ static double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, dou
 }
 
 /* d43 = v4 - v3. See Section VII.B of arXiv:2001.11412.  */
-static double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double dchi, double delta, int IntPhaseFlag){
+ double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double dchi, double delta, int IntPhaseFlag){
 
 	double eta2  = eta*eta;
 	double eta3  = eta2*eta;
@@ -1323,7 +1323,7 @@ static double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double 
 
 	ft = (f / f_ring)
 */
-static double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase)
+ double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase)
 {
   double invff1 = powers_of_f->m_one;
   double invff2 = powers_of_f->m_two;
@@ -1378,7 +1378,7 @@ static double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_Usef
 
     Effective spin parameterization used = StotR
 */
-static double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase)
+ double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase)
 {
   double invff1 = powers_of_f->m_one;
   double invff2 = powers_of_f->m_two;

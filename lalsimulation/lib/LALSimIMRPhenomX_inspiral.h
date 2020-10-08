@@ -41,27 +41,27 @@ extern "C" {
 
 
 /********************************* IMRPhenomX: Amplitude Functions *********************************/
-//static double IMRPhenomX_Inspiral_Amp_22_v1(double eta, double S, double dchi, double delta, int InsAmpFlag);
-static double IMRPhenomX_Inspiral_Amp_22_v2(double eta, double S, double dchi, double delta, int InsAmpFlag);
-static double IMRPhenomX_Inspiral_Amp_22_v3(double eta, double S, double dchi, double delta, int InsAmpFlag);
-static double IMRPhenomX_Inspiral_Amp_22_v4(double eta, double S, double dchi, double delta, int InsAmpFlag);
+// double IMRPhenomX_Inspiral_Amp_22_v1(double eta, double S, double dchi, double delta, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_v2(double eta, double S, double dchi, double delta, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_v3(double eta, double S, double dchi, double delta, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_v4(double eta, double S, double dchi, double delta, int InsAmpFlag);
 
-static double IMRPhenomX_Inspiral_Amp_22_rho1(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
-static double IMRPhenomX_Inspiral_Amp_22_rho2(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
-static double IMRPhenomX_Inspiral_Amp_22_rho3(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_rho1(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_rho2(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
+ double IMRPhenomX_Inspiral_Amp_22_rho3(double v1, double v2, double v3, double F1, double F2, double F3, int InsAmpFlag);
 
-static double IMRPhenomX_Inspiral_Amp_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
-static double IMRPhenomX_Inspiral_Amp_22_DAnsatz(double Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
+ double IMRPhenomX_Inspiral_Amp_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
+ double IMRPhenomX_Inspiral_Amp_22_DAnsatz(double Mf, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp);
 
 /********************************* IMRPhenomX: Phase Functions *********************************/
-static double IMRPhenomX_Inspiral_Phase_22_v3(double eta, double S, double dchi, double delta, int InspPhaseFlag);
-static double IMRPhenomX_Inspiral_Phase_22_d13(double eta, double S, double dchi, double delta, int InspPhaseFlag);
-static double IMRPhenomX_Inspiral_Phase_22_d23(double eta, double S, double dchi, double delta, int InspPhaseFlag);
-static double IMRPhenomX_Inspiral_Phase_22_d43(double eta, double S, double dchi, double delta, int InspPhaseFlag);
-static double IMRPhenomX_Inspiral_Phase_22_d53(double eta, double S, double dchi, double delta, int InspPhaseFlag);
+ double IMRPhenomX_Inspiral_Phase_22_v3(double eta, double S, double dchi, double delta, int InspPhaseFlag);
+ double IMRPhenomX_Inspiral_Phase_22_d13(double eta, double S, double dchi, double delta, int InspPhaseFlag);
+ double IMRPhenomX_Inspiral_Phase_22_d23(double eta, double S, double dchi, double delta, int InspPhaseFlag);
+ double IMRPhenomX_Inspiral_Phase_22_d43(double eta, double S, double dchi, double delta, int InspPhaseFlag);
+ double IMRPhenomX_Inspiral_Phase_22_d53(double eta, double S, double dchi, double delta, int InspPhaseFlag);
 
-static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
-static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
+ double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
+ double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
 
 
 #ifdef __cplusplus

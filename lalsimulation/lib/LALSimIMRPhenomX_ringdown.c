@@ -37,7 +37,7 @@
 /******************************* Amplitude Functions: Ringdown *******************************/
 
 /* Phenomenological Ringdown Amplitude Coefficient, gamma_2. See Section VI.C of arXiv:2001.11412. Note that this is just \lambda in the paper. */
-static double IMRPhenomX_Ringdown_Amp_22_gamma2(double eta, double S, double dchi, double delta, int RDAmpFlag){
+  double IMRPhenomX_Ringdown_Amp_22_gamma2(double eta, double S, double dchi, double delta, int RDAmpFlag){
 
   /*
       Effective Spin Used: STotR.
@@ -71,7 +71,7 @@ static double IMRPhenomX_Ringdown_Amp_22_gamma2(double eta, double S, double dch
 }
 
 /* Phenomenological Ringdown Amplitude Coefficient, gamma_3. See Section VI.C of arXiv:2001.11412. Note that this is just \sigma in the paper. */
-static double IMRPhenomX_Ringdown_Amp_22_gamma3(double eta, double S, double dchi, double delta, int RDAmpFlag){
+  double IMRPhenomX_Ringdown_Amp_22_gamma3(double eta, double S, double dchi, double delta, int RDAmpFlag){
 
   /*
       Effective Spin: STotR.
@@ -105,7 +105,7 @@ static double IMRPhenomX_Ringdown_Amp_22_gamma3(double eta, double S, double dch
 }
 
 /* Collocation point for ringdown amplitude evaluated at F1 = f_peak */
-static double IMRPhenomX_Ringdown_Amp_22_v1(double eta, double S, double dchi, double delta, int RDAmpFlag){
+  double IMRPhenomX_Ringdown_Amp_22_v1(double eta, double S, double dchi, double delta, int RDAmpFlag){
 
   /*
       Effective Spin: STotR.
@@ -144,7 +144,7 @@ static double IMRPhenomX_Ringdown_Amp_22_v1(double eta, double S, double dchi, d
 }
 
 /* Phenomenological Ringdown Amplitude Ansatz. See Eq. 6.17 or arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Amp_22_Ansatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp){
+  double IMRPhenomX_Ringdown_Amp_22_Ansatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp){
 
   int RDAmpFlag   = pWF->IMRPhenomXRingdownAmpVersion;
 
@@ -176,7 +176,7 @@ static double IMRPhenomX_Ringdown_Amp_22_Ansatz(double ff, IMRPhenomXWaveformStr
 }
 
 /* Derivative (with respect to f) of Phenomenological Ringdown Amplitude Ansatz.  See Eq. 6.17 or arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Amp_22_DAnsatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp) {
+  double IMRPhenomX_Ringdown_Amp_22_DAnsatz(double ff, IMRPhenomXWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp) {
 
   int RDAmpFlag = pWF->IMRPhenomXRingdownAmpVersion;
 
@@ -214,7 +214,7 @@ static double IMRPhenomX_Ringdown_Amp_22_DAnsatz(double ff, IMRPhenomXWaveformSt
 }
 
 /* Frequency of amplitude peak (f_peak), see Eq. 20 of 1508.07253 or Eq. XX of YY.  */
-static double IMRPhenomX_Ringdown_Amp_22_PeakFrequency(double gamma2, double gamma3, double frd, double fda, int RDAmpFlag){
+  double IMRPhenomX_Ringdown_Amp_22_PeakFrequency(double gamma2, double gamma3, double frd, double fda, int RDAmpFlag){
 
   double fpeak;
 
@@ -245,7 +245,7 @@ static double IMRPhenomX_Ringdown_Amp_22_PeakFrequency(double gamma2, double gam
 
 /******************************* Phase Functions: Ringdown *******************************/
 /* Collocation point for ringdown phase evaluated at f_ring = f_4. See Section VII.C of arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Phase_22_v4(double eta, double S, double dchi, double delta, int RDPhaseFlag){
+  double IMRPhenomX_Ringdown_Phase_22_v4(double eta, double S, double dchi, double delta, int RDPhaseFlag){
 
   /*
       Effective Spin Used: STotR.
@@ -283,7 +283,7 @@ static double IMRPhenomX_Ringdown_Phase_22_v4(double eta, double S, double dchi,
 }
 
 /* Difference between collocation points 1 and 2 (d12 = v1 - v2). See Section VII.C of arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Phase_22_d12(double eta, double S, double dchi, double delta, int RDPhaseFlag){
+  double IMRPhenomX_Ringdown_Phase_22_d12(double eta, double S, double dchi, double delta, int RDPhaseFlag){
 
   /*
       Effective Spin Used: STotR.
@@ -323,7 +323,7 @@ static double IMRPhenomX_Ringdown_Phase_22_d12(double eta, double S, double dchi
 }
 
 /* Difference between collocation points 2 and 4 (d24 = v2 - v4). See Section VII.C of arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi, double delta, int RDPhaseFlag){
+  double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi, double delta, int RDPhaseFlag){
 
   /*
       Effective Spin Used: STotR.
@@ -361,7 +361,7 @@ static double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi
 }
 
 /* Difference between collocation points 3 and 4 (d34 = v3 - v4). See Section VII.C of arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi, double delta, int RDPhaseFlag){
+  double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi, double delta, int RDPhaseFlag){
 
   double eta2  = eta*eta;
   double eta3  = eta2*eta;
@@ -397,7 +397,7 @@ static double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi
 }
 
 /* Difference between collocation points 5 and 4 (d54 = v5 - v4). See Section VII.C of arXiv:2001.11412. */
-static double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi, double delta, int RDPhaseFlag){
+  double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi, double delta, int RDPhaseFlag){
 
   double eta2  = eta*eta;
   double eta3  = eta2*eta;
@@ -437,7 +437,7 @@ static double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi
 
 	See Eq. 7.11 of arXiv:2001.11412.
 */
-static double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase){
+  double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase){
 
   int RDPhaseFlag = pWF->IMRPhenomXRingdownPhaseVersion;
 
@@ -473,7 +473,7 @@ static double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPo
 /*
     Phenomenological ringdown phase ansatz (i.e. integral of phase derivative ansatz). See. Eq. 7.11 of arxiv:2001.11412.
 */
-static double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase){
+  double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase){
 
   int RDPhaseFlag = pWF->IMRPhenomXRingdownPhaseVersion;
 
