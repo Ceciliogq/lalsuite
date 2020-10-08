@@ -4,7 +4,11 @@
 #include "LALSimIMRPhenomX_shared.h"
 
 
-__global__ void IMRPhenomX_FillArray(int length, )
+__global__ void IMRPhenomX_FillArray(int n, float *x, float *y)
+{
+  for (int i = 0; i < n; i++)
+      y[i] = x[i] + y[i];
+}
 
 
 
