@@ -13,25 +13,40 @@ void IMRPhenomX_FillArray(int n, float *x, float *y)
 
 
 int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22, 
-                         REAL8Sequence *freqs, 
+                     UNUSED  REAL8Sequence *freqs, 
                          IMRPhenomXWaveformStruct *pWF, 
                          IMRPhenomXAmpCoefficients *pAmp22, 
                          IMRPhenomXPhaseCoefficients *pPhase22,
-                         UINT4 offset)
+                         UINT4 offset,
+                         UINT4 N)
 {
-
-  int N = freqs->length;
-  float *x = NULL, *y = NULL;
+    
+  printf("\nInside PhXFreqLoop CUDA file");
+  
+  #ifdef __cplusplus
+  printf("\nC++\n");
+  #else
+  printf("\nNo C++\n");
+  #endif
+  
+  #ifdef __NVCC__
+  printf("NVCC defined");
+  #else
+  printf("NVCC NOT defined");
+  #endif
+  
+  //int N = 100; //freqs->length;
+  //float *x = NULL, *y = NULL;
 
   // Allocate Unified Memory – accessible from CPU or GPU
   //cudaMallocManaged(&x, N*sizeof(float));
   //cudaMallocManaged(&y, N*sizeof(float));
 
   // initialize x and y arrays on the host
-  for (int i = 0; i < N; i++) {
-    x[i] = 1.0f;
-    y[i] = 2.0f;
-  }
+ // for (int i = 0; i < N; i++) {
+ //   x[i] = 1.0f;
+ //   y[i] = 2.0f;
+ // }
 
   // Run kernel on 1M elements on the GPU
   //IMRPhenomX_FillArray<<<1, 1>>>(N, x, y);
@@ -39,10 +54,10 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
   // Wait for GPU to finish before accessing on host
   //cudaDeviceSynchronize();
     
-  for (UINT4 idx = 0; idx < freqs->length; idx++)
+  for (UINT4 idx = 0; idx < N; idx++)
   {
 	  /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
-      ((*htilde22)->data->data)[idx] = pWF->amp0 + pAmp22->fAmpMatchIN + pPhase22->C1Int + x[idx] + y[idx] + offset;
+      ((*htilde22)->data->data)[idx] = 0.*(pWF->amp0 + pAmp22->fAmpMatchIN + pPhase22->C1Int + offset);
   }
   
   

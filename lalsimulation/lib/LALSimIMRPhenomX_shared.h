@@ -17,11 +17,12 @@ extern "C" {
 void IMRPhenomX_FillArray(int n, float *x, float *y);
     
 int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22, 
-                     REAL8Sequence *freqs, 
+               UNUSED REAL8Sequence *freqs, 
                      IMRPhenomXWaveformStruct *pWF, 
                      IMRPhenomXAmpCoefficients *pAmp22, 
                      IMRPhenomXPhaseCoefficients *pPhase22,
-                     UINT4 offset);
+                     UINT4 offset,
+                     UINT4 N);
 
 
 #ifdef __cplusplus

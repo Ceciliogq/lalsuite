@@ -205,10 +205,7 @@ int XLALSimIMRPhenomXASGenerateFD(
   if(f_max    <  0.0) { XLAL_ERROR(XLAL_EDOM, "f_max must be non-negative.\n");                      }
   if(distance <  0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
 
-  printf("\nSimIMRPhenomXtest\n");
-  //SimIMRPhenomXprueba();
-  printf("\nSimIMRPhenomXtest\n");
-    
+     
   /*
   	Perform a basic sanity check on the region of the parameter space in which model is evaluated. Behaviour is as follows:
   		- For mass ratios <= 20.0 and spins <= 0.99: no warning messages.
@@ -572,13 +569,26 @@ int IMRPhenomXASGenerateFD(
 
 
   #ifdef LAL_CUDA_ENABLED
+   printf("LAL_CUDA_ENABLED defined, in C file\n");
+   #ifdef __cplusplus
+      printf("C++\n");
+      #else
+      printf("No C++\n");
+      #endif
+
+      #ifdef __NVCC__
+      printf("NVCC defined\n");
+      #else
+      printf("NVCC NOT defined\n");
+      #endif
     
-    IMRPhenomX_Frequency_Loop(htilde22, freqs, pWF, pAmp22, pPhase22, offset);
-    IMRPhenomX_Ringdown_Amp_22_v1(0.25, 0, 0, 0, pWF->IMRPhenomXRingdownAmpVersion);
+    IMRPhenomX_Frequency_Loop(htilde22, freqs, pWF, pAmp22, pPhase22, offset, freqs->length);
+    //IMRPhenomX_Ringdown_Amp_22_v1(0.25, 0, 0, 0, pWF->IMRPhenomXRingdownAmpVersion);
     printf("%i", offset);
     
   #else
-    
+  printf("LAL_CUDA_ENABLED NOT defined");
+  //printf("__NVCC__ NOT defined");
   /* initial_status used to track  */
   UINT4 initial_status = XLAL_SUCCESS;
     
