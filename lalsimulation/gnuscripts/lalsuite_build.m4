@@ -1000,11 +1000,11 @@ AC_DEFUN([LALSUITE_CHECK_CUDA],
 [AC_MSG_CHECKING([whether LAL has been compiled with CUDA support])
 AC_TRY_RUN([
 #include <lal/LALConfig.h>
-#ifdef LALSIMULATION_CUDA_ENABLED
-printf("\nlalsuite_build.m4 LALSIMULATION_CUDA_ENABLED defined\n");
+#ifdef LAL_CUDA_ENABLED
+printf("\nlalsuite_build.m4 LAL_CUDA_ENABLED defined\n");
 int main( void ) { return 0; }
 #else
-printf("\nlalsuite_build.m4 LALSIMULATION_CUDA_ENABLED NOT defined\n");
+printf("\nlalsuite_build.m4 LAL_CUDA_ENABLED NOT defined\n");
 int main( void ) { return 1; }
 #endif
 ],

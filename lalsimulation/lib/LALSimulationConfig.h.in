@@ -1,8 +1,6 @@
 /* only include this file if LALSimulation's config.h has not been included */
 #ifndef LALSIMULATION_VERSION
 
-printf("\n**********************************\nIn LALSimulationConfig.h.in undef LALSIMULATION_CUDA_ENABLED\n***************************************************\n");
-
 /* LALFrame Version */
 #undef LALSIMULATION_VERSION
 

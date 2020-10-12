@@ -571,7 +571,13 @@ int IMRPhenomXASGenerateFD(
 
   #ifdef LAL_CUDA_ENABLED
       printf("LAL_CUDA_ENABLED defined, in C file\n");
-      
+
+      #ifdef LALAPPS_CUDA_ENABLED
+      printf("LALAPPS_CUDA_ENABLED defined\n");
+      #else
+      printf("LALAPPS_CUDA_ENABLED NOT defined\n");
+      #endif
+
       #ifdef __cplusplus
       printf("C++\n");
       #else
