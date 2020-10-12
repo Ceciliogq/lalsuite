@@ -191,7 +191,6 @@ noinst_HEADERS = \
 	LALSimIMRPhenomX_ringdown.h \
 	LALSimIMRPhenomX_precession.c \
 	LALSimIMRPhenomX_precession.h \
-  LALSimIMRPhenomX_shared.cu \
   LALSimIMRPhenomX_shared.h \
 	LALSimIMRPhenomXHM.h \
 	LALSimIMRPhenomXHM_internals.c \
@@ -300,6 +299,7 @@ liblalsimulation_la_SOURCES = \
 	LALSimIMRPhenomUtils.c \
 	LALSimIMRPhenomX.c \
   LALSimIMRPhenomXUtilities.c \
+	LALSimIMRPhenomX_shared.cu \
 	LALSimIMRPhenomXHM.c \
 	LALSimIMRPSpinInspiralRD.c \
 	LALSimPhenSpinRingDown.c \

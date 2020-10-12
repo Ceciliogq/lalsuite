@@ -4,21 +4,28 @@
 #include "LALSimIMRPhenomX_shared.h"
 
 
-void IMRPhenomX_FillArray(int n, float *x, float *y)
+__global__ void IMRPhenomX_FillArray(int n, float *x, float *y)
 {
   for (int i = 0; i < n; i++)
-      y[i] = x[i] + y[i];
+      i++;
+      //y[i] = x[i] + y[i];
 }
 
+// int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
+//                      UNUSED  REAL8Sequence *freqs,
+//                          IMRPhenomXWaveformStruct *pWF,
+//                          IMRPhenomXAmpCoefficients *pAmp22,
+//                          IMRPhenomXPhaseCoefficients *pPhase22,
+//                          UINT4 offset,
+//                          INT4 N);
 
-
-int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
+extern "C" int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
                      UNUSED  REAL8Sequence *freqs,
                          IMRPhenomXWaveformStruct *pWF,
                          IMRPhenomXAmpCoefficients *pAmp22,
                          IMRPhenomXPhaseCoefficients *pPhase22,
                          UINT4 offset,
-                         UINT4 N)
+                         INT4 N)
 {
 
   printf("\nInside PhXFreqLoop CUDA file");
@@ -35,47 +42,47 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
   printf("NVCC NOT defined\n");
   #endif
 
-  #if defined(CUDA)
-  printf("CUDA defined\n");
+  #ifdef __CUDACC__
+  printf("__CUDACC__ defined\n");
   #else
-  printf("CUDA NOT defined\n");
+  printf("__CUDACC__ NOT defined\n");
   #endif
 
-  #if defined(LALSIMULATION_CUDA_ENABLED)
+  #ifdef LALSIMULATION_CUDA_ENABLED
   printf("LALSIMULATION_CUDA_ENABLED defined\n");
   #else
   printf("LALSIMULATION_CUDA_ENABLED NOT defined\n");
   #endif
 
   N = 100; //freqs->length;
-  float *x = NULL;// *y = NULL;
+  float *x = NULL, *y = NULL;
 
   // Allocate Unified Memory – accessible from CPU or GPU
   cudaMallocManaged((void**)&x, N*sizeof(float), cudaMemAttachGlobal);
-  //cudaMallocManaged(&y, N*sizeof(float));
+  cudaMallocManaged((void**)&y, N*sizeof(float), cudaMemAttachGlobal);
 
   // initialize x and y arrays on the host
- // for (int i = 0; i < N; i++) {
+ //  for (int i = 0; i < N; i++) {
  //   x[i] = 1.0f;
  //   y[i] = 2.0f;
  // }
 
   // Run kernel on 1M elements on the GPU
-  //IMRPhenomX_FillArray<<<1, 1>>>(N, x, y);
+  IMRPhenomX_FillArray<<<1, 1>>>(N, x, y);
 
   // Wait for GPU to finish before accessing on host
   //cudaDeviceSynchronize();
 
-  for (UINT4 idx = 0; idx < N; idx++)
+  for (INT4 idx = 0; idx < N; idx++)
   {
 	  /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
-      ((*htilde22)->data->data)[idx] = 0.*(pWF->amp0 + pAmp22->fAmpMatchIN + pPhase22->C1Int + offset);
+    //((*htilde22)->data->data)[idx] = 0.*(pWF->amp0 + pAmp22->fAmpMatchIN + pPhase22->C1Int + offset);
   }
 
 
   // Free memory
-  //cudaFree(x);
-  //cudaFree(y);
+  cudaFree(x);
+  cudaFree(y);
 
   return XLAL_SUCCESS;
 }

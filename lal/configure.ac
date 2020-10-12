@@ -252,11 +252,6 @@ fi
 # define what is being enabled
 if test "${cuda}" = "true"; then
   AC_DEFINE([LAL_CUDA_ENABLED],[1],[Define if using cuda library])
-  if LAL_CUDA_ENABLED; then
-    echo "LAL_CUDA_ENABLED"
-  else
-    echo "LAL_CUDA_NOT_ENABLED"
-  fi
 fi
 if test "${fftw3}" = "true"; then
   AC_DEFINE([LAL_FFTW3_ENABLED],[1],[Define if using fftw3 library])

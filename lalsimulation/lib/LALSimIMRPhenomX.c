@@ -62,8 +62,17 @@
 //#include "LALSimIMRPhenomX_tidal.c"
 #include "LALSimIMRPhenomX_precession.c"
 
-#include <cuda_runtime.h>
-#include "LALSimIMRPhenomX_shared.cu"
+// #include <cuda.h>
+// #include <cuda_runtime.h>
+#include "LALSimIMRPhenomX_shared.h"
+
+// extern int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
+//                      UNUSED  REAL8Sequence *freqs,
+//                          IMRPhenomXWaveformStruct *pWF,
+//                          IMRPhenomXAmpCoefficients *pAmp22,
+//                          IMRPhenomXPhaseCoefficients *pPhase22,
+//                          UINT4 offset,
+//                          INT4 N);
 
 /* Note: This is declared in LALSimIMRPhenomX_internals.c and avoids namespace clashes */
 IMRPhenomX_UsefulPowers powers_of_lalpi;
@@ -590,10 +599,10 @@ int IMRPhenomXASGenerateFD(
       printf("NVCC NOT defined\n");
       #endif
 
-      #ifdef CUDA
-      printf("CUDA defined\n");
+      #ifdef __CUDACC__
+      printf("__CUDACC__ defined\n");
       #else
-      printf("CUDA NOT defined\n");
+      printf("__CUDACC__ NOT defined\n");
       #endif
 
       #ifdef LALSIMULATION_CUDA_ENABLED
