@@ -365,11 +365,6 @@ liblalsimulation_la_SOURCES = \
 	LALSimNRSur7dq4Remnant.c \
 	LALSimNRSur3dq8Remnant.c
 
-if CUDA
-echo "CUDA lalsim Makefile.am true"
-else
-echo "CUDA lalsim Makefile.am false"
-endif
 
 nodist_liblalsimulation_la_SOURCES = \
 	LALSimulationBuildInfoHeader.h \

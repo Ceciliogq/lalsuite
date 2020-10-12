@@ -35,11 +35,11 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
   printf("NVCC NOT defined");
   #endif
 
-  //N = 100; //freqs->length;
-  //float *x = NULL;// *y = NULL;
+  N = 100; //freqs->length;
+  float *x = NULL;// *y = NULL;
 
   // Allocate Unified Memory – accessible from CPU or GPU
-  //cudaMallocManaged(&x, N*sizeof(float));
+  cudaMallocManaged((void**)&x, N*sizeof(float), cudaMemAttachGlobal);
   //cudaMallocManaged(&y, N*sizeof(float));
 
   // initialize x and y arrays on the host

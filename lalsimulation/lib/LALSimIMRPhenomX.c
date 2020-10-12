@@ -62,6 +62,7 @@
 //#include "LALSimIMRPhenomX_tidal.c"
 #include "LALSimIMRPhenomX_precession.c"
 
+#include <cuda_runtime.h>
 #include "LALSimIMRPhenomX_shared.cu"
 
 /* Note: This is declared in LALSimIMRPhenomX_internals.c and avoids namespace clashes */
@@ -205,7 +206,7 @@ int XLALSimIMRPhenomXASGenerateFD(
   if(f_max    <  0.0) { XLAL_ERROR(XLAL_EDOM, "f_max must be non-negative.\n");                      }
   if(distance <  0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
 
-     
+
   /*
   	Perform a basic sanity check on the region of the parameter space in which model is evaluated. Behaviour is as follows:
   		- For mass ratios <= 20.0 and spins <= 0.99: no warning messages.
@@ -581,17 +582,17 @@ int IMRPhenomXASGenerateFD(
       #else
       printf("NVCC NOT defined\n");
       #endif
-    
+
     IMRPhenomX_Frequency_Loop(htilde22, freqs, pWF, pAmp22, pPhase22, offset, freqs->length);
     //IMRPhenomX_Ringdown_Amp_22_v1(0.25, 0, 0, 0, pWF->IMRPhenomXRingdownAmpVersion);
     printf("%i", offset);
-    
+
   #else
   printf("LAL_CUDA_ENABLED NOT defined");
   //printf("__NVCC__ NOT defined");
   /* initial_status used to track  */
   UINT4 initial_status = XLAL_SUCCESS;
-    
+
   /*
   Here we declare explicit REAL8 variables for main loop in order to avoid numerous
   pointer calls.
@@ -621,7 +622,7 @@ int IMRPhenomXASGenerateFD(
   }
 
   REAL8 Amp0      = pWF->amp0 * pWF->ampNorm;
-    
+
   /* Now loop over main driver to generate waveform:  h(f) = A(f) * Exp[I phi(f)] */
   #pragma omp parallel for
   for (UINT4 idx = 0; idx < freqs->length; idx++)
@@ -681,7 +682,7 @@ int IMRPhenomXASGenerateFD(
     }
   }
   #endif
-    
+
   // Free allocated memory
   LALFree(pAmp22);
   LALFree(pPhase22);

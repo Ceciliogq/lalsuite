@@ -156,6 +156,7 @@ LALSUITE_USE_DOXYGEN
 
 # define if CUDA is enabled
 if test "${cuda}" = "true"; then
+  echo "HOLAAAAAAAAAAAAAAAAAAAAAAAAA\n"
   AC_DEFINE([LALSIMULATION_CUDA_ENABLED],[1],[Define if using cuda library])
 fi
 
