@@ -77,11 +77,8 @@ AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
 # nightly build
 LALSUITE_ENABLE_NIGHTLY
 
-## enable strict gcc flags
-#LALSUITE_ENABLE_GCC_FLAGS
-
-# We require CXX to compile code that supports the cuda code
-LALSUITE_REQUIRE_CXX
+# enable strict gcc flags
+LALSUITE_ENABLE_GCC_FLAGS
 
 # Add CUDA as a conditional
 LALSUITE_WITH_CUDA

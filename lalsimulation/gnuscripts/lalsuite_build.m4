@@ -999,10 +999,12 @@ AS_IF([test "x${osx_version_check}" = "xtrue"],[
 AC_DEFUN([LALSUITE_CHECK_CUDA],
 [AC_MSG_CHECKING([whether LAL has been compiled with CUDA support])
 AC_TRY_RUN([
-#include <lalsimulation/LALSimulationConfig.h>
+#include <lal/LALConfig.h>
 #ifdef LALSIMULATION_CUDA_ENABLED
+printf("\nlalsuite_build.m4 LALSIMULATION_CUDA_ENABLED defined\n");
 int main( void ) { return 0; }
 #else
+printf("\nlalsuite_build.m4 LALSIMULATION_CUDA_ENABLED NOT defined\n");
 int main( void ) { return 1; }
 #endif
 ],
