@@ -30,9 +30,21 @@ int IMRPhenomX_Frequency_Loop(COMPLEX16FrequencySeries **htilde22,
   #endif
 
   #ifdef __NVCC__
-  printf("NVCC defined");
+  printf("NVCC defined\n");
   #else
-  printf("NVCC NOT defined");
+  printf("NVCC NOT defined\n");
+  #endif
+
+  #if defined(CUDA)
+  printf("CUDA defined\n");
+  #else
+  printf("CUDA NOT defined\n");
+  #endif
+
+  #if defined(LALSIMULATION_CUDA_ENABLED)
+  printf("LALSIMULATION_CUDA_ENABLED defined\n");
+  #else
+  printf("LALSIMULATION_CUDA_ENABLED NOT defined\n");
   #endif
 
   N = 100; //freqs->length;

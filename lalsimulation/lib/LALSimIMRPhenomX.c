@@ -570,8 +570,9 @@ int IMRPhenomXASGenerateFD(
 
 
   #ifdef LAL_CUDA_ENABLED
-   printf("LAL_CUDA_ENABLED defined, in C file\n");
-   #ifdef __cplusplus
+      printf("LAL_CUDA_ENABLED defined, in C file\n");
+      
+      #ifdef __cplusplus
       printf("C++\n");
       #else
       printf("No C++\n");
@@ -581,6 +582,18 @@ int IMRPhenomXASGenerateFD(
       printf("NVCC defined\n");
       #else
       printf("NVCC NOT defined\n");
+      #endif
+
+      #ifdef CUDA
+      printf("CUDA defined\n");
+      #else
+      printf("CUDA NOT defined\n");
+      #endif
+
+      #ifdef LALSIMULATION_CUDA_ENABLED
+      printf("LALSIMULATION_CUDA_ENABLED defined\n");
+      #else
+      printf("LALSIMULATION_CUDA_ENABLED NOT defined\n");
       #endif
 
     IMRPhenomX_Frequency_Loop(htilde22, freqs, pWF, pAmp22, pPhase22, offset, freqs->length);
