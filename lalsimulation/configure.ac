@@ -77,8 +77,14 @@ AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
 # nightly build
 LALSUITE_ENABLE_NIGHTLY
 
-# enable strict gcc flags
-LALSUITE_ENABLE_GCC_FLAGS
+## enable strict gcc flags
+#LALSUITE_ENABLE_GCC_FLAGS
+
+# We require CXX to compile code that supports the cuda code
+LALSUITE_REQUIRE_CXX
+
+# Add CUDA as a conditional
+LALSUITE_WITH_CUDA
 
 # enable SWIG wrapping modules
 LALSUITE_ENABLE_SWIG
@@ -148,6 +154,11 @@ LALSUITE_USE_SWIG
 # configure Doxygen documentation
 LALSUITE_USE_DOXYGEN
 
+# define if CUDA is enabled
+if test "${cuda}" = "true"; then
+  AC_DEFINE([LALSIMULATION_CUDA_ENABLED],[1],[Define if using cuda library])
+fi
+
 # add gcc specific flags
 LALSUITE_ADD_GCC_FLAGS
 
@@ -173,6 +184,7 @@ AC_MSG_NOTICE([
 LALSimulation has now been successfully configured:
 
 * Python support is $PYTHON_ENABLE_VAL
+* CUDA support is $CUDA_ENABLE_VAL
 * SWIG bindings for Octave are $SWIG_BUILD_OCTAVE_ENABLE_VAL
 * SWIG bindings for Python are $SWIG_BUILD_PYTHON_ENABLE_VAL
 * OpenMP acceleration is $OPENMP_ENABLE_VAL

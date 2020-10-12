@@ -2,6 +2,8 @@ BUILT_SOURCES =
 MOSTLYCLEANFILES =
 include $(top_srcdir)/gnuscripts/lalsuite_header_links.am
 include $(top_srcdir)/gnuscripts/lalsuite_vcs_info.am
+include $(top_srcdir)/gnuscripts/lalsuite_help2man.am
+include $(top_srcdir)/gnuscripts/lalsuite_cuda.am
 
 SUBDIRS = \
 	seobnrv3_opt_exactderivs \
@@ -147,7 +149,7 @@ pkginclude_HEADERS = \
 	LALSimulationVCSInfoHeader.h \
 	LALSimUniversalRelations.h \
 	LALSimInspiralEOS.h \
-	LALSimInspiralFDPrecAngles.h 
+	LALSimInspiralFDPrecAngles.h
 
 noinst_HEADERS = \
 	LALSimIMRSpinEOBHcapExactDerivativePrec_v3opt.c \
@@ -189,8 +191,8 @@ noinst_HEADERS = \
 	LALSimIMRPhenomX_ringdown.h \
 	LALSimIMRPhenomX_precession.c \
 	LALSimIMRPhenomX_precession.h \
-    LALSimIMRPhenomX_shared.cu \
-    LALSimIMRPhenomX_shared.h \
+  LALSimIMRPhenomX_shared.cu \
+  LALSimIMRPhenomX_shared.h \
 	LALSimIMRPhenomXHM.h \
 	LALSimIMRPhenomXHM_internals.c \
 	LALSimIMRPhenomXHM_internals.h \
@@ -297,7 +299,7 @@ liblalsimulation_la_SOURCES = \
 	LALSimIMRPhenomInternalUtils.c \
 	LALSimIMRPhenomUtils.c \
 	LALSimIMRPhenomX.c \
-   	LALSimIMRPhenomXUtilities.c \
+  LALSimIMRPhenomXUtilities.c \
 	LALSimIMRPhenomXHM.c \
 	LALSimIMRPSpinInspiralRD.c \
 	LALSimPhenSpinRingDown.c \
@@ -361,8 +363,13 @@ liblalsimulation_la_SOURCES = \
 	LALSimInspiralFDPrecAngles.c \
 	LALSimNRSurRemnantUtils.c \
 	LALSimNRSur7dq4Remnant.c \
-	LALSimNRSur3dq8Remnant.c 
+	LALSimNRSur3dq8Remnant.c
 
+if CUDA
+echo "CUDA lalsim Makefile.am true"
+else
+echo "CUDA lalsim Makefile.am false"
+endif
 
 nodist_liblalsimulation_la_SOURCES = \
 	LALSimulationBuildInfoHeader.h \
