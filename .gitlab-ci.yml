@@ -916,19 +916,19 @@ docker:tags:stretch:
     reports:
       junit: "*/test/python/junit*.xml"
 
-clang:9:
-  <<: *clang-build
-  image: igwn/lalsuite-dev-clang:9
-  variables:
-    CLANG: clang-9
-    CLANGXX: clang++-9
-
 clang:10:
   <<: *clang-build
   image: igwn/lalsuite-dev-clang:10
   variables:
     CLANG: clang-10
     CLANGXX: clang++-10
+
+clang:11:
+  <<: *clang-build
+  image: igwn/lalsuite-dev-clang:11
+  variables:
+    CLANG: clang-11
+    CLANGXX: clang++-11
 
 clang:dev:
   <<: *clang-build
@@ -962,6 +962,11 @@ gcc:8:
 gcc:9:
   <<: *gcc-build
   image: igwn/lalsuite-dev-gcc:9
+
+gcc:10:
+  <<: *gcc-build
+  image: igwn/lalsuite-dev-gcc:10
+  allow_failure: true
 
 cuda:
   image: igwn/lalsuite-dev-cuda:el7
@@ -1132,21 +1137,21 @@ platform:conda:linux:
   image: containers.ligo.org/lscsoft/lalsuite-manylinux/manylinux2014_x86_64
 
 # Build wheels for all supported platforms
-wheel:cp35-cp35m-manylinux2014:
-  <<: *wheel-manylinux2014
 wheel:cp36-cp36m-manylinux2014:
   <<: *wheel-manylinux2014
 wheel:cp37-cp37m-manylinux2014:
   <<: *wheel-manylinux2014
 wheel:cp38-cp38-manylinux2014:
   <<: *wheel-manylinux2014
-wheel:cp35-cp35m-macosx:
-  <<: *wheel-macos
+wheel:cp39-cp39-manylinux2014:
+  <<: *wheel-manylinux2014
 wheel:cp36-cp36m-macosx:
   <<: *wheel-macos
 wheel:cp37-cp37m-macosx:
   <<: *wheel-macos
 wheel:cp38-cp38-macosx:
+  <<: *wheel-macos
+wheel:cp39-cp39-macosx:
   <<: *wheel-macos
 
 deploy:wheel:
@@ -1161,14 +1166,14 @@ deploy:wheel:
     - pip install twine
     - twine upload wheelhouse/*
   needs:
-    - wheel:cp35-cp35m-manylinux2014
     - wheel:cp36-cp36m-manylinux2014
     - wheel:cp37-cp37m-manylinux2014
     - wheel:cp38-cp38-manylinux2014
-    - wheel:cp35-cp35m-macosx
+    - wheel:cp39-cp39-manylinux2014
     - wheel:cp36-cp36m-macosx
     - wheel:cp37-cp37m-macosx
     - wheel:cp38-cp38-macosx
+    - wheel:cp39-cp39-macosx
   only:
     - /^lalsuite-v.*$/
     - schedules
