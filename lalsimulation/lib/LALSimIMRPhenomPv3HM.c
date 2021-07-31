@@ -801,6 +801,13 @@ static int IMRPhenomPv3HM_Compute_Mode(
         int ret_als;
         int ret_wigs;
 
+        FILE *fileangle2;
+        char fileSpec2[40];
+
+        sprintf(fileSpec2, "Pv3HM_angles_hphc_%i%i.dat", ell, mprime);
+        printf("\nOutput Pv3HM angle file: %s\r\n", fileSpec2);
+        fileangle2 = fopen(fileSpec2,"w");
+
         // frequency loop
         for (size_t j = 0; j < freqs_seq->length; j++)
         {
@@ -811,6 +818,9 @@ static int IMRPhenomPv3HM_Compute_Mode(
                 XLAL_SUCCESS == ret_abe,
                 XLAL_EFUNC,
                 "IMRPhenomPv3HM_Compute_a_b_e failed");
+
+            fprintf(fileangle2, "%.16e  %.16e  %.16e  %.16e\n",  fHz, alpha, mprime_epsilon, beta);
+
             /* Precompute wigner-d elements */
             ret_wigs = XLALSimIMRPhenomPv3HMComputeWignerdElements(&wigs, ell, mprime, -beta);
             XLAL_CHECK(
@@ -834,6 +844,7 @@ static int IMRPhenomPv3HM_Compute_Mode(
             (*hptilde)->data->data[j] += half_amp_eps * (Term1_sum + Term2_sum);
             (*hctilde)->data->data[j] += -I * half_amp_eps * (Term1_sum - Term2_sum);
         }
+        fclose(fileangle2);
 
         XLALFree(wigs);
         XLALFree(als);
@@ -1022,6 +1033,8 @@ tried to apply shift of -1.0/deltaF with deltaF=%g.",
                 COMPLEX16FrequencySeries *hlmD = XLALSphHarmFrequencySeriesGetMode(*hlmsD, ell, mprime);
                 if (!(hlmD))
                     XLAL_ERROR(XLAL_EFUNC, "XLALSphHarmFrequencySeriesGetMode failed for (%i,%i) mode\n", ell, mprime);
+
+
 
                 // frequency loop
                 for (size_t j = 0; j < freqs_seq->length; j++)

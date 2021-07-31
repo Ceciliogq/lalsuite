@@ -236,7 +236,7 @@ int XLALSimIMRPhenomXPHM(
 
   /* If no reference frequency is given, set it to the starting gravitational wave frequency. */
   REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
-  
+
   /* Use an auxiliar laldict to not overwrite the input argument */
   LALDict *lalParams_aux;
   /* setup mode array */
@@ -247,7 +247,7 @@ int XLALSimIMRPhenomXPHM(
   else{
       lalParams_aux = XLALDictDuplicate(lalParams);
   }
-  
+
   #if DEBUG == 1
   printf("\n\n **** Initializing waveform struct... **** \n\n");
   #endif
@@ -298,7 +298,7 @@ int XLALSimIMRPhenomXPHM(
   #if DEBUG == 1
   printf("\n\n **** Calling IMRPhenomXPHM_hplushcross... **** \n\n");
   #endif
-  
+
   /* We now call the core IMRPhenomXPHM waveform generator */
   status = IMRPhenomXPHM_hplushcross(hptilde, hctilde, freqs, pWF, pPrec, lalParams_aux);
   XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "IMRPhenomXPHM_hplushcross failed to generate IMRPhenomXHM waveform.\n");
@@ -338,7 +338,7 @@ int XLALSimIMRPhenomXPHM(
   LALFree(pPrec);
   XLALDestroyREAL8Sequence(freqs);
   XLALDestroyDict(lalParams_aux);
-  
+
   return XLAL_SUCCESS;
 }
 
@@ -430,7 +430,7 @@ int XLALSimIMRPhenomXPHMFromModes(
 
   /* If no reference frequency is given, set it to the starting gravitational wave frequency */
   REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
-  
+
   /* Use an auxiliar laldict to not overwrite the input argument */
   LALDict *lalParams_aux;
   /* setup mode array */
@@ -441,7 +441,7 @@ int XLALSimIMRPhenomXPHMFromModes(
   else{
       lalParams_aux = XLALDictDuplicate(lalParams);
   }
-  
+
   #if DEBUG == 1
   printf("\n\n **** Initializing waveform struct... **** \n\n");
   #endif
@@ -1016,7 +1016,7 @@ int XLALSimIMRPhenomXPHMFromModes(
                valpha[j]   = vangles.x - alpha_offset_mprime;
                vepsilon[j] = vangles.y - epsilon_offset_mprime;
                cos_beta    = vangles.z;
-               
+
                status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
                XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
 
@@ -1059,11 +1059,26 @@ int XLALSimIMRPhenomXPHMFromModes(
          printf("fine_count, htildelm->length, offset = %i %i %i\n", fine_count, htildelm->data->length, offset);
          #endif
 
+         #if DEBUG == 1
+         // Save coarse angles into a file
+         FILE *fileangle2;
+         char fileSpec2[40];
+
+         sprintf(fileSpec2, "coarse_angles_hphc_MB_%i%i.dat", ell, emmprime);
+         printf("\nOutput coarse angle file: %s\r\n", fileSpec2);
+         fileangle2 = fopen(fileSpec2,"w");
+
+         fprintf(fileangle2,"# q = %.16e m1 = %.16e m2 = %.16e chi1 = %.16e chi2 = %.16e lm = %i%i Mtot = %.16e distance = %.16e\n", pWF->q, pWF->m1, pWF->m2, pWF->chi1L, pWF->chi2L, ell, emmprime, pWF->Mtot, pWF->distance/LAL_PC_SI/1e6);
+         fprintf(fileangle2,"#fHz   cexp_i_alpha(re im)   cexp_i_epsilon(re im)    cexp_i_betah(re im)\n");
+
+
          /* Loop over the coarse freq points */
          for(UINT4 j = 0; j<lenCoarseArray-1 && fine_count < iStop; j++)
          {
            Mfhere = Mfnext;
            Mfnext = coarseFreqs->data[j+1];
+
+           fprintf(fileangle2, "%.16e  %.16e  %.16e  %.16e\n",  XLALSimIMRPhenomXUtilsMftoHz(Mfhere, pWF->Mtot), valpha[j], vepsilon[j], vbetah[j]);
 
            Omega_alpha   = (valpha[j + 1]   - valpha[j])  /(Mfnext - Mfhere);
            Omega_epsilon = (vepsilon[j + 1] - vepsilon[j])/(Mfnext - Mfhere);
@@ -1102,6 +1117,8 @@ int XLALSimIMRPhenomXPHMFromModes(
              fine_count++;
            }
          }// Loop over coarse grid
+         fclose(fileangle2);
+         #endif
 
          /*
           Now we have the complex exponentials of the three Euler angles alpha, beta, epsilon evaluated in the fine frequency grid.
@@ -1380,7 +1397,7 @@ static int IMRPhenomXPHMTwistUp(
         alpha       = vangles.x - alpha_offset_mprime;
         epsilon     = vangles.y - epsilon_offset_mprime;
         cos_beta    = vangles.z;
-        
+
         INT4 status = 0;
         status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
         XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
@@ -1990,7 +2007,7 @@ static int IMRPhenomXPHM_OneMode(
   {
     XLAL_ERROR(XLAL_EDOM, "ModeArray is NULL when it shouldn't be. Aborting.\n");
   }
-  
+
   /* Check that the co-precessing ModeArray has at least one ell mode. If not, twisting-up is not possible. */
   bool mode_arrays_consistent = false;
   INT4 emm = -(INT4)ell;
@@ -2145,7 +2162,7 @@ static int IMRPhenomXPHM_OneMode(
           XLALDestroyCOMPLEX16Sequence(hlm);
         }
      }
-     
+
      XLALDestroyCOMPLEX16FrequencySeries(htildelm);
 
   }// End Loop over emmprime
@@ -2226,7 +2243,7 @@ static int IMRPhenomXPHMTwistUpOneMode(
       alpha    = vangles.x - alpha_offset_mprime;
       epsilon  = vangles.y - epsilon_offset_mprime;
       cos_beta = vangles.z;
-      
+
       INT4 status = 0;
       status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
       XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
@@ -2375,7 +2392,7 @@ int XLALSimIMRPhenomXPHMModes(
 )
 {
     LALValue *ModeArrayJframe = NULL;  // Modes in the precessing J-frame. Specified through the new LAL dictionary option "ModeArrayJframe"
-    
+
     /* Use an auxiliar laldict to not overwrite the input argument */
     LALDict *lalParams_aux;
     /* setup mode array */
@@ -2386,14 +2403,14 @@ int XLALSimIMRPhenomXPHMModes(
     else{
         lalParams_aux = XLALDictDuplicate(lalParams);
     }
-    
+
     /* Check that the co-precessing modes chosen are available for the model */
     XLAL_CHECK(check_input_mode_array(lalParams_aux) == XLAL_SUCCESS, XLAL_EFAULT, "Not available co-precessing mode chosen.\n");
-    
-    
+
+
     /* Read mode array from LAL dictionary */
     ModeArrayJframe = XLALSimInspiralWaveformParamsLookupModeArrayJframe(lalParams_aux);
-        
+
     /* If input LAL dictionary does not have mode array, use all the modes available for XPHM (l<=4)  */
     if(ModeArrayJframe == NULL)
     {
@@ -2406,7 +2423,7 @@ int XLALSimIMRPhenomXPHMModes(
       XLAL_CHECK(check_input_mode_array_Jframe(ModeArrayJframe) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen. l must be lower than %i\n", L_MAX);
     }
 
-  
+
     INT4 length = 0;
     /***** Loop over modes ******/
     for (UINT4 ell = 2; ell <= LAL_SIM_L_MAX_MODE_ARRAY; ell++)
@@ -2461,7 +2478,7 @@ int XLALSimIMRPhenomXPHMModes(
     /* Free memory */
     XLALDestroyDict(lalParams_aux);
     XLALDestroyValue(ModeArrayJframe);
-    
+
 
     return XLAL_SUCCESS;
 
