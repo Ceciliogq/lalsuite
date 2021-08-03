@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 /**
@@ -58,11 +58,11 @@
  * #EOB at orders 2 and higher. #SpinTaylorT3 is implemented only at 2PN order
  * by solving the evolution equations for the spin and orbital angular momenta and a
  * time-domain phasing formula. Finally, PN order is undefined for #BCV.
- * The approximant and the order are set up by the enums ::Approximant and ::LALPNOrder,
+ * The approximant and the order are set up by the enums \c Approximant and \c LALPNOrder,
  * respectively.
  *
  * The waveforms are all terminated one bin before the last stable orbit is reached.
- * The last stable orbit corresponding to a given ::Approximant and ::LALPNOrder is
+ * The last stable orbit corresponding to a given \c Approximant and \c LALPNOrder is
  * defined as follows: For all \c Taylor approximants at orders 0PN, 1PN and 1.5PN
  * \f$v_\textrm{lso}^2=1/6,\f$ and at 2PN, 2.5PN, 3PN and 3.5PN
  * \f$v_\textrm{lso}^2 = x^\textrm{lso}_{T_4},\f$ where \f$x^\textrm{lso}_{T_4}\f$ is
@@ -102,9 +102,9 @@
  * ### Notes ###
  *
  * <ul>
- * <li> A time-domain waveform is returned when the ::Approximant is one of
+ * <li> A time-domain waveform is returned when the \c Approximant is one of
  * #TaylorT1, #TaylorT2, #TaylorT3, #PadeT1, #EOB, #SpinTaylorT3, #PhenSpinTaylorRD, #SpinQuadTaylor
- * </li><li> A frequency-domain waveform is returned when the ::Approximant is one of
+ * </li><li> A frequency-domain waveform is returned when the \c Approximant is one of
  * #TaylorF1, #TaylorF2, #TaylorF2RedSpin, #BCV.
  * In these cases the code returns the real and imagninary parts of the
  * Fourier domain signal in the convention of fftw. For a signal vector
@@ -120,12 +120,14 @@
  *
  */
 
+#include <ctype.h>
 #include <lal/LALInspiral.h>
 #include <lal/LALNoiseModels.h>
 #include <lal/LALStdlib.h>
 #include <lal/GeneratePPNInspiral.h>
 #include <lal/LALSQTPNWaveformInterface.h>
 #include <lal/TimeSeries.h>
+#include <lal/LALString.h>
 #include <lal/LALDict.h>
 
 /**
@@ -266,6 +268,46 @@ int XLALInspiralTDWaveformFromSimInspiral(
 
    /* note: the condition waveform already does tapering... ignore any request to do so get taper option */
    /* taper = XLALGetTaperFromString(thisRow->taper); */
+
+   /* get extra parameters from numrel_data column */
+   /* format is: "param1=3.14,param2:INT4=7,param3:string=hello" */
+   if (*thisRow->numrel_data && approximant != NR_hdf5) {
+      char *str = XLALStringDuplicate(thisRow->numrel_data);
+      char *head = str;
+      char *tok;
+      int i = 0;
+      /* remove whitespace from string */
+      for (int j=0; str[j]; ++j)
+         if (!isspace(str[j]))
+            str[i++] = str[j];
+      str[i] = '\0';
+      while ((tok = XLALStringToken(&str, ",", 0))) {
+         char *key = tok;
+         char *val = strchr(tok, '=');
+         char *type;
+         if (val == NULL) {
+            XLALDestroyDict(params);
+            XLALFree(head);
+            XLAL_ERROR(XLAL_ENAME, "could not parse extra params from numrel_data column `%s'", thisRow->numrel_data);
+         }
+         *val++ = 0;
+         type = strchr(key, ':');
+         if (type)
+             *type++ = 0;
+         if (type == NULL || XLALStringCaseCompare(type, "REAL8") == 0)
+            XLALDictInsertREAL8Value(params, key, atof(val));
+         else if (XLALStringCaseCompare(type, "INT4") == 0)
+            XLALDictInsertINT4Value(params, key, atoi(val));
+         else if (XLALStringCaseCompare(type, "STRING") == 0)
+            XLALDictInsertStringValue(params, key, val);
+         else {
+            XLALDestroyDict(params);
+            XLALFree(head);
+            XLAL_ERROR(XLAL_ENAME, "could not parse extra params from numrel_data column `%s'", thisRow->numrel_data);
+         }
+      }
+      XLALFree(head);
+   }
 
    /* generate +,x waveforms */
    ret = XLALSimInspiralTD(hplus, hcross, m1, m2, S1x, S1y, S1z, S2x, S2y, S2z, distance, inclination, phi0, 0.0, 0.0, 0.0, deltaT, f_min, f_ref, params, approximant);

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Copyright (C) 2019 Duncan Macleod
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -18,10 +16,7 @@
 
 import datetime
 import sys
-try:
-    from unittest import mock
-except ImportError:  # python < 3
-    import mock
+from unittest import mock
 
 import pytest
 

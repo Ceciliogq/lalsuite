@@ -17,8 +17,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 /**
@@ -57,9 +57,9 @@ void LALInferenceDrawThreads(LALInferenceRunState *run_state);
  * by setting it as LALINFERENCE_PARAM_FIXED
  * Note: The prior is setup in state->priorArgs, but it does not set state->currentParams
  */
-void LALInferenceRegisterUniformVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char name[VARNAME_MAX], REAL8 startval, REAL8 min, REAL8 max, LALInferenceParamVaryType varytype);
+void LALInferenceRegisterUniformVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char *name, REAL8 startval, REAL8 min, REAL8 max, LALInferenceParamVaryType varytype);
 
-void LALInferenceRegisterGaussianVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char name[VARNAME_MAX], REAL8 startval, REAL8 mean, REAL8 stdev, LALInferenceParamVaryType varytype);
+void LALInferenceRegisterGaussianVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char *name, REAL8 startval, REAL8 mean, REAL8 stdev, LALInferenceParamVaryType varytype);
 
 
 /**

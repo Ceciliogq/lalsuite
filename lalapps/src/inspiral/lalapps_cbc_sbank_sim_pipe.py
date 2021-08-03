@@ -22,11 +22,20 @@
 ###############################################################################
 
 import os
+import getpass
 import socket, tempfile
+import warnings
 from optparse import OptionParser
 from glue.pipeline import DeepCopyableConfigParser as dcConfigParser
 from glue import pipeline
 from lalapps import inspiral
+
+warnings.warn(
+    "this script has been moved into the independent `sbank` project, "
+    "see https://pypi.org/project/sbank/ for details, and will be "
+    "removed from lalapps in an upcoming release",
+    DeprecationWarning,
+)
 
 ###############################################################################
 #
@@ -36,7 +45,7 @@ from lalapps import inspiral
 
 def log_path():
     host = socket.getfqdn()
-    username = os.environ['USER']
+    username = getpass.getuser()
     #FIXME add more hosts as you need them
     if 'caltech.edu' in host: return '/usr1/' + username
     if 'phys.uwm.edu' in host: return '/localscratch/' + username

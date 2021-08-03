@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Postprocessing for the tiger pipeline
 """
@@ -31,12 +29,8 @@ hatch_default = ['..','//','||']
 #
 ###############################################################################
 
-try:
-    from configparser import ConfigParser
-    from pickle import dump, load
-except ImportError:  # python < 3
-    from ConfigParser import SafeConfigParser as ConfigParser
-    from cPickle import dump, load
+from configparser import ConfigParser
+from pickle import dump, load
 from datetime import datetime
 from itertools import combinations
 from itertools import cycle

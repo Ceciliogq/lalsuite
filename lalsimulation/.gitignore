@@ -15,6 +15,7 @@ __pycache__
 AUTHORS
 config.lt
 debian/control
+debian/liblal*.install
 doxygen/autogen.dox
 doxygen/doxygen_objdb_*.tmp
 doxygen/doxygen_sqlite3.db
@@ -105,5 +106,6 @@ test/ST4-dynamics.dat
 test/WaveformFlagsTest
 test/WaveformFromCacheTest
 test/XLALSimAddInjectionTest
+test/XLALSimBurstCherenkovRadiationTest
 test/XLALSimIMRPhenomC.dat
 test/XLALSimIMRPhenomP.dat

@@ -18,6 +18,7 @@ from __future__ import (division, print_function)
 
 from operator import attrgetter
 from optparse import OptionParser
+import warnings
 
 from time import strftime
 import numpy as np
@@ -33,6 +34,14 @@ from lalinspiral.sbank.bank import Bank
 #from sbank import git_version FIXME
 from lalinspiral.sbank.waveforms import waveforms
 from lalinspiral.sbank.psds import noise_models, read_psd
+
+warnings.warn(
+    "this script has been moved into the independent `sbank` project, "
+    "see https://pypi.org/project/sbank/ for details, and will be "
+    "removed from lalapps in an upcoming release",
+    DeprecationWarning,
+)
+
 
 class ContentHandler(ligolw.LIGOLWContentHandler):
     pass
@@ -87,7 +96,7 @@ def parse_command_line():
     parser.add_option("--duration-min",default = 0, type="float", help="Cull injections based on duration")
     parser.add_option("--template-bank",default = [], action="append", metavar="FILE[:APPROX]")
     parser.add_option("--template-approx",default = None, help="Approximant to be used for templates when not specified with file.")
-    parser.add_option("--noise-model", choices=noise_models.keys(), default="aLIGOZeroDetHighPower", help="Choose a noise model for the PSD from a set of available analytical model")
+    parser.add_option("--noise-model", choices=list(noise_models.keys()), default="aLIGOZeroDetHighPower", help="Choose a noise model for the PSD from a set of available analytical model")
     parser.add_option("--reference-psd", help="Read PSD from xml instead of using analytical noise model.")
     parser.add_option("--instrument", metavar="IFO", help="Specify the instrument for which to generate a template bank.")
     parser.add_option("--flow",default = 40.0, type="float")
@@ -244,7 +253,7 @@ lsctables.reset_next_ids((lsctables.ProcessTable, lsctables.ProcessParamsTable))
 ligolw_add.reassign_ids(fake_xmldoc)
 ligolw_add.merge_ligolws(fake_xmldoc)
 ligolw_add.merge_compatible_tables(fake_xmldoc)
-ligolw_process.set_process_end_time(process)
+process.set_end_time_now()
 
 # output process
 proc = lsctables.ProcessTable.get_table(fake_xmldoc)

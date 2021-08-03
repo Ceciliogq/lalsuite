@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Copyright (C) 2008  Kipp Cannon
 #               2015  Leo Singer
 #
@@ -29,9 +27,9 @@ the DMT to store time- and frequency-series data in XML files,
 """
 
 
-from glue.ligolw import ligolw
-from glue.ligolw import array as ligolw_array
-from glue.ligolw import param as ligolw_param
+from ligo.lw import ligolw
+from ligo.lw import array as ligolw_array
+from ligo.lw import param as ligolw_param
 import lal
 import six
 import numpy as np
@@ -245,7 +243,7 @@ def read_psd_xmldoc(xmldoc, root_name = u"psd"):
 class PSDContentHandler(ligolw.LIGOLWContentHandler):
     """A content handler suitable for reading PSD documents. Use like this:
 
-    >>> from glue.ligolw.utils import load_filename
+    >>> from ligo.lw.utils import load_filename
     >>> xmldoc = load_filename('psd.xml', contenthandler=PSDContentHandler)
     >>> psds = read_psd_xmldoc(xmldoc)
     """

@@ -109,9 +109,10 @@ class CacheEntry(object):
     >>> filename = "874000000-20000.cache"
     >>> # adjustment for doctest in out-of-tree builds
     >>> inname = os.path.join(os.environ.get("LAL_TEST_SRCDIR", "."), filename)
-    >>> cache = map(CacheEntry, open(inname))
-    >>> f = open(filename + ".new", "w")
-    >>> for cacheentry in cache: print(str(cacheentry), file=f)
+    >>> # one-liner to read
+    >>> cache = list(map(CacheEntry, open(inname)))
+    >>> # one-liner to write
+    >>> print(*cache, sep = "\\n", file = open(filename + ".new", "w"))
 
     Example (extract segmentlist dictionary from LAL cache):
 
@@ -317,12 +318,7 @@ class CacheEntry(object):
         """
         # the import has to be done here to break the cyclic
         # dependancy
-        try:
-            from ligo.lw.lsctables import instrumentsproperty
-        except ImportError:
-            # FIXME:  remove when we can rely on ligo.lw being installed
-            # (why isn't it!?)
-            from glue.ligolw.lsctables import instrumentsproperty
+        from ligo.lw.lsctables import instrumentsproperty
         instruments = instrumentsproperty.get(self.observatory) or (None,)
         return segments.segmentlistdict((instrument, segments.segmentlist(self.segment is not None and [self.segment] or [])) for instrument in instruments)
 

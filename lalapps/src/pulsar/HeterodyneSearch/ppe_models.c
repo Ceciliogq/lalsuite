@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 
@@ -213,7 +213,7 @@ void get_pulsar_model( LALInferenceModel *model ){
         REAL8Vector *gl = NULL;
         gl = XLALCreateREAL8Vector( glnum );
         for ( UINT4 j=0; j < glnum; j++ ){
-          CHAR varname[256];
+          CHAR varname[300];
           snprintf(varname, sizeof(varname), "%s_%u", glitchpars[i], j+1);
           if ( LALInferenceCheckVariable( model->params, varname ) ){
             gl->data[j] = LALInferenceGetREAL8Variable( model->params, varname );

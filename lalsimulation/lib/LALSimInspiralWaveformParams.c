@@ -62,17 +62,25 @@ int XLALSimInspiralWaveformParamsInsertModeArray(LALDict *params, LALValue *valu
 	return XLALDictInsertValue(params, "ModeArray", value);
 }
 
+int XLALSimInspiralWaveformParamsInsertModeArrayJframe(LALDict *params, LALValue *value)
+{
+	return XLALDictInsertValue(params, "ModeArrayJframe", value);
+}
+
 DEFINE_INSERT_FUNC(PNPhaseOrder, INT4, "phaseO", -1)
 DEFINE_INSERT_FUNC(PNAmplitudeOrder, INT4, "ampO", -1)
 DEFINE_INSERT_FUNC(PNEccentricityOrder, INT4, "eccO", -1)
 DEFINE_INSERT_FUNC(PNSpinOrder, INT4, "spinO", -1)
 DEFINE_INSERT_FUNC(PNTidalOrder, INT4, "tideO", -1)
-
+DEFINE_INSERT_FUNC(GETides, INT4, "GEtideO", 0)
+DEFINE_INSERT_FUNC(GMTides, INT4, "GMtideO", 0)
 
 DEFINE_INSERT_FUNC(TidalLambda1, REAL8, "lambda1", 0)
 DEFINE_INSERT_FUNC(TidalLambda2, REAL8, "lambda2", 0)
 DEFINE_INSERT_FUNC(TidalOctupolarLambda1, REAL8, "TidalOctupolarLambda1", 0)
 DEFINE_INSERT_FUNC(TidalOctupolarLambda2, REAL8, "TidalOctupolarLambda2", 0)
+DEFINE_INSERT_FUNC(TidalHexadecapolarLambda1, REAL8, "TidalHexadecapolarLambda1", 0)
+DEFINE_INSERT_FUNC(TidalHexadecapolarLambda2, REAL8, "TidalHexadecapolarLambda2", 0)
 DEFINE_INSERT_FUNC(TidalQuadrupolarFMode1, REAL8, "TidalQuadrupolarFMode1", 0)
 DEFINE_INSERT_FUNC(TidalQuadrupolarFMode2, REAL8, "TidalQuadrupolarFMode2", 0)
 DEFINE_INSERT_FUNC(TidalOctupolarFMode1, REAL8, "TidalOctupolarFMode1", 0)
@@ -151,6 +159,8 @@ DEFINE_INSERT_FUNC(NLTidesF2, REAL8, "nlTidesF2", 0)
 
 /* SEOBNRv4P */
 DEFINE_INSERT_FUNC(EOBChooseNumOrAnalHamDer, INT4, "EOBChooseNumOrAnalHamDer", 1)
+DEFINE_INSERT_FUNC(EOBEllMaxForNyquistCheck, INT4, "EOBEllMaxForNyquistCheck", 5)
+
 
 /* IMRPhenomX Parameters */
 DEFINE_INSERT_FUNC(PhenomXInspiralPhaseVersion, INT4, "InsPhaseVersion", 104)
@@ -159,10 +169,11 @@ DEFINE_INSERT_FUNC(PhenomXIntermediatePhaseVersion, INT4, "IntPhaseVersion", 105
 DEFINE_INSERT_FUNC(PhenomXIntermediateAmpVersion, INT4, "IntAmpVersion", 104)
 DEFINE_INSERT_FUNC(PhenomXRingdownPhaseVersion, INT4, "RDPhaseVersion", 105)
 DEFINE_INSERT_FUNC(PhenomXRingdownAmpVersion, INT4, "RDAmpVersion", 103)
-DEFINE_INSERT_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 223)
+DEFINE_INSERT_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 300)
 DEFINE_INSERT_FUNC(PhenomXPExpansionOrder, INT4, "ExpansionOrder", 5)
 DEFINE_INSERT_FUNC(PhenomXPConvention, INT4, "Convention", 1)
-DEFINE_INSERT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 3)
+DEFINE_INSERT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
+DEFINE_INSERT_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
 DEFINE_INSERT_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
@@ -186,6 +197,10 @@ DEFINE_INSERT_FUNC(PhenomXPHMModesL0Frame, INT4, "ModesL0Frame", 0)
 DEFINE_INSERT_FUNC(PhenomXPHMPrecModes, INT4, "PrecModes", 0)
 DEFINE_INSERT_FUNC(PhenomXPHMTwistPhenomHM, INT4, "TwistPhenomHM", 0)
 
+/* IMRPhenomTHM Parameters */
+DEFINE_INSERT_FUNC(PhenomTHMInspiralVersion, INT4, "InspiralVersion", 0)
+DEFINE_INSERT_FUNC(PhenomTPHMMergerVersion, INT4, "MergerVersion", 1)
+
 /* LOOKUP FUNCTIONS */
 
 DEFINE_LOOKUP_FUNC(ModesChoice, INT4, "modes", LAL_SIM_INSPIRAL_MODES_CHOICE_ALL)
@@ -205,16 +220,32 @@ LALValue* XLALSimInspiralWaveformParamsLookupModeArray(LALDict *params)
 	return value;
 }
 
+LALValue* XLALSimInspiralWaveformParamsLookupModeArrayJframe(LALDict *params)
+{
+	/* Initialise and set Default to NULL */
+	LALValue * value = NULL;
+	if (params && XLALDictContains(params, "ModeArrayJframe"))
+	{
+		LALDictEntry * entry = XLALDictLookup(params, "ModeArrayJframe");
+		value = XLALValueDuplicate(XLALDictEntryGetValue(entry));
+	}
+	return value;
+}
+
 DEFINE_LOOKUP_FUNC(PNPhaseOrder, INT4, "phaseO", -1)
 DEFINE_LOOKUP_FUNC(PNAmplitudeOrder, INT4, "ampO", -1)
 DEFINE_LOOKUP_FUNC(PNEccentricityOrder, INT4, "eccO", -1)
 DEFINE_LOOKUP_FUNC(PNSpinOrder, INT4, "spinO", -1)
 DEFINE_LOOKUP_FUNC(PNTidalOrder, INT4, "tideO", -1)
+DEFINE_LOOKUP_FUNC(GETides, INT4, "GEtideO", 0)
+DEFINE_LOOKUP_FUNC(GMTides, INT4, "GMtideO", 0)
 
 DEFINE_LOOKUP_FUNC(TidalLambda1, REAL8, "lambda1", 0)
 DEFINE_LOOKUP_FUNC(TidalLambda2, REAL8, "lambda2", 0)
 DEFINE_LOOKUP_FUNC(TidalOctupolarLambda1, REAL8, "TidalOctupolarLambda1", 0)
 DEFINE_LOOKUP_FUNC(TidalOctupolarLambda2, REAL8, "TidalOctupolarLambda2", 0)
+DEFINE_LOOKUP_FUNC(TidalHexadecapolarLambda1, REAL8, "TidalHexadecapolarLambda1", 0)
+DEFINE_LOOKUP_FUNC(TidalHexadecapolarLambda2, REAL8, "TidalHexadecapolarLambda2", 0)
 DEFINE_LOOKUP_FUNC(TidalQuadrupolarFMode1, REAL8, "TidalQuadrupolarFMode1", 0)
 DEFINE_LOOKUP_FUNC(TidalQuadrupolarFMode2, REAL8, "TidalQuadrupolarFMode2", 0)
 DEFINE_LOOKUP_FUNC(TidalOctupolarFMode1, REAL8, "TidalOctupolarFMode1", 0)
@@ -292,6 +323,7 @@ DEFINE_LOOKUP_FUNC(NLTidesN2, REAL8, "nlTidesN2", 0)
 DEFINE_LOOKUP_FUNC(NLTidesF2, REAL8, "nlTidesF2", 0)
 /* SEOBNRv4P */
 DEFINE_LOOKUP_FUNC(EOBChooseNumOrAnalHamDer, INT4, "EOBChooseNumOrAnalHamDer", 1)
+DEFINE_LOOKUP_FUNC(EOBEllMaxForNyquistCheck, INT4, "EOBEllMaxForNyquistCheck", 5)
 
 /* IMRPhenomX Parameters */
 DEFINE_LOOKUP_FUNC(PhenomXInspiralPhaseVersion, INT4, "InsPhaseVersion", 104)
@@ -300,10 +332,11 @@ DEFINE_LOOKUP_FUNC(PhenomXIntermediatePhaseVersion, INT4, "IntPhaseVersion", 105
 DEFINE_LOOKUP_FUNC(PhenomXIntermediateAmpVersion, INT4, "IntAmpVersion", 104)
 DEFINE_LOOKUP_FUNC(PhenomXRingdownPhaseVersion, INT4, "RDPhaseVersion", 105)
 DEFINE_LOOKUP_FUNC(PhenomXRingdownAmpVersion, INT4, "RDAmpVersion", 103)
-DEFINE_LOOKUP_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 223)
+DEFINE_LOOKUP_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 300)
 DEFINE_LOOKUP_FUNC(PhenomXPExpansionOrder, INT4, "ExpansionOrder", 5)
 DEFINE_LOOKUP_FUNC(PhenomXPConvention, INT4, "Convention", 1)
-DEFINE_LOOKUP_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 3)
+DEFINE_LOOKUP_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
+DEFINE_LOOKUP_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
 DEFINE_LOOKUP_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
@@ -327,6 +360,10 @@ DEFINE_LOOKUP_FUNC(PhenomXPHMModesL0Frame, INT4, "ModesL0Frame", 0)
 DEFINE_LOOKUP_FUNC(PhenomXPHMPrecModes, INT4, "PrecModes", 0)
 DEFINE_LOOKUP_FUNC(PhenomXPHMTwistPhenomHM, INT4, "TwistPhenomHM", 0)
 
+/* IMRPhenomTHM Parameters */
+DEFINE_LOOKUP_FUNC(PhenomTHMInspiralVersion, INT4, "InspiralVersion", 0)
+DEFINE_LOOKUP_FUNC(PhenomTPHMMergerVersion, INT4, "MergerVersion", 1)
+
 /* ISDEFAULT FUNCTIONS */
 
 DEFINE_ISDEFAULT_FUNC(ModesChoice, INT4, "modes", LAL_SIM_INSPIRAL_MODES_CHOICE_ALL)
@@ -339,16 +376,25 @@ int XLALSimInspiralWaveformParamsModeArrayIsDefault(LALDict *params)
 	return XLALSimInspiralWaveformParamsLookupModeArray(params) == NULL;
 }
 
+int XLALSimInspiralWaveformParamsModeArrayJframeIsDefault(LALDict *params)
+{
+	return XLALSimInspiralWaveformParamsLookupModeArrayJframe(params) == NULL;
+}
+
 DEFINE_ISDEFAULT_FUNC(PNPhaseOrder, INT4, "phaseO", -1)
 DEFINE_ISDEFAULT_FUNC(PNAmplitudeOrder, INT4, "ampO", -1)
 DEFINE_ISDEFAULT_FUNC(PNEccentricityOrder, INT4, "eccO", -1)
 DEFINE_ISDEFAULT_FUNC(PNSpinOrder, INT4, "spinO", -1)
 DEFINE_ISDEFAULT_FUNC(PNTidalOrder, INT4, "tideO", -1)
+DEFINE_ISDEFAULT_FUNC(GETides, INT4, "GEtideO", LAL_SIM_INSPIRAL_GETIDES_GSF23)
+DEFINE_ISDEFAULT_FUNC(GMTides, INT4, "GMtideO", LAL_SIM_INSPIRAL_GMTIDES_PN)
 
 DEFINE_ISDEFAULT_FUNC(TidalLambda1, REAL8, "lambda1", 0)
 DEFINE_ISDEFAULT_FUNC(TidalLambda2, REAL8, "lambda2", 0)
 DEFINE_ISDEFAULT_FUNC(TidalOctupolarLambda1, REAL8, "TidalOctupolarLambda1", 0)
 DEFINE_ISDEFAULT_FUNC(TidalOctupolarLambda2, REAL8, "TidalOctupolarLambda2", 0)
+DEFINE_ISDEFAULT_FUNC(TidalHexadecapolarLambda1, REAL8, "TidalHexadecapolarLambda1", 0)
+DEFINE_ISDEFAULT_FUNC(TidalHexadecapolarLambda2, REAL8, "TidalHexadecapolarLambda2", 0)
 DEFINE_ISDEFAULT_FUNC(TidalQuadrupolarFMode1, REAL8, "TidalQuadrupolarFMode1", 0)
 DEFINE_ISDEFAULT_FUNC(TidalQuadrupolarFMode2, REAL8, "TidalQuadrupolarFMode2", 0)
 DEFINE_ISDEFAULT_FUNC(TidalOctupolarFMode1, REAL8, "TidalOctupolarFMode1", 0)
@@ -416,6 +462,7 @@ DEFINE_ISDEFAULT_FUNC(NonGRLIVASign, REAL8, "LIV_A_sign", 1)
 DEFINE_ISDEFAULT_FUNC(NonGRLIVAlpha, REAL8, "nonGR_alpha", 0)
 /* SEOBNRv4P */
 DEFINE_ISDEFAULT_FUNC(EOBChooseNumOrAnalHamDer, INT4, "EOBChooseNumOrAnalHamDer", 1)
+DEFINE_ISDEFAULT_FUNC(EOBEllMaxForNyquistCheck, INT4, "EOBEllMaxForNyquistCheck", 5)
 
 /* IMRPhenomX Parameters */
 DEFINE_ISDEFAULT_FUNC(PhenomXInspiralPhaseVersion, INT4, "InsPhaseVersion", 104)
@@ -424,10 +471,11 @@ DEFINE_ISDEFAULT_FUNC(PhenomXIntermediatePhaseVersion, INT4, "IntPhaseVersion", 
 DEFINE_ISDEFAULT_FUNC(PhenomXIntermediateAmpVersion, INT4, "IntAmpVersion", 104)
 DEFINE_ISDEFAULT_FUNC(PhenomXRingdownPhaseVersion, INT4, "RDPhaseVersion", 105)
 DEFINE_ISDEFAULT_FUNC(PhenomXRingdownAmpVersion, INT4, "RDAmpVersion", 103)
-DEFINE_ISDEFAULT_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 223)
+DEFINE_ISDEFAULT_FUNC(PhenomXPrecVersion, INT4, "PrecVersion", 300)
 DEFINE_ISDEFAULT_FUNC(PhenomXPExpansionOrder, INT4, "ExpansionOrder", 5)
 DEFINE_ISDEFAULT_FUNC(PhenomXPConvention, INT4, "Convention", 1)
-DEFINE_ISDEFAULT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 3)
+DEFINE_ISDEFAULT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
+DEFINE_ISDEFAULT_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
 DEFINE_ISDEFAULT_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
@@ -450,5 +498,9 @@ DEFINE_ISDEFAULT_FUNC(PhenomXPHMUseModes, INT4, "UseModes", 0)
 DEFINE_ISDEFAULT_FUNC(PhenomXPHMModesL0Frame, INT4, "ModesL0Frame", 0)
 DEFINE_ISDEFAULT_FUNC(PhenomXPHMPrecModes, INT4, "PrecModes", 0)
 DEFINE_ISDEFAULT_FUNC(PhenomXPHMTwistPhenomHM, INT4, "TwistPhenomHM", 0)
+
+/* IMRPhenomTHM Parameters */
+DEFINE_ISDEFAULT_FUNC(PhenomTHMInspiralVersion, INT4, "InspiralVersion", 0)
+DEFINE_ISDEFAULT_FUNC(PhenomTPHMMergerVersion, INT4, "MergerVersion", 1)
 
 #undef String

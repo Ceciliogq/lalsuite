@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 Reinhard Prix
+ * Copyright (C) 2017-2020 David Keitel
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,18 +14,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
- */
-
-/*********************************************************************************/
-/**
- * \author R. Prix
- * \file
- * \brief
- * Some helper functions useful for "transient CWs", mostly applying transient window
- * functions.
- *
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #ifndef _TRANSIENTCW_UTILS_H
@@ -34,8 +25,6 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
-
-#include <lal/ProbabilityDensity.h>
 
 /* ---------- System includes ---------- */
 /* gsl-includes */
@@ -50,14 +39,35 @@ extern "C" {
 #include <lal/ComputeFstat.h>
 #include <lal/SinCosLUT.h> /* for XLALFastNegExp() */
 #include <lal/FileIO.h>
+#include <lal/ProbabilityDensity.h>
+
+///
+/// \defgroup TransientCW_utils_h Header TransientCW_utils.h
+/// \ingroup lalpulsar_coh
+/// \authors Reinhard Prix, David Keitel
+///
+/// \brief Some helper functions useful for "transient CWs",
+/// mostly applying transient window functions.
+///
+/// The approach is described by Prix, Giampanis & Messenger
+/// in https://arxiv.org/abs/1104.1704
+
+// @{
 
 /* ---------- exported API defines ---------- */
 
-#define DAY24 (24 * 3600)	/* standard 24h day = 86400 seconds ==> this is what's used in the definition of 'tauDays' */
+/**
+ * standard 24h day = 86400 seconds
+ * ==> this is what's used in the definition of 'tauDays'
+ */
+#define DAY24 (24 * 3600)
 
-#define TRANSIENT_EXP_EFOLDING	3.0      /**< e-folding parameter for exponential window, after which we truncate
-                                          * the window for efficiency. 3 e-foldings means we lose only
-                                          * about e^(-2x3) ~1e-8 of signal power! */
+/**
+ * e-folding parameter for exponential window,
+ * after which we truncate the window for efficiency.
+ * 3 e-foldings means we lose only about e^(-2x3) ~1e-8 of signal power!
+ */
+#define TRANSIENT_EXP_EFOLDING	3.0
 
 /* ---------- exported API types ---------- */
 
@@ -223,7 +233,7 @@ XLALGetTransientWindowValue ( UINT4 timestamp,	/**< timestamp for which to compu
 
 } /* XLALGetTransientWindowValue() */
 
-
+// @}
 
 
 #ifdef  __cplusplus

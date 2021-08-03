@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with with program; see the file COPYING. If not, write to the Free
- * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
  */
 
 
@@ -27,7 +27,7 @@
  * @details
  * These routines generate several burst waveforms used in searches for
  * gravitational waves, including sine-Gaussian waveforms, cosmic string
- * cusp waveforms, and band- and time-limited white-noise burst waveforms.
+ * cusp, kink and kinkkink waveforms, and band- and time-limited white-noise burst waveforms.
  * Also included are several general-purpose routines to measure the
  * properties of gravitational wave waveforms like the "hrss" and peak
  * strain.  These are useful for imposing normalizations and other
@@ -108,6 +108,33 @@ int XLALGenerateStringCusp(
 	REAL8 f_high,
 	REAL8 delta_t
 );
+
+
+int XLALGenerateStringKink(
+	REAL8TimeSeries **hplus,
+	REAL8TimeSeries **hcross,
+	REAL8 amplitude,
+	REAL8 f_high,
+	REAL8 delta_t
+);
+
+
+int XLALGenerateStringKinkKink(
+	REAL8TimeSeries **hplus,
+	REAL8TimeSeries **hcross,
+	REAL8 amplitude,
+	REAL8 delta_t
+);
+
+
+int XLALSimBurstCherenkovRadiation(
+	REAL8TimeSeries **hplus,
+	REAL8TimeSeries **hcross,
+	double f_natural,
+	double beta,
+	double Eover_Rsquared,
+	double deltaT
+	);
 
 
 double XLALSimBurstSineGaussianQ(

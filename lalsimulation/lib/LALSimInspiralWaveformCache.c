@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #include <math.h>
@@ -322,11 +322,12 @@ int XLALSimInspiralChooseTDWaveformFromCache(
         return XLAL_SUCCESS;
     }
     // case 3: Non-precessing, ampO > 0
-    // FIXME: EOBNRv2HM actually ignores ampO. If it's given with ampO==0,
+    // FIXME: EOBNRv2HM and TEOBResumS actually ignores ampO. If it's given with ampO==0,
     // it will fall to the catch-all and not be cached.
     else if( (ampO==-1 || ampO>0) && (approximant==TaylorT1
                 || approximant==TaylorT2 || approximant==TaylorT3
-                || approximant==TaylorT4 || approximant==EOBNRv2HM) ) {
+                || approximant==TaylorT4 || approximant==EOBNRv2HM
+                || approximant==TEOBResumS) ) {
         // If polarizations are not cached we must generate a fresh waveform
         // FIXME: Add in check that hlms non-NULL
         if( cache->hplus == NULL || cache->hcross == NULL) {
@@ -681,6 +682,13 @@ static CacheVariableDiffersBitmask CacheArgsDifferenceBitmask(
     if ( f_max != cache->f_max) return INTRINSIC;
     if ( XLALSimInspiralWaveformParamsLookupTidalLambda1(LALpars) != XLALSimInspiralWaveformParamsLookupTidalLambda1(cache->LALpars)) return INTRINSIC;
     if ( XLALSimInspiralWaveformParamsLookupTidalLambda2(LALpars) != XLALSimInspiralWaveformParamsLookupTidalLambda2(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupTidalOctupolarLambda1(LALpars) != XLALSimInspiralWaveformParamsLookupTidalOctupolarLambda1(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupTidalOctupolarLambda2(LALpars) != XLALSimInspiralWaveformParamsLookupTidalOctupolarLambda2(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupTidalHexadecapolarLambda1(LALpars) != XLALSimInspiralWaveformParamsLookupTidalHexadecapolarLambda1(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupTidalHexadecapolarLambda2(LALpars) != XLALSimInspiralWaveformParamsLookupTidalHexadecapolarLambda1(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupdQuadMon1(LALpars) != XLALSimInspiralWaveformParamsLookupdQuadMon1(cache->LALpars)) return INTRINSIC;
+    if ( XLALSimInspiralWaveformParamsLookupdQuadMon2(LALpars) != XLALSimInspiralWaveformParamsLookupdQuadMon2(cache->LALpars)) return INTRINSIC;
+    
     if ( XLALSimInspiralWaveformParamsLookupPNAmplitudeOrder(LALpars) != XLALSimInspiralWaveformParamsLookupPNAmplitudeOrder(cache->LALpars)) return INTRINSIC;
     if ( XLALSimInspiralWaveformParamsLookupPNAmplitudeOrder(LALpars) != XLALSimInspiralWaveformParamsLookupPNAmplitudeOrder(cache->LALpars)) return INTRINSIC;
 
@@ -1045,6 +1053,20 @@ int XLALSimInspiralChooseFDWaveformSequence(
 
             ret = XLALSimIMRSEOBNRv4ROMFrequencySequence(hptilde, hctilde, frequencies,
                     phiRef, f_ref, distance, inclination, m1, m2, S1z, S2z, -1, LALpars, NoNRT_V);
+            break;
+
+        case SEOBNRv4HM_ROM:
+            /* Waveform-specific sanity checks */
+            if( !XLALSimInspiralWaveformParamsFlagsAreDefault(LALpars) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-default flags given, but this approximant does not support this case.");
+            if( !checkTransverseSpinsZero(S1x, S1y, S2x, S2y) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero transverse spins were given, but this is a non-precessing approximant.");
+            if( !checkTidesZero(lambda1, lambda2) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero tidal parameters were given, but this is approximant doe not have tidal corrections.");
+
+            int nModes = 5;
+            ret = XLALSimIMRSEOBNRv4HMROMFrequencySequence(hptilde, hctilde, frequencies,
+            phiRef, f_ref, distance, inclination, m1, m2, S1z, S2z, -1, nModes, LALpars);
             break;
 
         case SEOBNRv4_ROM_NRTidal:

@@ -178,6 +178,15 @@ noinst_HEADERS = \
 	LALSimIMRPhenomD.h \
 	LALSimIMRPhenomD_internals.c \
 	LALSimIMRPhenomD_internals.h \
+	LALSimIMRPhenomTHM_internals.c \
+	LALSimIMRPhenomTHM_internals.h \
+	LALSimIMRPhenomTHM_fits.c \
+	LALSimIMRPhenomTHM_fits.h \
+	LALSimIMRPhenomTHM.c \
+	LALSimIMRPhenomTHM.h \
+	LALSimIMRPhenomTPHM.c \
+	LALSimIMRPhenomTPHM_FrameRotations.c \
+	LALSimIMRPhenomTPHM_EulerAngles.c \
 	LALSimIMRPhenomX.h \
 	LALSimIMRPhenomX_internals.c \
 	LALSimIMRPhenomX_internals.h \
@@ -240,6 +249,7 @@ noinst_HEADERS = \
 	LALSimIMRSpinEOBHcapNumericalDerivativePrec.c \
 	LALSimIMRSpinEOBInitialConditions.c \
 	LALSimIMRSpinEOBInitialConditionsPrec.c \
+	LALSimTEOBResumS.h \
 	LALSimInspiralPNCoefficients.c \
 	LALSimInspiralTaylorF2Ecc.c \
 	LALSimInspiraldEnergyFlux.c \
@@ -259,7 +269,6 @@ noinst_HEADERS = \
 	LALSimNRSur7dq4Remnant.h \
 	LALSimNRSur3dq8Remnant.h
 	$(END_OF_LIST)
-
 
 lib_LTLIBRARIES = liblalsimulation.la
 
@@ -297,11 +306,16 @@ liblalsimulation_la_SOURCES = \
 	LALSimIMRPhenomPv3HM.c \
 	LALSimIMRPhenomInternalUtils.c \
 	LALSimIMRPhenomUtils.c \
+	LALSimIMRPhenomTHM.c \
+	LALSimIMRPhenomTPHM.c \
 	LALSimIMRPhenomX.c \
   LALSimIMRPhenomXUtilities.c \
 	LALSimIMRPhenomX_shared.cu \
 	LALSimIMRPhenomXHM.c \
 	LALSimIMRPSpinInspiralRD.c \
+	LALSimIMRTEOBResumSUtils.c \
+	LALSimIMRTEOBResumS_Internals.c \
+	LALSimIMRTEOBResumS.c \
 	LALSimPhenSpinRingDown.c \
 	LALSimInspiralWaveformFlags.c \
 	LALSimInspiralTestGRParams.c \

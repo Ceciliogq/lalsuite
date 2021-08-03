@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 /**
@@ -85,7 +85,7 @@ int main(void){
 
   // Define h_{2-2}
   for( i=0; i< hp->data->length; i++ ){
-    h_2_2->data->data[i] = (hp->data->data[i] + 1I * hx->data->data[i]) / Y_2_m2;
+    h_2_2->data->data[i] = (hp->data->data[i] + hx->data->data[i] * I) / Y_2_m2;
   }
 
   XLALDestroyREAL8TimeSeries( hp );
@@ -123,7 +123,7 @@ int main(void){
 
   // Define h_{22}
   for( i=0; i< hp->data->length; i++ ){
-    h_22->data->data[i] = (hp->data->data[i] + 1I * hx->data->data[i]) / Y_22;
+    h_22->data->data[i] = (hp->data->data[i] + hx->data->data[i] * I) / Y_22;
   }
 
   // Write out reference waveform

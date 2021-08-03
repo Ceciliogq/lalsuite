@@ -3,11 +3,12 @@ EXTRA_DIST = \
 	compat \
 	control \
 	copyright \
-	lalpulsar-dev.install \
-	lalpulsar-octave.install \
-	python-lalpulsar.install \
-	python3-lalpulsar.install \
 	lalpulsar.install \
+	lalpulsar-octave.install \
+	liblalpulsar-dev.install \
+	liblalpulsar@LIBMAJOR@.install \
+	python3-lalpulsar.install \
 	rules \
 	lalsuite.mk \
-	source/format
+	source/format \
+	$(END_OF_LIST)

@@ -18,11 +18,13 @@ from __future__ import print_function
 
 ##############################################################################
 # import standard modules and append the lalapps prefix to the python path
+import getpass
 import os
 import socket
 import subprocess
 import sys
 import tempfile
+import warnings
 
 ##############################################################################
 # import the modules we need to build the pipeline
@@ -31,6 +33,14 @@ from glue.pipeline import DeepCopyableConfigParser as dcConfigParser
 
 from glue import pipeline
 from lalapps import inspiral
+
+warnings.warn(
+    "this script has been moved into the independent `sbank` project, "
+    "see https://pypi.org/project/sbank/ for details, and will be "
+    "removed from lalapps in an upcoming release",
+    DeprecationWarning,
+)
+
 
 def which(prog):
     which = subprocess.Popen(['/usr/bin/which', prog], stdout=subprocess.PIPE)
@@ -42,7 +52,7 @@ def which(prog):
 
 def log_path():
     host = socket.getfqdn()
-    username = os.environ['USER']
+    username = getpass.getuser()
     #FIXME add more hosts as you need them
     if 'caltech.edu' in host: return '/usr1/' + username
     if 'phys.uwm.edu' in host: return '/localscratch/' + username

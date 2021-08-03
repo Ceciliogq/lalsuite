@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with with program; see the file COPYING. If not, write to the Free
- * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
  */
 
 
@@ -100,6 +100,14 @@ int XLALGenerateSimBurst(
 	} else if(!strcmp(sim_burst->waveform, "StringCusp")) {
 		XLALPrintInfo("%s(): string cusp @ %9d.%09u s (GPS): A = %.16g, fhigh = %.16g Hz\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->amplitude, sim_burst->frequency);
 		if(XLALGenerateStringCusp(hplus, hcross, sim_burst->amplitude, sim_burst->frequency, delta_t))
+			XLAL_ERROR(XLAL_EFUNC);
+	} else if(!strcmp(sim_burst->waveform, "StringKink")) {
+		XLALPrintInfo("%s(): string kink @ %9d.%09u s (GPS): A = %.16g, fhigh = %.16g Hz\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->amplitude, sim_burst->frequency);
+		if(XLALGenerateStringKink(hplus, hcross, sim_burst->amplitude, sim_burst->frequency, delta_t))
+			XLAL_ERROR(XLAL_EFUNC);
+	} else if(!strcmp(sim_burst->waveform, "StringKinkKink")) {
+		XLALPrintInfo("%s(): string kinkkink @ %9d.%09u s (GPS): A = %.16g\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->amplitude);
+		if(XLALGenerateStringKinkKink(hplus, hcross, sim_burst->amplitude, delta_t))
 			XLAL_ERROR(XLAL_EFUNC);
 	} else if(!strcmp(sim_burst->waveform, "SineGaussian")) {
 		XLALPrintInfo("%s(): sine-Gaussian @ %9d.%09u s (GPS): f = %.16g Hz, Q = %.16g, hrss = %.16g\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->frequency, sim_burst->q, sim_burst->hrss);

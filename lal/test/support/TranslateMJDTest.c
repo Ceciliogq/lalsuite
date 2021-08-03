@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with with program; see the file COPYING. If not, write to the
-// Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-// MA 02111-1307 USA
+// Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+// MA 02110-1301 USA
 //
 
 // Tests of the unit conversion functions in the UserInputParser.[ch] module
@@ -62,7 +62,7 @@ test_MJDTT_GPS ( void )
   mjdTTDays = 51544;
   mjdTTFracDays = 0.5;
   gpsRef.gpsSeconds = 630763148; // $ lalapps_tconvert "Jan 01 2000 11:58:55 UTC"
-  gpsRef.gpsNanoSeconds = 0.816 * 1e9;
+  gpsRef.gpsNanoSeconds = 816000000;
 
   XLAL_CHECK ( XLALTranslateMJDTTtoGPS ( &gps, mjdTTDays, mjdTTFracDays ) != NULL, XLAL_EFUNC );
   XLAL_CHECK ( (gps.gpsSeconds == gpsRef.gpsSeconds) && (gps.gpsNanoSeconds == gpsRef.gpsNanoSeconds), XLAL_ETOL,
@@ -79,7 +79,7 @@ test_MJDTT_GPS ( void )
   mjdTTDays = 50814;
   mjdTTFracDays = 0;
   gpsRef.gpsSeconds = 567647948;
-  gpsRef.gpsNanoSeconds = 0.816 * 1e9;
+  gpsRef.gpsNanoSeconds = 816000000;
 
   XLAL_CHECK ( XLALTranslateMJDTTtoGPS ( &gps, mjdTTDays, mjdTTFracDays ) != NULL, XLAL_EFUNC );
   XLAL_CHECK ( (gps.gpsSeconds == gpsRef.gpsSeconds) && (gps.gpsNanoSeconds == gpsRef.gpsNanoSeconds), XLAL_ETOL,

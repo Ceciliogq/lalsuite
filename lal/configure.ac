@@ -1,15 +1,68 @@
 AC_PREREQ([2.63])
-AC_INIT([LAL],[7.0.0.1],[lal-discuss@ligo.org])
+AC_INIT([LAL],[7.1.2.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([lib/config.h lib/LALConfig.h])
 AC_CONFIG_SRCDIR([lib/std/LALStdio.h])
 AC_CONFIG_AUX_DIR([gnuscripts])
 AC_CONFIG_MACRO_DIR([gnuscripts])
+
+# set library api info - liblal
+# 1. start with version information of "0:0:0" for each libtool library
+# 2. update the version information only immediately before a public
+#    release of your software. More frequent updates are unnecessary,
+#    and only guarantee that the current interface number gets larger
+#    faster.
+# 3. if the library source code has changed at all since the last
+#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
+# 4. if any interfaces have been added, removed, or changed since the
+#    last update, increment current, and set revision to 0.
+# 5. if any interfaces have been added since the last public release,
+#    then increment age.
+# 6. if any interfaces have been removed since the last public release,
+#    then set age to 0.
+AC_SUBST([LIBCURRENT],[21])
+AC_SUBST([LIBREVISION],[2])
+AC_SUBST([LIBAGE],[1])
+AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
+AS_CASE([${host_os}],
+  [freebsd-aout|qnx|sco|sunos], [AC_SUBST([LIBMAJOR],[${LIBCURRENT}])],
+  [AC_SUBST([LIBMAJOR],[$((LIBCURRENT-LIBAGE))])]
+)
+
+# set library api info - liblalsupport
+# 1. start with version information of "0:0:0" for each libtool library
+# 2. update the version information only immediately before a public
+#    release of your software. More frequent updates are unnecessary,
+#    and only guarantee that the current interface number gets larger
+#    faster.
+# 3. if the library source code has changed at all since the last
+#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
+# 4. if any interfaces have been added, removed, or changed since the
+#    last update, increment current, and set revision to 0.
+# 5. if any interfaces have been added since the last public release,
+#    then increment age.
+# 6. if any interfaces have been removed since the last public release,
+#    then set age to 0.
+AC_SUBST([LIBCURRENT_SUPPORT],[14])
+AC_SUBST([LIBREVISION_SUPPORT],[2])
+AC_SUBST([LIBAGE_SUPPORT],[0])
+AC_SUBST([LIBVERSION_SUPPORT],[${LIBCURRENT_SUPPORT}:${LIBREVISION_SUPPORT}:${LIBAGE_SUPPORT}])
+AS_CASE([${host_os}],
+  [freebsd-aout|qnx|sco|sunos], [AC_SUBST([LIBMAJOR_SUPPORT],[${LIBCURRENT_SUPPORT}])],
+  [AC_SUBST([LIBMAJOR_SUPPORT],[$((LIBCURRENT_SUPPORT-LIBAGE_SUPPORT))])]
+)
+
+
+# configure files
+# NOTE: this needs to be done _after_ the above library version stuff so
+#       that we can use ${LIBCURRENT} as a variable in the file names
 AC_CONFIG_FILES([ \
   Makefile \
   conda/Makefile \
   conda/meta.yaml.in \
   debian/Makefile \
   debian/control \
+  debian/liblal${LIBMAJOR}.install:debian/liblal.install.in \
+  debian/liblalsupport${LIBMAJOR_SUPPORT}.install:debian/liblalsupport.install.in \
   doxygen/Makefile \
   doxygen/doxygen.cfg \
   include/Makefile \
@@ -69,52 +122,10 @@ AM_INIT_AUTOMAKE([ \
   no-dist-gzip \
 ])
 
-# version requirements
-MIN_GLUE_VERSION="1.54.1"
-AC_SUBST([MIN_GLUE_VERSION])
-
 AC_CANONICAL_HOST
 
 LALSUITE_CHECK_GIT_REPO
 LALSUITE_DISTCHECK_CONFIGURE_FLAGS
-
-# set library api info - liblal
-# 1. start with version information of "0:0:0" for each libtool library
-# 2. update the version information only immediately before a public
-#    release of your software. More frequent updates are unnecessary,
-#    and only guarantee that the current interface number gets larger
-#    faster.
-# 3. if the library source code has changed at all since the last
-#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
-# 4. if any interfaces have been added, removed, or changed since the
-#    last update, increment current, and set revision to 0.
-# 5. if any interfaces have been added since the last public release,
-#    then increment age.
-# 6. if any interfaces have been removed since the last public release,
-#    then set age to 0.
-AC_SUBST([LIBCURRENT],[20])
-AC_SUBST([LIBREVISION],[0])
-AC_SUBST([LIBAGE],[0])
-AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
-
-# set library api info - liblalsupport
-# 1. start with version information of "0:0:0" for each libtool library
-# 2. update the version information only immediately before a public
-#    release of your software. More frequent updates are unnecessary,
-#    and only guarantee that the current interface number gets larger
-#    faster.
-# 3. if the library source code has changed at all since the last
-#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
-# 4. if any interfaces have been added, removed, or changed since the
-#    last update, increment current, and set revision to 0.
-# 5. if any interfaces have been added since the last public release,
-#    then increment age.
-# 6. if any interfaces have been removed since the last public release,
-#    then set age to 0.
-AC_SUBST([LIBCURRENT_SUPPORT],[14])
-AC_SUBST([LIBREVISION_SUPPORT],[0])
-AC_SUBST([LIBAGE_SUPPORT],[0])
-AC_SUBST([LIBVERSION_SUPPORT],[${LIBCURRENT_SUPPORT}:${LIBREVISION_SUPPORT}:${LIBAGE_SUPPORT}])
 
 LAL_ENABLE_INTELFFT
 LAL_ENABLE_FFTW3_MEMALIGN
@@ -136,6 +147,9 @@ LALSUITE_ENABLE_SWIG
 # enable Doxygen documentation
 LALSUITE_ENABLE_DOXYGEN
 
+# enable help2man documentation
+LALSUITE_ENABLE_HELP2MAN
+
 # define version/configure info
 LALSUITE_VERSION_CONFIGURE_INFO
 
@@ -153,7 +167,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_AWK
 AC_PROG_SED
-LALSUITE_CHECK_PYTHON([2.6])
+LALSUITE_CHECK_PYTHON([3.5])
 
 # check for supported mac os x version
 LALSUITE_OSX_VERSION_CHECK
@@ -178,7 +192,6 @@ case "${host_os}" in
 esac
 
 # check for system headers files
-AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/time.h sys/resource.h unistd.h malloc.h regex.h glob.h execinfo.h])
 AC_CHECK_HEADERS([stdint.h],,[AC_MSG_ERROR([could not find stdint.h])])
 AC_CHECK_HEADERS([inttypes.h],,[AC_MSG_ERROR([could not find inttypes.h])])
@@ -281,7 +294,6 @@ AC_C_CONST
 AC_C_STRINGIZE
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
-AC_HEADER_TIME
 
 # checks for library functions
 AC_CHECK_FUNCS([gmtime_r localtime_r stat putenv posix_memalign backtrace clock_gettime])
@@ -344,6 +356,7 @@ LAL has now been successfully configured:
 * SWIG bindings for Octave are $SWIG_BUILD_OCTAVE_ENABLE_VAL
 * SWIG bindings for Python are $SWIG_BUILD_PYTHON_ENABLE_VAL
 * Doxygen documentation is $DOXYGEN_ENABLE_VAL
+* help2man documentation is $HELP2MAN_ENABLE_VAL
 
 and will be installed under the directory:
 

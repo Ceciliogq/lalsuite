@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #ifndef _LALSIMINSPIRALWAVEFORMFLAGS_H
@@ -23,6 +23,7 @@
 #include <lal/LALMalloc.h>
 #include <lal/LALError.h>
 #include <lal/LALDict.h>
+#include <lal/Sequence.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -38,6 +39,7 @@ extern "C" {
 /** Default values for all enumerated flags */
 #define LAL_SIM_INSPIRAL_SPIN_ORDER_DEFAULT LAL_SIM_INSPIRAL_SPIN_ORDER_ALL
 #define LAL_SIM_INSPIRAL_TIDAL_ORDER_DEFAULT LAL_SIM_INSPIRAL_TIDAL_ORDER_ALL
+#define LAL_SIM_INSPIRAL_GMTIDES_DEFAULT LAL_SIM_INSPIRAL_GMTIDES_OFF
 #define LAL_SIM_INSPIRAL_FRAME_AXIS_DEFAULT LAL_SIM_INSPIRAL_FRAME_AXIS_ORBITAL_L
 #define LAL_SIM_INSPIRAL_MODES_CHOICE_DEFAULT LAL_SIM_INSPIRAL_MODES_CHOICE_RESTRICTED
 
@@ -82,8 +84,24 @@ typedef enum tagLALSimInspiralTidalOrder {
     LAL_SIM_INSPIRAL_TIDAL_ORDER_65PN = 13,
     LAL_SIM_INSPIRAL_TIDAL_ORDER_7PN = 14,
     LAL_SIM_INSPIRAL_TIDAL_ORDER_75PN = 15,
-    LAL_SIM_INSPIRAL_TIDAL_ORDER_ALL = -1
+    LAL_SIM_INSPIRAL_TIDAL_ORDER_ALL = -1,
 } LALSimInspiralTidalOrder;
+
+typedef enum tagLALSimInspiralGETides {
+    LAL_SIM_INSPIRAL_GETIDES_OFF,
+    LAL_SIM_INSPIRAL_GETIDES_NNLO,
+    LAL_SIM_INSPIRAL_GETIDES_GSF2,
+    LAL_SIM_INSPIRAL_GETIDES_GSF23,
+    LAL_SIM_INSPIRAL_GETIDES_NOPT
+} LALSimInspiralGETides;
+
+typedef enum tagLALSimInspiralGMTides {
+    LAL_SIM_INSPIRAL_GMTIDES_OFF,
+    LAL_SIM_INSPIRAL_GMTIDES_PN,
+    LAL_SIM_INSPIRAL_GMTIDES_GSF,
+    LAL_SIM_INSPIRAL_GMTIDES_NOPT
+} LALSimInspiralGMTides;
+
 
 /**
  * Enumerator for choosing the reference frame associated with
@@ -166,6 +184,7 @@ int XLALSimInspiralModeArrayIsModeActive(LALValue *modes, unsigned l, int m);
 LALValue * XLALSimInspiralModeArrayActivateAllModesAtL(LALValue *modes, unsigned l);
 LALValue * XLALSimInspiralModeArrayDeactivateAllModesAtL(LALValue *modes, unsigned l);
 int XLALSimInspiralModeArrayPrintModes(LALValue *modes);
+INT2Sequence *XLALSimInspiralModeArrayReadModes(LALValue *modes);
 
 #if 0
 { /* so that editors will match succeeding brace */
