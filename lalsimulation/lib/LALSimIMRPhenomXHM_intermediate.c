@@ -357,6 +357,8 @@ static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, UNUSED doubl
   return total;
 }
 
+/* End of Parameter Space Fits */
+
 
 /* Solves system of equations for 5th order polynomial ansatz */
 

@@ -263,6 +263,8 @@ static double IMRPhenomXHM_RD_Amp_44_sigma(UNUSED double eta, UNUSED double S, U
     return total;
 }
 
+/* End of Parameter Space Fits */
+
 
 /************** Amplitude Ringdown Ansatz *************/
 

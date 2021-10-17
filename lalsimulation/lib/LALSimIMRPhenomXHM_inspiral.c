@@ -308,6 +308,8 @@ static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double S, double chi1, do
     return total;
 }
 
+/* End of Parameter Space Fits */
+
 
 /***********************************************/
 /*     Pseudo PN Amplitude Coefficients    */
