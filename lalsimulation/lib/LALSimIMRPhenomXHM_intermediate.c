@@ -46,14 +46,11 @@
 
 
 static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,eta4,S2,S3;
+  double total=0,eta2,S2;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
-      eta3 = pow(eta,3);
-      eta4 = pow(eta,4);
       S2 = pow(S,2);
-      S3 = pow(S,3);
       double noSpin = sqrt(eta - 4.*eta2)*(21.256776327599113 - 25.594352690383847*eta + 30.14761650482866*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(-11.262044985632757 - 1.8167045597937677*S + eta*(-1.1798437990445079 + 6.344825546437461*S - 4.881427482271166*S2));
       double uneqSpin = -3.6366100759176696*pow(chi1 - 1.*chi2,2)*(1. - 4.*eta)*eta - 31.60048733143782*(chi1 - 1.*chi2)*eta2*(1. + 2.1502870640831855*eta2);
@@ -66,13 +63,10 @@ static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, eta2,eta3,eta4,S2;
+  double total=0, eta2;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
-      eta3 = pow(eta,3);
-      eta4 = pow(eta,4);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 4.*eta2)*(19.15445065708005 - 21.13596229438309*eta + 29.742565944285772*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(-12.766814596085734 - 2.123816950673979*S + eta*(-2.913184982025043 + 6.006571549661901*S));
       double uneqSpin = -25.856046423804255*(chi1 - 1.*chi2)*eta2*(1. + 5.7871199275552*eta2);
@@ -85,15 +79,13 @@ static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, eta2,eta3,eta4,eta5,eta6,S2;
+  double total=0, eta2,eta3,eta4,eta6;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
       eta6 = pow(eta,6);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 4.*eta2)*(27.927652424857733 - 133.56611389260297*eta + 974.8550901501316*eta2 - 3744.785831952632*eta3 + 5621.897260910284*eta4);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(7.348313807306079 + eta*(-60.248696675045565 - 37.07212326362276*S) + 5.059236579431119*S + eta2*(159.68630712802727 + 83.33807316873204*S));
       double uneqSpin = 1412.367880056888*(chi1 - 1.*chi2)*eta6;
@@ -106,15 +98,11 @@ static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, eta2,eta3,eta4,eta5,eta6,S2;
+  double total=0, eta2,eta6;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
-      eta3 = pow(eta,3);
-      eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
       eta6 = pow(eta,6);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 4.*eta2)*(20.162169689041903 - 18.666422946967764*eta + 53.04107631052987*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(3.896260108714186 + eta*(-33.707998325000965 - 61.1244771077077*S) + 4.878506403725656*S + eta2*(91.31681057861915 + 196.40535070402336*S));
       double uneqSpin = 1637.4256048973248*(chi1 - 1.*chi2)*eta6;
@@ -127,7 +115,7 @@ static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7,S2;
+  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
@@ -135,8 +123,6 @@ static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, 
       eta4 = pow(eta,4);
       eta5 = pow(eta,5);
       eta6 = pow(eta,6);
-      eta7 = pow(eta,7);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 3.*eta2)*(6.523612598187996 - 56.93956111746338*eta + 1021.6414686597869*eta2 - 12107.114370361525*eta3 + 76320.90587515048*eta4 - 244144.92645448362*eta5 + 321790.55131499085*eta6);
       double eqSpin = sqrt(eta - 3.*eta2)*S*(2.9649243713119895 + eta3*(1790.8363334078751 - 5438.911035114849*S) + eta*(-37.87005271181108 - 126.1263286618178*S) + 4.063724538613828*S + eta2*(48.39743086535961 + 1341.2619677741804*S) + eta4*(-5200.659417644607 + 7369.386205324284*S));
       double uneqSpin = eta2*(-0.4386152975075188*(pow(chi1,2) - 2.*chi1*chi2 + pow(chi2,2)) + (chi2*(3.6527252109313233 - 7.324266404418883*S) + chi1*(-3.6527252109313233 + 7.324266404418883*S))*delta);
@@ -149,15 +135,13 @@ static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2,S3;
+  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
       S2 = pow(S,2);
-      S3 = pow(S,3);
       double noSpin = sqrt(eta - 3.*eta2)*(5.941845842405418 - 31.905244419036794*eta + 271.105632998832*eta2 - 2113.9652334868965*eta3 + 6214.038393898584*eta4);
       double eqSpin = sqrt(eta - 3.*eta2)*S*(-2.726472456645038 + 2.9454485454761827*S + eta3*(10581.664858726683 - 8474.190197512324*S - 11680.937129551317*S2) + eta*(98.08119212251981 - 119.88112323140916*S - 145.5079981415436*S2) + 3.5684571473795095*S2 + eta2*(-1595.8027347570667 + 1686.7137359336039*S + 2139.8290160628144*S2) + eta4*(-21488.25117198268 + 13866.428366595079*S + 20863.270079587106*S2));
       double uneqSpin = 0.0038732029045487884*(chi1 - 1.*chi2)*eta2*delta;
@@ -170,14 +154,12 @@ static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
+  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 3.*eta2)*(10.804555518381166 - 72.3834734399584*eta + 540.0541240482852*eta2 - 2612.999845214264*eta3 + 4779.096001663427*eta4);
       double eqSpin = sqrt(eta - 3.*eta2)*S*(4.26336253142121 + eta*(-47.94914754514519 - 39.31284390368824*S) + 3.0973959822174297*S + eta2*(119.70401520575753 + 106.91295627237112*S));
       double uneqSpin = 0.7262636326998003*pow(chi1 - 1.*chi2,2)*(1. - 4.*eta)*eta + 3.001401833124412*(chi1 - 1.*chi2)*eta2*delta;
@@ -190,14 +172,12 @@ static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
+  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 3.*eta2)*(9.020721305469884 - 53.221883492311235*eta + 508.07176447172264*eta2 - 3194.0620894511508*eta3 + 6769.9274392345915*eta4);
       double eqSpin = sqrt(eta - 3.*eta2)*S*(3.256591670091969 + eta*(-38.38922554651356 - 25.286684856422735*S) + 2.374434219852751*S + eta2*(96.41777041220982 + 64.74544118094362*S));
       double uneqSpin = 3.2337593375595417*(chi1 - 1.*chi2)*eta2*delta;
@@ -213,12 +193,11 @@ static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, 
 Fits for the extra collocation point for EMR cases with 2 intermediate regions
 */
 static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2;
+  double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = 0.872895771366973 + 441.76285124642845*eta - 24617.068739152524*eta2 + 518054.9485981792*eta3;
       double eqSpin = S*(-0.0720494539485585 + eta*(-173.67847091983123 - 113.29725582509889*S) - 0.2687302438646897*S + eta2*(3571.0393588230045 + 2640.919925429635*S));
       double uneqSpin = 0.;
@@ -231,12 +210,11 @@ static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, UNUSED double
 }
 
 static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2;
+  double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = -0.8535048463050732 - 93.1876950411214*eta + 13641.071903017495*eta2 - 337621.44851304166*eta3;
       double eqSpin = S*(-1.2067842398131878 + eta2*(-1972.284151572111 - 8172.057025783849*S) - 0.26539816223182355*S + eta*(77.26350785961219 + 189.63365484152857*S));
       double uneqSpin = 0.;
@@ -249,12 +227,11 @@ static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, UNUSED doubl
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2;
+  double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = 1.5852399637975103 + 549.5183711492834*eta - 34257.76380246282*eta2 + 743142.8286902909*eta3;
       double eqSpin = S*(0.7436306553052219 + eta*(-89.49451655594787 - 174.5730646548662*S) + 0.4253024979725725*S + eta2*(1185.1654325913717 + 6510.983041407191*S));
       double uneqSpin = 0.;
@@ -267,12 +244,11 @@ static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, UNUSED double
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2;
+  double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = -4.691600252198376 + 101.4338937535679*eta + 9262.994550540048*eta2 - 310993.1309846956*eta3;
       double eqSpin = S*(-4.198232394219111 + eta2*(-28714.904192060643 - 5100.09336069277*S) - 0.40986595512314733*S + eta*(734.7118618746317 + 292.04566260701574*S));
       double uneqSpin = 0.;
@@ -285,7 +261,7 @@ static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, UNUSED doubl
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2,S3;
+  double total=0,eta2,eta3,S2,S3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
@@ -304,12 +280,11 @@ static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, UNUSED double
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2;
+  double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = -0.3391808620221253 - 14.604141885467747*eta + 3694.1706648870427*eta2 - 95482.02951271653*eta3;
       double eqSpin = S*(-1.2844502090793946 + eta2*(-5018.762853306415 - 6332.389157828062*S) - 1.2356159239385598*S + eta*(149.04865679660233 + 188.2052849646003*S));
       double uneqSpin = 0.;
@@ -322,7 +297,7 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, UNUSED doubl
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2,S3;
+  double total=0,eta2,eta3,S2,S3;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
@@ -341,11 +316,10 @@ static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, UNUSED double
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
-  UNUSED double total=0,eta2,S2;
+  double total=0,eta2;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
-      S2 = pow(S,2);
       double noSpin = -1.796444922382065 + 111.51170611049032*eta - 1728.7493675776548*eta2;
       double eqSpin = S*(-1.842119860613924 + eta2*(-11235.484645624338 - 2927.019210835522*S) - 0.36655273031432567*S + eta*(312.34531117524097 + 128.64488103364167*S));
       double uneqSpin = 0.;

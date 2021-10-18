@@ -46,7 +46,7 @@
 
 
 static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, eta2,eta3,eta4,eta5,S2,S3;
+    double total=0, eta2,eta3,eta4,eta5,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -54,7 +54,6 @@ static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, do
             eta4 = pow(eta,4);
             eta5 = pow(eta,5);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 4.*eta)*(0.037868557189995156 + 0.10740090317702103*eta + 1.963812986867654*eta2 - 16.706455229589558*eta3 + 69.75910808095745*eta4 - 98.3062466823662*eta5);
             double eqSpin = sqrt(1. - 4.*eta)*S*(-0.007963757232702219 + 0.10627108779259965*eta - 0.008044970210401218*S + eta2*(-0.4735861262934258 - 0.5985436493302649*S - 0.08217216660522082*S2));
             double uneqSpin = -0.257787704938017*(chi1 - 1.*chi2)*eta2*(1. + 8.75928187268504*eta2) - 0.2597503605427412*(chi1 - 1.*chi2)*eta2*S;
@@ -67,14 +66,13 @@ static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 4.*eta)*(0.05511628628738656 - 0.12579599745414977*eta + 2.831411618302815*eta2 - 14.27268643447161*eta3 + 28.3307320191161*eta4);
             double eqSpin = sqrt(1. - 4.*eta)*S*(-0.008692738851491525 + eta*(0.09512553997347649 + 0.116470975986383*S) - 0.009520793625590234*S + eta2*(-0.3409769288480959 - 0.8321002363767336*S - 0.13099477081654226*S2) - 0.006383232900211555*S2);
             double uneqSpin = -0.2962753588645467*(chi1 - 1.*chi2)*eta2*(1. + 1.3993978458830476*eta2) - 0.17100612756133535*(chi1 - 1.*chi2)*eta2*S*(1. + 18.974303741922743*eta2*delta);
@@ -87,14 +85,11 @@ static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
-            eta3 = pow(eta,3);
-            eta4 = pow(eta,4);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 4.*eta)*(0.059110044024271766 - 0.0024538774422098405*eta + 0.2428578654261086*eta2);
             double eqSpin = sqrt(1. - 4.*eta)*S*(-0.007044339356171243 - 0.006952154764487417*S + eta2*(-0.016643018304732624 - 0.12702579620537421*S + 0.004623467175906347*S2) - 0.007685497720848461*S2);
             double uneqSpin = -0.3172310538516028*(chi1 - 1.*chi2)*(1. - 2.9155919835488024*eta2)*eta2 - 0.11975485688200693*(chi1 - 1.*chi2)*eta2*S*(1. + 17.27626751837825*eta2*delta);
@@ -107,15 +102,11 @@ static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, eta2,eta3,eta4,eta5,S2,S3;
+    double total=0, eta2,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
-            eta3 = pow(eta,3);
-            eta4 = pow(eta,4);
-            eta5 = pow(eta,5);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = (sqrt(1. - 4.*eta)*(-0.056586690934283326 - 0.14374841547279146*eta + 0.5584776628959615*eta2))/(-0.3996185676368123 + eta);
             double eqSpin = sqrt(1. - 4.*eta)*S*((0.056042044149691175 + 0.12482426029674777*S)*S + eta*(2.1108074577110343 - 1.7827773156978863*S2) + eta2*(-7.657635515668849 - 0.07646730296478217*S + 5.343277927456605*S2));
             double uneqSpin = 0.45866449225302536*(chi1 - 1.*chi2)*(1. - 9.603750707244906*eta2)*eta2;
@@ -128,7 +119,7 @@ static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0, eta2,eta3,eta4,eta5,eta6,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -137,7 +128,6 @@ static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, do
             eta5 = pow(eta,5);
             eta6 = pow(eta,6);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 4.*eta)*(0.2137734510411439 - 0.7692194209223682*eta + 26.10570221351058*eta2 - 316.0643979123107*eta3 + 2090.9063511488234*eta4 - 6897.3285171507105*eta5 + 8968.893362362503*eta6);
             double eqSpin = sqrt(1. - 4.*eta)*S*(0.018546836505210842 + 0.05924304311104228*S + eta*(1.6484440612224325 - 0.4683932646001618*S - 2.110311135456494*S2) + 0.10701786057882816*S2 + eta2*(-6.51575737684721 + 1.6692205620001157*S + 8.351789152096782*S2));
             double uneqSpin = 0.3929315188124088*(chi1 - 1.*chi2)*(1. - 11.289452844364227*eta2)*eta2;
@@ -150,7 +140,7 @@ static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0, eta2,eta3,eta4,eta5,eta6,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -159,7 +149,6 @@ static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, do
             eta5 = pow(eta,5);
             eta6 = pow(eta,6);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 4.*eta)*(0.2363760327127446 + 0.2855410252403732*eta - 10.159877125359897*eta2 + 162.65372389693505*eta3 - 1154.7315106095564*eta4 + 3952.61320206691*eta5 - 5207.67472857814*eta6);
             double eqSpin = sqrt(1. - 4.*eta)*S*(0.04573095188775319 + 0.048249943132325494*S + eta*(0.15922377052827502 - 0.1837289613228469*S - 0.2834348500565196*S2) + 0.052963737236081304*S2);
             double uneqSpin = 0.25187274502769835*(chi1 - 1.*chi2)*(1. - 12.172961866410864*eta2)*eta2;
@@ -172,7 +161,7 @@ static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-  UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7,eta8,S2,S3,S4;
+  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta8,S2,S3;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -180,11 +169,9 @@ static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, do
             eta4 = pow(eta,4);
             eta5 = pow(eta,5);
             eta6 = pow(eta,6);
-            eta7 = pow(eta,7);
             eta8 = pow(eta,8);
             S2 = pow(S,2);
             S3 = pow(S,3);
-            S4 = pow(S,4);
             double noSpin = sqrt(1. - 3.*eta)*(0.019069933430190773 - 0.19396651989685837*eta + 11.95224600241255*eta2 - 158.90113442757382*eta3 + 1046.65239329071*eta4 - 3476.940285294999*eta5 + 4707.249209858949*eta6);
             double eqSpin = sqrt(1. - 3.*eta)*S*(0.0046910348789512895 + 0.40231360805609434*eta - 0.0038263656140933152*S + 0.018963579407636953*S2 + eta2*(-1.955352354930108 + 2.3753413452420133*S - 0.9085620866763245*S3) + 0.02738043801805805*S3 + eta3*(7.977057990568723 - 7.9259853291789515*S + 0.49784942656123987*S2 + 5.2255665027119145*S3));
             double uneqSpin = 0.058560321425018165*pow(chi1 - 1.*chi2,2)*(1. - 19.936477485971217*eta2)*eta2 + 1635.4240644598524*(chi1 - 1.*chi2)*eta8*delta + 0.2735219358839411*(chi1 - 1.*chi2)*eta2*S*delta;
@@ -197,19 +184,15 @@ static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7,eta8,S2,S3,S4;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta8,S2,S3;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
-            eta5 = pow(eta,5);
-            eta6 = pow(eta,6);
-            eta7 = pow(eta,7);
             eta8 = pow(eta,8);
             S2 = pow(S,2);
             S3 = pow(S,3);
-            S4 = pow(S,4);
             double noSpin = sqrt(1. - 3.*eta)*(0.024621376891809633 - 0.09692699636236377*eta + 2.7200998230836158*eta2 - 16.160563094841066*eta3 + 32.930430889650836*eta4);
             double eqSpin = sqrt(1. - 3.*eta)*S*(0.008522695567479373 - 1.1104639098529456*eta2 - 0.00362963820787208*S + 0.016978054142418417*S2 + eta*(0.24280554040831698 + 0.15878436411950506*S - 0.1470288177047577*S3) + 0.029465887557447824*S3 + eta3*(4.649438233164449 - 0.7550771176087877*S + 0.3381436950547799*S2 + 2.5663386135613093*S3));
             double uneqSpin = -0.007061187955941243*pow(chi1 - 1.*chi2,2)*(1. - 2.024701925508361*eta2)*eta2 + 215.06940561269835*(chi1 - 1.*chi2)*eta8*delta + 0.1465612311350642*(chi1 - 1.*chi2)*eta2*S*delta;
@@ -222,20 +205,14 @@ static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7,eta8,eta9,S2,S3,S4;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta8,S2,S3;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
-            eta4 = pow(eta,4);
-            eta5 = pow(eta,5);
-            eta6 = pow(eta,6);
-            eta7 = pow(eta,7);
             eta8 = pow(eta,8);
-            eta9 = pow(eta,9);
             S2 = pow(S,2);
             S3 = pow(S,3);
-            S4 = pow(S,4);
             double noSpin = (sqrt(1. - 3.*eta)*(-0.006150151041614737 + 0.017454430190035*eta + 0.02620962593739105*eta2 - 0.019043090896351363*eta3))/(-0.2655505633361449 + eta);
             double eqSpin = sqrt(1. - 3.*eta)*S*(0.011073381681404716 + 0.00347699923233349*S + eta*S*(0.05592992411391443 - 0.15666140197050316*S2) + 0.012079324401547036*S2 + eta2*(0.5440307361144313 - 0.008730335213434078*S + 0.04615964369925028*S2 + 0.6703688097531089*S3) + 0.016323101357296865*S3);
             double uneqSpin = -0.020140175824954427*pow(chi1 - 1.*chi2,2)*(1. - 12.675522774051249*eta2)*eta2 - 417.3604094454253*(chi1 - 1.*chi2)*eta8*delta + 0.10464021067936538*(chi1 - 1.*chi2)*eta2*S*delta;
@@ -248,14 +225,13 @@ static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, eta2,eta3,eta4,S2,S3;
+    double total=0, eta2,eta3,eta4,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(1. - 3.*eta)*(0.06190013067931406 + 0.1928897813606222*eta + 1.9024723168424225*eta2 - 15.988716302668415*eta3 + 35.21461767354364*eta4);
             double eqSpin = sqrt(1. - 3.*eta)*S*(0.011454874900772544 + 0.044702230915643903*S + eta*(0.6600413908621988 + 0.12149520289658673*S - 0.4482406547006759*S2) + 0.07327810908370004*S2 + eta2*(-2.1705970511116486 - 0.6512813450832168*S + 1.1237234702682313*S2));
             double uneqSpin = 0.4766851579723911*(chi1 - 1.*chi2)*(1. - 15.950025762198988*eta2)*eta2 + 0.127900699645338*pow(chi1 - 1.*chi2,2)*(1. - 15.79329306044842*eta2)*eta2;
@@ -268,12 +244,11 @@ static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,S2,S3;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
-            eta4 = pow(eta,4);
             S2 = pow(S,2);
             S3 = pow(S,3);
             double noSpin = 0.08406011695496626 - 0.1469952725049322*eta + 0.2997223283799925*eta2 - 1.2910560244510723*eta3;
@@ -288,7 +263,7 @@ static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
     switch (InspAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -296,7 +271,6 @@ static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double S, double chi1, do
             eta4 = pow(eta,4);
             eta5 = pow(eta,5);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = 0.08212436946985402 - 0.025332770704783136*eta - 3.2466088293309885*eta2 + 28.404235115663706*eta3 - 111.36325359782991*eta4 + 157.05954559045156*eta5;
             double eqSpin = S*(0.03488890057062679 + 0.039491331923244756*S + eta*(-0.08968833480313292 - 0.12754920943544915*S - 0.11199012099701576*S2) + 0.034468577523793176*S2);
             double uneqSpin = 0.2062291124580944*(chi1 - 1.*chi2)*eta2*delta;
@@ -614,7 +588,7 @@ int WavyPoints(double p1, double p2, double p3){
 // Below we give paramater-space fits for the weighted difference between each mode's phase and the 22-phase: phi_lm-m/2 phi_22(2/m f), see Eqs. (4.10-4.12)
 
 static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag) {
-    UNUSED double total,eta2,eta3,eta4,eta5,S2,S3;
+    double total,eta2,eta3,eta4,eta5,S2;
     switch (InspPhaseFlag){
         case 122019:{
             eta2 = pow(eta,2);
@@ -622,7 +596,6 @@ static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta, double S, double chi
             eta4 = pow(eta,4);
             eta5 = pow(eta,5);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = 13.664473636545068 - 170.08866400251395*eta + 3535.657736681598*eta2 - 26847.690494515424*eta3 + 96463.68163125668*eta4 - 133820.89317471132*eta5;
             double eqSpin = (S*(18.52571430563905 - 41.55066592130464*S + eta3*(83493.24265292779 + 16501.749243703132*S - 149700.4915210766*S2) + eta*(3642.5891077598003 + 1198.4163078715173*S - 6961.484805326852*S2) + 33.8697137964237*S2 + eta2*(-35031.361998480075 - 7233.191207000735*S + 62149.00902591944*S2)))/(6.880288191574696 + 1.*S);
             double uneqSpin = -134.27742343186577*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;

@@ -42,14 +42,11 @@
 
 
 static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,S2;
     switch (RDAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
-            eta3 = pow(eta,3);
-            eta4 = pow(eta,4);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(eta - 4.*eta2)*(0.00734983387668636 - 0.0012619735607202085*eta + 0.01042318959002753*eta2);
             double eqSpin = sqrt(eta - 4.*eta2)*S*(-0.004839645742570202 - 0.0013927779195756036*S + eta2*(-0.054621206928483663 + 0.025956604949552205*S + 0.020360826886107204*S2));
             double uneqSpin = -0.018115657394753674*(chi1 - 1.*chi2)*eta2*(1. - 10.539795474715346*eta2*delta);
@@ -62,11 +59,10 @@ static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,S2;
+    double total=0, delta=sqrt(1. - 4.*eta), eta2;
     switch (RDAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
-            S2 = pow(S,2);
             double noSpin = 0.5566284518926176 + 0.12651770333481904*eta + 1.8084545267208734*eta2;
             double eqSpin = (0.29074922226651545 + eta2*(-2.101111399437034 - 3.4969956644617946*S) + eta*(0.059317243606471406 - 0.31924748117518226*S) + 0.27420263462336675*S)*S;
             double uneqSpin = 1.0122975748481835*(chi1 - 1.*chi2)*eta2*delta;
@@ -79,15 +75,11 @@ static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double S, double chi1, d
 }
 
 static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-  UNUSED double total=0,eta2,eta3,eta4,eta5,eta6,S2,delta=sqrt(1-4*eta);
+  double total=0,eta2,eta4,delta=sqrt(1-4*eta);
   switch (RDAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
-      eta3 = pow(eta,3);
       eta4 = pow(eta,4);
-      eta5 = pow(eta,5);
-      eta6 = pow(eta,6);
-      S2 = pow(S,2);
       double noSpin = sqrt(eta - 4.*eta2)*(0.013700854227665184 + 0.01202732427321774*eta + 0.0898095508889557*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*(0.0075858980586079065 + eta*(-0.013132320758494439 - 0.018186317026076343*S) + 0.0035617441651710473*S)*S;
       double uneqSpin = eta4*(chi2*(-0.09802218411554885 - 0.05745949361626237*S) + chi1*(0.09802218411554885 + 0.05745949361626237*S) + eta2*(chi1*(-4.2679864481479886 - 11.877399902871485*S) + chi2*(4.2679864481479886 + 11.877399902871485*S))*delta);
@@ -100,12 +92,11 @@ static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-  UNUSED double total=0,eta2,S2,S3,delta=sqrt(1-4*eta);
+  double total=0,eta2,S2,delta=sqrt(1-4*eta);
   switch (RDAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       S2 = pow(S,2);
-      S3 = pow(S,3);
       double noSpin = 0.7435306475478924 - 0.06688558533374556*eta + 1.471989765837694*eta2;
       double eqSpin = S*(0.19457194111990656 + 0.07564220573555203*S + eta*(-0.4809350398289311 + 0.17261430318577403*S - 0.1988991467974821*S2));
       double uneqSpin = 1.8881959341735146*(chi1 - 1.*chi2)*eta2*delta;
@@ -118,7 +109,7 @@ static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double S, double chi1, d
 }
 
 static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-  UNUSED double total=0,eta2,eta3,eta4,eta5,eta6,eta7,eta8,eta9,S2;
+  double total=0,eta2,eta3,eta4,eta5,eta6;
   switch (RDAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
@@ -126,10 +117,6 @@ static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double S, double chi1, 
       eta4 = pow(eta,4);
       eta5 = pow(eta,5);
       eta6 = pow(eta,6);
-      eta7 = pow(eta,7);
-      eta8 = pow(eta,8);
-      eta9 = pow(eta,9);
-      S2 = pow(S,2);
       double noSpin = 0.00012587900257140724 + 0.03927886286971654*eta - 0.8109309606583066*eta2 + 8.820604907164254*eta3 - 51.43344812454074*eta4 + 141.81940900657446*eta5 - 140.0426973304466*eta6;
       double eqSpin = S*(-0.00006001471234796344 + eta4*(-0.7849112300598181 - 2.09188976953315*S) + eta2*(0.08311497969032984 - 0.15569578955822236*S) + eta*(-0.01083175709906557 + 0.00568899459837252*S) - 0.00009363591928190229*S + 1.0670798489407887*eta3*S);
       double uneqSpin = -0.04537308968659669*pow(chi1 - 1.*chi2,2)*eta2*(1. - 8.711096029480697*eta + 18.362371966229926*eta2) + (chi1 - 1.*chi2)*(-297.36978685672733 + 3103.2516759087644*eta - 10001.774055779177*eta2 + 9386.734883473799*eta3)*eta6;
@@ -142,12 +129,11 @@ static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-  UNUSED double total=0,eta2,eta3,S2,delta=sqrt(1.-4*eta);
+  double total=0,eta2,eta3,delta=sqrt(1.-4*eta);
   switch (RDAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
-      S2 = pow(S,2);
       double noSpin = (sqrt(1. - 3.*eta)*(0.0341611244787871 - 0.3197209728114808*eta + 0.7689553234961991*eta2))/(0.048429644168112324 - 0.43758296068790314*eta + eta2);
       double eqSpin = sqrt(1. - 3.*eta)*S*(0.11057199932233873 + eta2*(25.536336676250748 - 71.18182757443142*S) + 9.790509295728649*eta*S + eta3*(-56.96407763839491 + 175.47259563543165*S));
       double uneqSpin = -5.002106168893265*pow(chi1 - 1.*chi2,2)*eta2*delta;
@@ -160,16 +146,14 @@ static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double S, double chi1, d
 }
 
 static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
     switch (RDAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
             eta5 = pow(eta,5);
-            eta6 = pow(eta,6);
             S2 = pow(S,2);
-            S3 = pow(S,3);
             double noSpin = sqrt(eta - 3.*eta2)*(0.007904587819112173 + 0.09558474985614368*eta - 2.663803397359775*eta2 + 28.298192768381554*eta3 - 136.10446022757958*eta4 + 233.23167528016833*eta5);
             double eqSpin = sqrt(eta - 3.*eta2)*S*(0.0049703757209330025 + 0.004122811292229324*S + eta*(-0.06166686913913691 + 0.014107365722576927*S)*S + eta2*(-0.2945455034809188 + 0.4139026619690879*S - 0.1389170612199015*S2) + eta3*(0.9225758392294605 - 0.9656098473922222*S + 0.19708289555425246*S2) + 0.000657528128497184*S2);
             double uneqSpin = 0.00659873279539475*(chi1 - 1.*chi2)*eta2*delta;
@@ -182,7 +166,7 @@ static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7;
     switch (RDAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -203,7 +187,7 @@ static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double S, double chi1, d
 }
 
 static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
-    UNUSED double total=0, delta=sqrt(1. - 4.*eta),eta2;
+    double total=0, delta=sqrt(1. - 4.*eta),eta2;
     switch (RDAmpFlag){
         case 122018:{
             eta2 = pow(eta,2);
@@ -219,7 +203,7 @@ static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_RD_Amp_33_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
-    UNUSED double total=0;
+    double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.3;
@@ -234,7 +218,7 @@ static double IMRPhenomXHM_RD_Amp_33_sigma(UNUSED double eta, UNUSED double S, U
 }
 
 static double IMRPhenomXHM_RD_Amp_32_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
-    UNUSED double total=0;
+    double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
@@ -249,7 +233,7 @@ static double IMRPhenomXHM_RD_Amp_32_sigma(UNUSED double eta, UNUSED double S, U
 }
 
 static double IMRPhenomXHM_RD_Amp_44_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
-    UNUSED double total=0;
+    double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
@@ -416,7 +400,7 @@ static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double S, double chi1,
 }
 
 static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
-    UNUSED double total=0, delta=sqrt(1.- 4.*eta),eta2,eta3,eta4,S2;
+    double total=0, delta=sqrt(1.- 4.*eta),eta2,eta3,eta4,S2;
     switch (RDPhaseFlag){
         case 122019:{
             eta2 = pow(eta,2);
