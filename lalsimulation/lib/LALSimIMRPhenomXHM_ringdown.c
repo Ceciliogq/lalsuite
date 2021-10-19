@@ -202,12 +202,12 @@ static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double S, double chi1, do
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_33_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.3;
-            double eqSpin = 0.;
+            double eqSpin = 0.*eta*S*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;
@@ -217,12 +217,12 @@ static double IMRPhenomXHM_RD_Amp_33_sigma(UNUSED double eta, UNUSED double S, U
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_32_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
-            double eqSpin = 0.;
+            double eqSpin = 0.*eta*S*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;
@@ -232,12 +232,12 @@ static double IMRPhenomXHM_RD_Amp_32_sigma(UNUSED double eta, UNUSED double S, U
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_44_sigma(UNUSED double eta, UNUSED double S, UNUSED double chi1, UNUSED double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
-            double eqSpin = 0.;
+            double eqSpin = 0.*eta*S*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;

@@ -192,7 +192,7 @@ static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, 
 /*
 Fits for the extra collocation point for EMR cases with 2 intermediate regions
 */
-static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
@@ -200,7 +200,7 @@ static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, UNUSED double
       eta3 = pow(eta,3);
       double noSpin = 0.872895771366973 + 441.76285124642845*eta - 24617.068739152524*eta2 + 518054.9485981792*eta3;
       double eqSpin = S*(-0.0720494539485585 + eta*(-173.67847091983123 - 113.29725582509889*S) - 0.2687302438646897*S + eta2*(3571.0393588230045 + 2640.919925429635*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -209,7 +209,7 @@ static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, UNUSED double
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
@@ -217,7 +217,7 @@ static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, UNUSED doubl
       eta3 = pow(eta,3);
       double noSpin = -0.8535048463050732 - 93.1876950411214*eta + 13641.071903017495*eta2 - 337621.44851304166*eta3;
       double eqSpin = S*(-1.2067842398131878 + eta2*(-1972.284151572111 - 8172.057025783849*S) - 0.26539816223182355*S + eta*(77.26350785961219 + 189.63365484152857*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -226,7 +226,7 @@ static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, UNUSED doubl
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
@@ -234,7 +234,7 @@ static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, UNUSED double
       eta3 = pow(eta,3);
       double noSpin = 1.5852399637975103 + 549.5183711492834*eta - 34257.76380246282*eta2 + 743142.8286902909*eta3;
       double eqSpin = S*(0.7436306553052219 + eta*(-89.49451655594787 - 174.5730646548662*S) + 0.4253024979725725*S + eta2*(1185.1654325913717 + 6510.983041407191*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -243,7 +243,7 @@ static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, UNUSED double
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
@@ -251,7 +251,7 @@ static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, UNUSED doubl
       eta3 = pow(eta,3);
       double noSpin = -4.691600252198376 + 101.4338937535679*eta + 9262.994550540048*eta2 - 310993.1309846956*eta3;
       double eqSpin = S*(-4.198232394219111 + eta2*(-28714.904192060643 - 5100.09336069277*S) - 0.40986595512314733*S + eta*(734.7118618746317 + 292.04566260701574*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -260,7 +260,7 @@ static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, UNUSED doubl
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3,S2,S3;
   switch (InterAmpFlag){
     case 122018:{
@@ -270,7 +270,7 @@ static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, UNUSED double
       S3 = pow(S,3);
       double noSpin = 0.24794156582503746 + 115.81823862983131*eta - 6626.167995915723*eta2 + 141004.29332593994*eta3;
       double eqSpin = (0.21144389781375486 + 35.10041265469983*eta - 1794.2301585086836*eta2)*S + (0.2781735549493081 - 37.038950686633*eta + 1258.628375238807*eta2)*S2 + (0.23428222791962147 - 63.98011009365723*eta + 2118.213562899934*eta2)*S3;
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -279,7 +279,7 @@ static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, UNUSED double
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3;
   switch (InterAmpFlag){
     case 122018:{
@@ -287,7 +287,7 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, UNUSED doubl
       eta3 = pow(eta,3);
       double noSpin = -0.3391808620221253 - 14.604141885467747*eta + 3694.1706648870427*eta2 - 95482.02951271653*eta3;
       double eqSpin = S*(-1.2844502090793946 + eta2*(-5018.762853306415 - 6332.389157828062*S) - 1.2356159239385598*S + eta*(149.04865679660233 + 188.2052849646003*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -296,7 +296,7 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, UNUSED doubl
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2,eta3,S2,S3;
   switch (InterAmpFlag){
     case 122018:{
@@ -306,7 +306,7 @@ static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, UNUSED double
       S3 = pow(S,3);
       double noSpin = 0.5664660641971224 + 185.58965113823874*eta - 11458.768824989507*eta2 + 249386.7511724409*eta3;
       double eqSpin = (0.1741768776210781 - 9.365114803167128*eta + 703.2622732011035*eta2)*S + (0.20169229783048184 - 62.13147149352512*eta + 2833.5738711424974*eta2)*S2 + (0.4423803798742513 - 23.60535149579996*eta - 994.9241585715828*eta2)*S3;
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -315,14 +315,14 @@ static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, UNUSED double
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, UNUSED double chi1, UNUSED double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
   double total=0,eta2;
   switch (InterAmpFlag){
     case 122018:{
       eta2 = pow(eta,2);
       double noSpin = -1.796444922382065 + 111.51170611049032*eta - 1728.7493675776548*eta2;
       double eqSpin = S*(-1.842119860613924 + eta2*(-11235.484645624338 - 2927.019210835522*S) - 0.36655273031432567*S + eta*(312.34531117524097 + 128.64488103364167*S));
-      double uneqSpin = 0.;
+      double uneqSpin = 0.*(chi1+chi2);
       total = noSpin + eqSpin + uneqSpin;
       break;
     }
@@ -358,55 +358,55 @@ static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double 
   {
     case 101: //linear, only v1, v2
     {
-      UNUSED double f1mf4 = f1-f4;
+      double f1mf4 = f1-f4;
 
       retVal = (-(f4*v1) + f1*v4)/f1mf4;
       break;
     }
     case 102: //quadratic: v1, v2, d2
     {
-      UNUSED double f12    = f1*f1;
-      UNUSED double f42    = f4*f4;
-      UNUSED double f1mf4  = f1-f4;
-      UNUSED double f1mf42 = f1mf4*f1mf4;
+      double f12    = f1*f1;
+      double f42    = f4*f4;
+      double f1mf4  = f1-f4;
+      double f1mf42 = f1mf4*f1mf4;
 
       retVal = (-(d4*f1*f1mf4*f4) + f42*v1 + f12*v4 - 2*f1*f4*v4)/f1mf42;
       break;
     }
     case 1032:  // 2 freqs, points and derivatives: v1, v4, d1, d4
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
 
-      UNUSED double f1mf4  = f1-f4;
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f1mf43 = f1mf42*f1mf4;
+      double f1mf4  = f1-f4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f1mf43 = f1mf42*f1mf4;
 
       retVal = (d4*f12*f4*(-f1 + f4) + d1*f1*(-f1 + f4)*f42 + 3*f1*f42*v1 - f43*v1 + f13*v4 - 3*f12*f4*v4)/f1mf43;
       break;
     }
     case 103:   // 4 freqs, no boundaries derivatives
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
+      double f22 = f2*f2;
+      double f23 = f22*f2;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf2 = f1-f2;
+      double f1mf3 = f1-f3;
+      double f1mf4 = f1-f4;
+      double f2mf3 = f2-f3;
+      double f2mf4 = f2-f4;
+      double f3mf4 = f3-f4;
 
       retVal = (f1*f1mf3*f1mf4*f3*f3mf4*f4*v2 + f23*(f1*f1mf4*f4*v3 + f32*(-(f4*v1) + f1*v4) + f3*(f42*v1 - f12*v4)) + f2*(f12*f1mf4*f42*v3 + f33*(-(f42*v1) + f12*v4) + f32*(f43*v1 - f13*v4)) +
       f22*(f1*f4*(-f12 + f42)*v3 + f33*(f4*v1 - f1*v4) + f3*(-(f43*v1) + f13*v4)))/(f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4);
@@ -414,35 +414,33 @@ static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double 
     }
     case 1043:  //no left derivative
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f14 = f13*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
-      UNUSED double f24 = f23*f2;
-      UNUSED double f25 = f24*f2;
+      double f22 = f2*f2;
+      double f23 = f22*f2;
+      double f24 = f23*f2;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
-      UNUSED double f34 = f33*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
+      double f34 = f33*f3;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
-      UNUSED double f45 = f44*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
+      double f44 = f43*f4;
+      double f45 = f44*f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf2 = f1-f2;
+      double f1mf3 = f1-f3;
+      double f1mf4 = f1-f4;
+      double f2mf3 = f2-f3;
+      double f2mf4 = f2-f4;
+      double f3mf4 = f3-f4;
 
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
-      UNUSED double f2mf32 = f2mf3*f2mf3;
-      UNUSED double f2mf42 = f2mf4*f2mf4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f3mf42 = f3mf4*f3mf4;
+      double f2mf42 = f2mf4*f2mf4;
 
       retVal = (-(d4*f1*f1mf2*f1mf3*f1mf4*f2*f2mf3*f2mf4*f3*f3mf4*f4) - f1*f1mf3*f1mf42*f3*f3mf42*f42*v2 +
       f24*(-(f1*f1mf42*f42*v3) + f33*(f42*v1 + f12*v4 - 2*f1*f4*v4) + f3*f4*(f43*v1 + 2*f13*v4 - 3*f12*f4*v4) - f32*(2*f43*v1 + f13*v4 - 3*f1*f42*v4)) +
@@ -454,29 +452,29 @@ static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double 
     case 1042:   //4th order poly: v1,d1, v4,d4, v3  // used for the first intermediate region
     {
 
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
-      UNUSED double f15 = f14*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f14 = f13*f1;
+      double f15 = f14*f1;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
-      UNUSED double f45 = f44*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
+      double f44 = f43*f4;
+      double f45 = f44*f4;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
-      UNUSED double f34 = f33*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
+      double f34 = f33*f3;
 
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf4 = f1-f4;
+      double f1mf3 = f1-f3;
+      double f3mf4 = f3-f4;
 
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f1mf32 = f1mf3*f1mf3;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f1mf32 = f1mf3*f1mf3;
+      double f3mf42 = f3mf4*f3mf4;
 
-      UNUSED double f1mf43 = f1mf42*f1mf4;
+      double f1mf43 = f1mf42*f1mf4;
 
       retVal = (-(d4*f12*f1mf32*f1mf4*f3*f3mf4*f4) + d1*f1*f1mf3*f1mf4*f3*f3mf42*f42 - 4*f12*f33*f42*v1 + 3*f1*f34*f42*v1 + 8*f12*f32*f43*v1 - 4*f1*f33*f43*v1 - f34*f43*v1 - 4*f12*f3*f44*v1 - f1*f32*f44*v1 +
       2*f33*f44*v1 + 2*f1*f3*f45*v1 - f32*f45*v1 + f15*f42*v3 - 3*f14*f43*v3 + 3*f13*f44*v3 - f12*f45*v3 + f15*f32*v4 - 2*f14*f33*v4 + f13*f34*v4 - 2*f15*f3*f4*v4 + f14*f32*f4*v4 + 4*f13*f33*f4*v4 -
@@ -487,32 +485,17 @@ static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double 
     case 104:  //Geraint's Version, 4th order poly: v1,d1, v4,d4, v2
     {
 
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
+      double f12 = f1*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
-      UNUSED double f24 = f23*f2;
+      double f42 = f4*f4;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
+      double f1mf2 = f1-f2;
+      double f1mf4 = f1-f4;
+      double f2mf4 = f2-f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
-
-      UNUSED double f1mf22 = f1mf2*f1mf2;
-      UNUSED double f1mf32 = f1mf3*f1mf3;
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f2mf32 = f2mf3*f2mf3;
-      UNUSED double f2mf42 = f2mf4*f2mf4;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
-      UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+      double f1mf22 = f1mf2*f1mf2;
+      double f2mf42 = f2mf4*f2mf4;
+      double f1mf43 = f1mf4*f1mf4*f1mf4;
 
       retVal = ((-(d4*f12*f1mf22*f1mf4*f2*f2mf4*f4) + d1*f1*f1mf2*f1mf4*f2*f2mf42*f42 + f42*(f2*f2mf42*(-4*f12 + 3*f1*f2 + 2*f1*f4 - f2*f4)*v1 + f12*f1mf43*v2) +
       f12*f1mf22*f2*(f1*f2 - 2*f1*f4 - 3*f2*f4 + 4*f42)*v4)/(f1mf22*f1mf43*f2mf42));
@@ -520,48 +503,43 @@ static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double 
     }
     case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
-      UNUSED double f15 = f14*f1;
-      UNUSED double f16 = f15*f1;
-      UNUSED double f17 = f16*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f14 = f13*f1;
+      double f15 = f14*f1;
+      double f16 = f15*f1;
+      double f17 = f16*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
-      UNUSED double f24 = f23*f2;
-      UNUSED double f25 = f24*f2;
-      UNUSED double f26 = f25*f2;
-      UNUSED double f27 = f26*f2;
+      double f22 = f2*f2;
+      double f23 = f22*f2;
+      double f24 = f23*f2;
+      double f25 = f24*f2;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
-      UNUSED double f34 = f33*f3;
-      UNUSED double f35 = f34*f3;
-      UNUSED double f36 = f35*f3;
-      UNUSED double f37 = f36*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
+      double f34 = f33*f3;
+      double f35 = f34*f3;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
-      UNUSED double f45 = f44*f4;
-      UNUSED double f46 = f45*f4;
-      UNUSED double f47 = f46*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
+      double f44 = f43*f4;
+      double f45 = f44*f4;
+      double f46 = f45*f4;
+      double f47 = f46*f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf2 = f1-f2;
+      double f1mf3 = f1-f3;
+      double f1mf4 = f1-f4;
+      double f2mf3 = f2-f3;
+      double f2mf4 = f2-f4;
+      double f3mf4 = f3-f4;
 
-      UNUSED double f1mf22 = f1mf2*f1mf2;
-      UNUSED double f1mf32 = f1mf3*f1mf3;
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f2mf32 = f2mf3*f2mf3;
-      UNUSED double f2mf42 = f2mf4*f2mf4;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
-      UNUSED double f1mf43 = f1mf42*f1mf4;
+      double f1mf22 = f1mf2*f1mf2;
+      double f1mf32 = f1mf3*f1mf3;
+      double f1mf42 = f1mf4*f1mf4;
+      double f2mf42 = f2mf4*f2mf4;
+      double f3mf42 = f3mf4*f3mf4;
+      double f1mf43 = f1mf42*f1mf4;
 
       retVal = (
         (-(d4*f12*f1mf22*f1mf32*f1mf4*f2*f2mf3*f2mf4*f3*f3mf4*f4) - d1*f1*f1mf2*f1mf3*f1mf4*f2*f2mf3*f2mf42*f3*f3mf42*f42 + 5*f13*f24*f33*f42*v1 - 4*f12*f25*f33*f42*v1 - 5*f13*f23*f34*f42*v1 +
@@ -596,52 +574,52 @@ static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double 
   {
     case 101: //linear, only v1, v2
     {
-      UNUSED double f1mf4 = f1-f4;
+      double f1mf4 = f1-f4;
 
       retVal = (v1 - v4)/f1mf4;
       break;
     }
     case 102: //quadratic: v1, v2, d2
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f42 = f4*f4;
-      UNUSED double f1mf42 = (f1-f4)*(f1-f4);
+      double f12 = f1*f1;
+      double f42 = f4*f4;
+      double f1mf42 = (f1-f4)*(f1-f4);
 
       retVal = (d4*(f12 - f42) + 2*f4*(-v1 + v4))/f1mf42;
       break;
     }
     case 1032:  // 2 freqs, points and derivatives: v1, v4, d1, d4
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f42 = f4*f4;
+      double f12 = f1*f1;
+      double f42 = f4*f4;
 
-      UNUSED double f1mf4  = f1-f4;
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f1mf43 = f1mf42*f1mf4;
+      double f1mf4  = f1-f4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f1mf43 = f1mf42*f1mf4;
 
       retVal = (d4*f1*f1mf4*(f1 + 2*f4) - f4*(d1*(-2*f12 + f1*f4 + f42) + 6*f1*(v1 - v4)))/f1mf43;
       break;
     }
     case 103:   // 4 freqs, no boundaries derivatives
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
+      double f22 = f2*f2;
+      double f23 = f22*f2;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf2 = f1-f2;
+      double f1mf3 = f1-f3;
+      double f1mf4 = f1-f4;
+      double f2mf3 = f2-f3;
+      double f2mf4 = f2-f4;
+      double f3mf4 = f3-f4;
 
       retVal = (f12*f1mf4*f42*(v2 - v3) + f33*(f42*(v1 - v2) + f12*(v2 - v4)) + f22*(f43*(v1 - v3) + f13*(v3 - v4) + f33*(-v1 + v4)) + f32*(f43*(-v1 + v2) + f13*(-v2 + v4)) +
       f23*(f42*(-v1 + v3) + f32*(v1 - v4) + f12*(-v3 + v4)))/(f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4);
@@ -649,40 +627,39 @@ static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double 
     }
     case 1043:  //no left derivative
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f14 = f13*f1;
 
-      UNUSED double f22 = f2*f2;
-      UNUSED double f23 = f22*f2;
-      UNUSED double f24 = f23*f2;
-      UNUSED double f25 = f24*f2;
+      double f22 = f2*f2;
+      double f23 = f22*f2;
+      double f24 = f23*f2;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
-      UNUSED double f34 = f33*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
+      double f34 = f33*f3;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
+      double f44 = f43*f4;
 
-      UNUSED double f1mf2 = f1-f2;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f2mf3 = f2-f3;
-      UNUSED double f2mf4 = f2-f4;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf2 = f1-f2;
+      double f1mf3 = f1-f3;
+      double f1mf4 = f1-f4;
+      double f2mf3 = f2-f3;
+      double f2mf4 = f2-f4;
+      double f3mf4 = f3-f4;
 
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f2mf42 = f2mf4*f2mf4;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f2mf42 = f2mf4*f2mf4;
+      double f3mf42 = f3mf4*f3mf4;
 
-      UNUSED double v1mv2 = v1-v2;
-      UNUSED double v2mv3 = v2-v3;
-      UNUSED double v2mv4 = v2-v4;
-      UNUSED double v1mv3 = v1-v3;
-      UNUSED double v1mv4 = v1-v4;
-      UNUSED double v3mv4 = v3-v4;
+      double v1mv2 = v1-v2;
+      double v2mv3 = v2-v3;
+      double v2mv4 = v2-v4;
+      double v1mv3 = v1-v3;
+      double v1mv4 = v1-v4;
+      double v3mv4 = v3-v4;
 
       retVal =(d4*f1mf4*f2mf4*f3mf4*(f1*f2*f3 + f2*f3*f4 + f1*(f2 + f3)*f4) + (f4*(f12*f1mf42*f43*v2mv3 + f34*(f43*v1mv2 +
         3*f12*f4*v2mv4 + 2*f13*(-v2 + v4)) + f32*f4*(f44*v1mv2 + 4*f13*f4*v2mv4 + 3*f14*(-v2 + v4)) + 2*f33*(f44*(-v1 + v2)
@@ -694,33 +671,29 @@ static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double 
     }
     case 1042:   //4th order poly: v1,d1, v4,d4, v3  // used for the first intermediate region
     {
-      UNUSED double f12 = f1*f1;
-      UNUSED double f13 = f12*f1;
-      UNUSED double f14 = f13*f1;
-      UNUSED double f15 = f14*f1;
+      double f12 = f1*f1;
+      double f13 = f12*f1;
+      double f14 = f13*f1;
+      double f15 = f14*f1;
 
-      UNUSED double f42 = f4*f4;
-      UNUSED double f43 = f42*f4;
-      UNUSED double f44 = f43*f4;
-      UNUSED double f45 = f44*f4;
+      double f42 = f4*f4;
+      double f43 = f42*f4;
+      double f44 = f43*f4;
+      double f45 = f44*f4;
 
-      UNUSED double f32 = f3*f3;
-      UNUSED double f33 = f32*f3;
-      UNUSED double f34 = f33*f3;
+      double f32 = f3*f3;
+      double f33 = f32*f3;
+      double f34 = f33*f3;
 
-      UNUSED double f1mf4 = f1-f4;
-      UNUSED double f1mf3 = f1-f3;
-      UNUSED double f3mf4 = f3-f4;
+      double f1mf4 = f1-f4;
+      double f1mf3 = f1-f3;
+      double f3mf4 = f3-f4;
 
-      UNUSED double f1mf42 = f1mf4*f1mf4;
-      UNUSED double f1mf32 = f1mf3*f1mf3;
-      UNUSED double f3mf42 = f3mf4*f3mf4;
+      double f1mf42 = f1mf4*f1mf4;
+      double f1mf32 = f1mf3*f1mf3;
+      double f3mf42 = f3mf4*f3mf4;
 
-      UNUSED double f1mf43 = f1mf42*f1mf4;
-
-      UNUSED double v1mv4 = v1-v4;
-      UNUSED double v1mv3 = v1-v3;
-      UNUSED double v3mv4 = v3-v4;
+      double f1mf43 = f1mf42*f1mf4;
 
       retVal = (d4*f15*f32 - 2*d4*f14*f33 + d4*f13*f34 + d4*f14*f32*f4 - 2*d1*f13*f33*f4 - 2*d4*f13*f33*f4 + 2*d1*f12*f34*f4 + d4*f12*f34*f4 - d4*f15*f42 + 3*d1*f13*f32*f42 + d4*f13*f32*f42 - 2*d1*f12*f33*f42 +
         2*d4*f12*f33*f42 - d1*f1*f34*f42 - 2*d4*f1*f34*f42 + d4*f14*f43 - d1*f12*f32*f43 - 3*d4*f12*f32*f43 + 2*d1*f1*f33*f43 + 2*d4*f1*f33*f43 - d1*f34*f43 - d1*f13*f44 - d1*f1*f32*f44 + 2*d1*f33*f44 +
@@ -746,36 +719,25 @@ static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double 
       case 104:  //Geraint's Version, 4th order poly: v1,d1, v2,d2, v3
       {
 
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
+        double f1mf2 = f1-f2;
+        double f1mf4 = f1-f4;
+        double f2mf4 = f2-f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
-
-        UNUSED double f1mf22 = f1mf2*f1mf2;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf32 = f2mf3*f2mf3;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
-        UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+        double f1mf22 = f1mf2*f1mf2;
+        double f2mf42 = f2mf4*f2mf4;
+        double f1mf43 = f1mf4*f1mf4*f1mf4;
 
         retVal = ((d4*f1*f1mf22*f1mf4*f2mf4*(2*f2*f4 + f1*(f2 + f4)) + f4*(-(d1*f1mf2*f1mf4*f2mf42*(2*f1*f2 + (f1 + f2)*f4)) -
         2*f1*(f44*(v1 - v2) + 3*f24*(v1 - v4) + f14*(v2 - v4) + 4*f23*f4*(-v1 + v4)
@@ -785,48 +747,39 @@ static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double 
       case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
       {
 
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
-        UNUSED double f15 = f14*f1;
-        UNUSED double f16 = f15*f1;
-        UNUSED double f17 = f16*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
+        double f15 = f14*f1;
+        double f16 = f15*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
-        UNUSED double f25 = f24*f2;
-        UNUSED double f26 = f25*f2;
-        UNUSED double f27 = f26*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
+        double f25 = f24*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
-        UNUSED double f35 = f34*f3;
-        UNUSED double f36 = f35*f3;
-        UNUSED double f37 = f36*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
+        double f34 = f33*f3;
+        double f35 = f34*f3;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
-        UNUSED double f46 = f45*f4;
-        UNUSED double f47 = f46*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f45 = f44*f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf22 = f1mf2*f1mf2;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf32 = f2mf3*f2mf3;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
-        UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+        double f1mf22 = f1mf2*f1mf2;
+        double f1mf32 = f1mf3*f1mf3;
+        double f2mf42 = f2mf4*f2mf4;
+        double f3mf42 = f3mf4*f3mf4;
+        double f1mf43 = f1mf4*f1mf4*f1mf4;
 
         retVal = (
           (d4*f1*f1mf22*f1mf32*f1mf4*f2mf3*f2mf4*f3mf4*(f1*f2*f3 + 2*f2*f3*f4 + f1*(f2 + f3)*f4) +
@@ -865,44 +818,44 @@ static double IMRPhenomXHM_Intermediate_Amp_delta2(double d1, double d4, double 
       }
       case 102: //quadratic: v1, v2, d2
       {
-        UNUSED double f1mf4  = f1-f4;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
+        double f1mf4  = f1-f4;
+        double f1mf42 = f1mf4*f1mf4;
 
         retVal = (-(d4*f1mf4) + v1 - v4)/f1mf42;
         break;
       }
       case 1032:  // 2 freqs, points and derivatives: v1, v4, d1, d4
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f42 = f4*f4;
+        double f12 = f1*f1;
+        double f42 = f4*f4;
 
-        UNUSED double f1mf4  = f1-f4;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f1mf43 = f1mf42*f1mf4;
+        double f1mf4  = f1-f4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f1mf43 = f1mf42*f1mf4;
 
         retVal = (-(d1*(f12 + f1*f4 - 2*f42)) + d4*(-2*f12 + f1*f4 + f42) + 3*(f1 + f4)*(v1 - v4))/f1mf43;
         break;
       }
       case 103:   // 4 freqs, no boundaries derivatives
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
         retVal = (-(f1*f4*(f12 - f42)*(v2 - v3)) + f3*(f43*(v1 - v2) + f13*(v2 - v4)) + f23*(f4*(v1 - v3) + f1*(v3 - v4) + f3*(-v1 + v4)) + f33*(f4*(-v1 + v2) + f1*(-v2 + v4)) +
         f2*(f43*(-v1 + v3) + f33*(v1 - v4) + f13*(-v3 + v4)))/(f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4);
@@ -910,42 +863,37 @@ static double IMRPhenomXHM_Intermediate_Amp_delta2(double d1, double d4, double 
       }
       case 1043:  //no left derivative: v1, v2, v3, v4, d4
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
-        UNUSED double f25 = f24*f2;
-        UNUSED double f26 = f25*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
+        double f34 = f33*f3;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f46 = f44*f42;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f46 = f44*f42;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f2mf42 = f2mf4*f2mf4;
+        double f3mf42 = f3mf4*f3mf4;
 
-        UNUSED double v1mv2 = v1-v2;
-        UNUSED double v2mv3 = v2-v3;
-        UNUSED double v2mv4 = v2-v4;
-        UNUSED double v1mv3 = v1-v3;
-        UNUSED double v1mv4 = v1-v4;
-        UNUSED double v3mv4 = v3-v4;
+        double v1mv3 = v1-v3;
+        double v1mv4 = v1-v4;
+        double v3mv4 = v3-v4;
 
         retVal = (-(d4*f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4*(f3*f4 + f2*(f3 + f4) + f1*(f2 + f3 + f4))) - 2*f34*f43*v1 + 3*f33*f44*v1 - f3*f46*v1 - f14*f33*v2 + f13*f34*v2 + 3*f14*f3*f42*v2 - 3*f1*f34*f42*v2 -
         2*f14*f43*v2 - 4*f13*f3*f43*v2 + 4*f1*f33*f43*v2 + 2*f34*f43*v2 + 3*f13*f44*v2 - 3*f33*f44*v2 - f1*f46*v2 + f3*f46*v2 + 2*f14*f43*v3 - 3*f13*f44*v3 + f1*f46*v3 +
@@ -956,29 +904,29 @@ static double IMRPhenomXHM_Intermediate_Amp_delta2(double d1, double d4, double 
       }
       case 1042:   //4th order poly: v1,d1, v2,d2, v3   // used for the first intermediate region
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
-        UNUSED double f15 = f14*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
+        double f15 = f14*f1;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f45 = f44*f4;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
+        double f34 = f33*f3;
 
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf4 = f1-f4;
+        double f1mf3 = f1-f3;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f1mf32 = f1mf3*f1mf3;
+        double f3mf42 = f3mf4*f3mf4;
 
-        UNUSED double f1mf43 = f1mf42*f1mf4;
+        double f1mf43 = f1mf42*f1mf4;
 
         retVal = (-(d4*f1mf32*f1mf4*f3mf4*(f12 + f3*f4 + 2*f1*(f3 + f4))) + d1*f1mf3*f1mf4*f3mf42*(f1*f3 + 2*(f1 + f3)*f4 + f42) - 4*f12*f33*v1 + 3*f1*f34*v1 - 4*f1*f33*f4*v1 + 3*f34*f4*v1 + 12*f12*f3*f42*v1 -
         4*f33*f42*v1 - 8*f12*f43*v1 + f1*f44*v1 + f45*v1 + f15*v3 + f14*f4*v3 - 8*f13*f42*v3 + 8*f12*f43*v3 - f1*f44*v3 - f45*v3 -
@@ -987,38 +935,27 @@ static double IMRPhenomXHM_Intermediate_Amp_delta2(double d1, double d4, double 
       }
       case 104:  //Geraint's Version, 4th order poly: v1,d1, v2,d2, v3
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
-        UNUSED double f15 = f14*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
+        double f15 = f14*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f45 = f44*f4;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
+        double f1mf2 = f1-f2;
+        double f1mf4 = f1-f4;
+        double f2mf4 = f2-f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
-
-        UNUSED double f1mf22 = f1mf2*f1mf2;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf32 = f2mf3*f2mf3;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
-        UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+        double f1mf22 = f1mf2*f1mf2;
+        double f2mf42 = f2mf4*f2mf4;
+        double f1mf43 = f1mf4*f1mf4*f1mf4;
 
         retVal = ((-(d4*f1mf22*f1mf4*f2mf4*(f12 + f2*f4 + 2*f1*(f2 + f4))) + d1*f1mf2*f1mf4*f2mf42*(f1*f2 + 2*(f1 + f2)*f4 + f42)
         - 4*f12*f23*v1 + 3*f1*f24*v1 - 4*f1*f23*f4*v1 + 3*f24*f4*v1 + 12*f12*f2*f42*v1 -
@@ -1029,48 +966,42 @@ static double IMRPhenomXHM_Intermediate_Amp_delta2(double d1, double d4, double 
       }
       case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
-        UNUSED double f15 = f14*f1;
-        UNUSED double f16 = f15*f1;
-        UNUSED double f17 = f16*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
+        double f15 = f14*f1;
+        double f16 = f15*f1;
+        double f17 = f16*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
-        UNUSED double f25 = f24*f2;
-        UNUSED double f26 = f25*f2;
-        UNUSED double f27 = f26*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
+        double f25 = f24*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
-        UNUSED double f35 = f34*f3;
-        UNUSED double f36 = f35*f3;
-        UNUSED double f37 = f36*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
+        double f34 = f33*f3;
+        double f35 = f34*f3;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
-        UNUSED double f46 = f45*f4;
-        UNUSED double f47 = f46*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f45 = f44*f4;
+        double f46 = f45*f4;
+        double f47 = f46*f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf22 = f1mf2*f1mf2;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf32 = f2mf3*f2mf3;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
-        UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+        double f1mf22 = f1mf2*f1mf2;
+        double f1mf32 = f1mf3*f1mf3;
+        double f2mf42 = f2mf4*f2mf4;
+        double f3mf42 = f3mf4*f3mf4;
+        double f1mf43 = f1mf4*f1mf4*f1mf4;
 
         retVal = (
           (-(d4*f1mf22*f1mf32*f1mf4*f2mf3*f2mf4*f3mf4*(f2*f3*f4 + f12*(f2 + f3 + f4) + 2*f1*(f2*f3 + (f2 + f3)*f4))) -
@@ -1118,33 +1049,29 @@ static double IMRPhenomXHM_Intermediate_Amp_delta3(double d1, double d4, double 
       }
       case 1032:  // 2 freqs, points and derivatives: v1, v4, d1, d4
       {
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f1mf43 = f1mf42*f1mf4;
+        double f1mf4 = f1-f4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f1mf43 = f1mf42*f1mf4;
 
         retVal = (d1*f1mf4 + d4*f1mf4 - 2*v1 + 2*v4)/f1mf43;
         break;
       }
       case 103:  // 4 freqs, no boundaries derivatives
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
+        double f12 = f1*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
+        double f22 = f2*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
+        double f32 = f3*f3;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
+        double f42 = f4*f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
         retVal = (f1*f1mf4*f4*(v2 - v3) + f32*(f4*(v1 - v2) + f1*(v2 - v4)) + f2*(f42*(v1 - v3) + f12*(v3 - v4) + f32*(-v1 + v4)) + f3*(f42*(-v1 + v2) + f12*(-v2 + v4)) +
         f22*(f4*(-v1 + v3) + f3*(v1 - v4) + f1*(-v3 + v4)))/(f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4);
@@ -1152,39 +1079,36 @@ static double IMRPhenomXHM_Intermediate_Amp_delta3(double d1, double d4, double 
       }
       case 1043:  //no left derivative: v1, v2, v3, v4, d4
       {
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
 
-        UNUSED double f22 = f2*f2;
-        UNUSED double f23 = f22*f2;
-        UNUSED double f24 = f23*f2;
+        double f22 = f2*f2;
+        double f23 = f22*f2;
+        double f24 = f23*f2;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f34 = f32*f32;
+        double f32 = f3*f3;
+        double f34 = f32*f32;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
+        double f45 = f44*f4;
 
-        UNUSED double f1mf2 = f1-f2;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f2mf3 = f2-f3;
-        UNUSED double f2mf4 = f2-f4;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf2 = f1-f2;
+        double f1mf3 = f1-f3;
+        double f1mf4 = f1-f4;
+        double f2mf3 = f2-f3;
+        double f2mf4 = f2-f4;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f2mf42 = f2mf4*f2mf4;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f2mf42 = f2mf4*f2mf4;
+        double f3mf42 = f3mf4*f3mf4;
 
-        UNUSED double v1mv2 = v1-v2;
-        UNUSED double v2mv3 = v2-v3;
-        UNUSED double v2mv4 = v2-v4;
-        UNUSED double v1mv3 = v1-v3;
-        UNUSED double v1mv4 = v1-v4;
-        UNUSED double v3mv4 = v3-v4;
+        double v1mv3 = v1-v3;
+        double v1mv4 = v1-v4;
+        double v3mv4 = v3-v4;
 
         retVal = (d4*f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4*(f1 + f2 + f3 + f4) + f34*f42*v1 - 3*f32*f44*v1 + 2*f3*f45*v1 + f14*f32*v2 - f12*f34*v2 - 2*f14*f3*f4*v2 + 2*f1*f34*f4*v2 + f14*f42*v2 - f34*f42*v2 +
         4*f12*f3*f43*v2 - 4*f1*f32*f43*v2 - 3*f12*f44*v2 + 3*f32*f44*v2 + 2*f1*f45*v2 - 2*f3*f45*v2 - f14*f42*v3 + 3*f12*f44*v3 - 2*f1*f45*v3 +
@@ -1196,33 +1120,27 @@ static double IMRPhenomXHM_Intermediate_Amp_delta3(double d1, double d4, double 
       case 1042:   //4th order poly: v1,d1, v2,d2, v3  // used for the first intermediate region
       {
 
-        UNUSED double f12 = f1*f1;
-        UNUSED double f13 = f12*f1;
-        UNUSED double f14 = f13*f1;
-        UNUSED double f15 = f14*f1;
+        double f12 = f1*f1;
+        double f13 = f12*f1;
+        double f14 = f13*f1;
 
-        UNUSED double f42 = f4*f4;
-        UNUSED double f43 = f42*f4;
-        UNUSED double f44 = f43*f4;
-        UNUSED double f45 = f44*f4;
+        double f42 = f4*f4;
+        double f43 = f42*f4;
+        double f44 = f43*f4;
 
-        UNUSED double f32 = f3*f3;
-        UNUSED double f33 = f32*f3;
-        UNUSED double f34 = f33*f3;
+        double f32 = f3*f3;
+        double f33 = f32*f3;
+        double f34 = f33*f3;
 
-        UNUSED double f1mf4 = f1-f4;
-        UNUSED double f1mf3 = f1-f3;
-        UNUSED double f3mf4 = f3-f4;
+        double f1mf4 = f1-f4;
+        double f1mf3 = f1-f3;
+        double f3mf4 = f3-f4;
 
-        UNUSED double f1mf42 = f1mf4*f1mf4;
-        UNUSED double f1mf32 = f1mf3*f1mf3;
-        UNUSED double f3mf42 = f3mf4*f3mf4;
+        double f1mf42 = f1mf4*f1mf4;
+        double f1mf32 = f1mf3*f1mf3;
+        double f3mf42 = f3mf4*f3mf4;
 
-        UNUSED double f1mf43 = f1mf42*f1mf4;
-
-        UNUSED double v1mv4 = v1-v4;
-        UNUSED double v1mv3 = v1-v3;
-        UNUSED double v3mv4 = v3-v4;
+        double f1mf43 = f1mf42*f1mf4;
 
         retVal = (2*d4*f14*f3 - d1*f13*f32 - 3*d4*f13*f32 + d1*f1*f34 + d4*f1*f34 - 2*d4*f14*f4 + 2*d1*f13*f3*f4 + 2*d4*f13*f3*f4 - d1*f12*f32*f4 + d4*f12*f32*f4 - d1*f34*f4 - d4*f34*f4 - d1*f13*f42 + d4*f13*f42 +
           2*d1*f12*f3*f42 - 2*d4*f12*f3*f42 - d1*f1*f32*f42 + d4*f1*f32*f42 - d1*f12*f43 + d4*f12*f43 - 2*d1*f1*f3*f43 - 2*d4*f1*f3*f43 + 3*d1*f32*f43 + d4*f32*f43 + 2*d1*f1*f44 - 2*d1*f3*f44 +
@@ -1233,36 +1151,25 @@ static double IMRPhenomXHM_Intermediate_Amp_delta3(double d1, double d4, double 
         case 104:  //Geraint's Version, 4th order poly: v1,d1, v2,d2, v3
         {
 
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
+          double f14 = f13*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
+          double f24 = f23*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
+          double f44 = f43*f4;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
+          double f1mf2 = f1-f2;
+          double f1mf4 = f1-f4;
+          double f2mf4 = f2-f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
-
-          UNUSED double f1mf22 = f1mf2*f1mf2;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf32 = f2mf3*f2mf3;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
-          UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+          double f1mf22 = f1mf2*f1mf2;
+          double f2mf42 = f2mf4*f2mf4;
+          double f1mf43 = f1mf4*f1mf4*f1mf4;
 
           retVal = ((d4*f1mf22*f1mf4*f2mf4*(2*f1 + f2 + f4) - d1*f1mf2*f1mf4*f2mf42*(f1 + f2 + 2*f4)
           + 2*(f44*(-v1 + v2) + 2*f12*f2mf42*(v1 - v4) + 2*f22*f42*(v1 - v4)
@@ -1273,48 +1180,42 @@ static double IMRPhenomXHM_Intermediate_Amp_delta3(double d1, double d4, double 
         }
         case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
-          UNUSED double f15 = f14*f1;
-          UNUSED double f16 = f15*f1;
-          UNUSED double f17 = f16*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
+          double f14 = f13*f1;
+          double f15 = f14*f1;
+          double f16 = f15*f1;
+          double f17 = f16*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
-          UNUSED double f25 = f24*f2;
-          UNUSED double f26 = f25*f2;
-          UNUSED double f27 = f26*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
+          double f24 = f23*f2;
+          double f25 = f24*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
-          UNUSED double f35 = f34*f3;
-          UNUSED double f36 = f35*f3;
-          UNUSED double f37 = f36*f3;
+          double f32 = f3*f3;
+          double f33 = f32*f3;
+          double f34 = f33*f3;
+          double f35 = f34*f3;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
-          UNUSED double f45 = f44*f4;
-          UNUSED double f46 = f45*f4;
-          UNUSED double f47 = f46*f4;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
+          double f44 = f43*f4;
+          double f45 = f44*f4;
+          double f46 = f45*f4;
+          double f47 = f46*f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
+          double f1mf2 = f1-f2;
+          double f1mf3 = f1-f3;
+          double f1mf4 = f1-f4;
+          double f2mf3 = f2-f3;
+          double f2mf4 = f2-f4;
+          double f3mf4 = f3-f4;
 
-          UNUSED double f1mf22 = f1mf2*f1mf2;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf32 = f2mf3*f2mf3;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
-          UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+          double f1mf22 = f1mf2*f1mf2;
+          double f1mf32 = f1mf3*f1mf3;
+          double f2mf42 = f2mf4*f2mf4;
+          double f3mf42 = f3mf4*f3mf4;
+          double f1mf43 = f1mf4*f1mf4*f1mf4;
 
           retVal = (
             (d4*f1mf22*f1mf32*f1mf4*f2mf3*f2mf4*f3mf4*(f12 + f2*f3 + (f2 + f3)*f4 + 2*f1*(f2 + f3 + f4)) + d1*f1mf2*f1mf3*f1mf4*f2mf3*f2mf42*f3mf42*(f1*f2 + f1*f3 + f2*f3 + 2*(f1 + f2 + f3)*f4 + f42) -
@@ -1372,37 +1273,33 @@ static double IMRPhenomXHM_Intermediate_Amp_delta4(double d1, double d4, double 
         }
         case 1043:  //no left derivative: v1, v2, v3, v4, d4
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
+          double f32 = f3*f3;
+          double f33 = f32*f3;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
+          double f44 = f43*f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
+          double f1mf2 = f1-f2;
+          double f1mf3 = f1-f3;
+          double f1mf4 = f1-f4;
+          double f2mf3 = f2-f3;
+          double f2mf4 = f2-f4;
+          double f3mf4 = f3-f4;
 
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
+          double f1mf42 = f1mf4*f1mf4;
+          double f2mf42 = f2mf4*f2mf4;
+          double f3mf42 = f3mf4*f3mf4;
 
-          UNUSED double v1mv2 = v1-v2;
-          UNUSED double v2mv3 = v2-v3;
-          UNUSED double v2mv4 = v2-v4;
-          UNUSED double v1mv3 = v1-v3;
-          UNUSED double v1mv4 = v1-v4;
-          UNUSED double v3mv4 = v3-v4;
+          double v1mv3 = v1-v3;
+          double v1mv4 = v1-v4;
+          double v3mv4 = v3-v4;
 
           retVal = (-(d4*f1mf2*f1mf3*f1mf4*f2mf3*f2mf4*f3mf4) - f33*f42*v1 + 2*f32*f43*v1 - f3*f44*v1 - f13*f32*v2 + f12*f33*v2 + 2*f13*f3*f4*v2 - 2*f1*f33*f4*v2 - f13*f42*v2 - 3*f12*f3*f42*v2 + 3*f1*f32*f42*v2 +
           f33*f42*v2 + 2*f12*f43*v2 - 2*f32*f43*v2 - f1*f44*v2 + f3*f44*v2 + f13*f42*v3 - 2*f12*f43*v3 + f1*f44*v3 + f23*(f42*v1mv3 + f32*v1mv4 - 2*f3*f4*v1mv4 - f12*v3mv4 + 2*f1*f4*v3mv4) +
@@ -1412,29 +1309,24 @@ static double IMRPhenomXHM_Intermediate_Amp_delta4(double d1, double d4, double 
         }
         case 1042:   //4th order poly: v1,d1, v2,d2, v3   // used for the first intermediate region
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
-          UNUSED double f15 = f14*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
-          UNUSED double f45 = f44*f4;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
+          double f32 = f3*f3;
+          double f33 = f32*f3;
 
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f3mf4 = f3-f4;
+          double f1mf4 = f1-f4;
+          double f1mf3 = f1-f3;
+          double f3mf4 = f3-f4;
 
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
+          double f1mf42 = f1mf4*f1mf4;
+          double f1mf32 = f1mf3*f1mf3;
+          double f3mf42 = f3mf4*f3mf4;
 
-          UNUSED double f1mf43 = f1mf42*f1mf4;
+          double f1mf43 = f1mf42*f1mf4;
 
           retVal = (-(d4*f1mf32*f1mf4*f3mf4) + d1*f1mf3*f1mf4*f3mf42 - 3*f1*f32*v1 + 2*f33*v1 + 6*f1*f3*f4*v1 - 3*f32*f4*v1 - 3*f1*f42*v1 + f43*v1 + f13*v3 - 3*f12*f4*v3 + 3*f1*f42*v3 - f43*v3 -
           f1mf32*(f1 + 2*f3 - 3*f4)*v4)/(f1mf32*f1mf43*f3mf42);
@@ -1442,36 +1334,22 @@ static double IMRPhenomXHM_Intermediate_Amp_delta4(double d1, double d4, double 
         }
         case 104:  //Geraint's Version, 4th order poly: v1,d1, v2, v4,d4
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
+          double f1mf2 = f1-f2;
+          double f1mf4 = f1-f4;
+          double f2mf4 = f2-f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
-
-          UNUSED double f1mf22 = f1mf2*f1mf2;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf32 = f2mf3*f2mf3;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
-          UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+          double f1mf22 = f1mf2*f1mf2;
+          double f2mf42 = f2mf4*f2mf4;
+          double f1mf43 = f1mf4*f1mf4*f1mf4;
 
           retVal = ((-(d4*f1mf22*f1mf4*f2mf4) + d1*f1mf2*f1mf4*f2mf42 - 3*f1*f22*v1 + 2*f23*v1 + 6*f1*f2*f4*v1 - 3*f22*f4*v1
           - 3*f1*f42*v1 + f43*v1 + f13*v2 - 3*f12*f4*v2 + 3*f1*f42*v2 - f43*v2 - f1mf22*(f1 + 2*f2 - 3*f4)*v4)/(f1mf22*f1mf43*f2mf42));
@@ -1480,48 +1358,40 @@ static double IMRPhenomXHM_Intermediate_Amp_delta4(double d1, double d4, double 
         }
         case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
-          UNUSED double f15 = f14*f1;
-          UNUSED double f16 = f15*f1;
-          UNUSED double f17 = f16*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
+          double f14 = f13*f1;
+          double f15 = f14*f1;
+          double f16 = f15*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
-          UNUSED double f25 = f24*f2;
-          UNUSED double f26 = f25*f2;
-          UNUSED double f27 = f26*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
+          double f24 = f23*f2;
+          double f25 = f24*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
-          UNUSED double f35 = f34*f3;
-          UNUSED double f36 = f35*f3;
-          UNUSED double f37 = f36*f3;
+          double f32 = f3*f3;
+          double f33 = f32*f3;
+          double f34 = f33*f3;
+          double f35 = f34*f3;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
-          UNUSED double f45 = f44*f4;
-          UNUSED double f46 = f45*f4;
-          UNUSED double f47 = f46*f4;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
+          double f44 = f43*f4;
+          double f45 = f44*f4;
+          double f46 = f45*f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
+          double f1mf2 = f1-f2;
+          double f1mf3 = f1-f3;
+          double f1mf4 = f1-f4;
+          double f2mf3 = f2-f3;
+          double f2mf4 = f2-f4;
+          double f3mf4 = f3-f4;
 
-          UNUSED double f1mf22 = f1mf2*f1mf2;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf32 = f2mf3*f2mf3;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
-          UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+          double f1mf22 = f1mf2*f1mf2;
+          double f1mf32 = f1mf3*f1mf3;
+          double f2mf42 = f2mf4*f2mf4;
+          double f3mf42 = f3mf4*f3mf4;
+          double f1mf43 = f1mf4*f1mf4*f1mf4;
 
           retVal = (
             (-(d4*f1mf22*f1mf32*f1mf4*f2mf3*f2mf4*f3mf4*(2*f1 + f2 + f3 + f4)) - d1*f1mf2*f1mf3*f1mf4*f2mf3*f2mf42*f3mf42*(f1 + f2 + f3 + 2*f4) + 5*f13*f23*f32*v1 - 3*f1*f25*f32*v1 - 5*f13*f22*f33*v1 +
@@ -1594,48 +1464,36 @@ static double IMRPhenomXHM_Intermediate_Amp_delta5(double d1, double d4, double 
         }
         case 105: // Geraint, standard way: v1, v2, v3, v4, d1, d4
         {
-          UNUSED double f12 = f1*f1;
-          UNUSED double f13 = f12*f1;
-          UNUSED double f14 = f13*f1;
-          UNUSED double f15 = f14*f1;
-          UNUSED double f16 = f15*f1;
-          UNUSED double f17 = f16*f1;
+          double f12 = f1*f1;
+          double f13 = f12*f1;
+          double f14 = f13*f1;
+          double f15 = f14*f1;
 
-          UNUSED double f22 = f2*f2;
-          UNUSED double f23 = f22*f2;
-          UNUSED double f24 = f23*f2;
-          UNUSED double f25 = f24*f2;
-          UNUSED double f26 = f25*f2;
-          UNUSED double f27 = f26*f2;
+          double f22 = f2*f2;
+          double f23 = f22*f2;
+          double f24 = f23*f2;
 
-          UNUSED double f32 = f3*f3;
-          UNUSED double f33 = f32*f3;
-          UNUSED double f34 = f33*f3;
-          UNUSED double f35 = f34*f3;
-          UNUSED double f36 = f35*f3;
-          UNUSED double f37 = f36*f3;
+          double f32 = f3*f3;
+          double f33 = f32*f3;
+          double f34 = f33*f3;
 
-          UNUSED double f42 = f4*f4;
-          UNUSED double f43 = f42*f4;
-          UNUSED double f44 = f43*f4;
-          UNUSED double f45 = f44*f4;
-          UNUSED double f46 = f45*f4;
-          UNUSED double f47 = f46*f4;
+          double f42 = f4*f4;
+          double f43 = f42*f4;
+          double f44 = f43*f4;
+          double f45 = f44*f4;
 
-          UNUSED double f1mf2 = f1-f2;
-          UNUSED double f1mf3 = f1-f3;
-          UNUSED double f1mf4 = f1-f4;
-          UNUSED double f2mf3 = f2-f3;
-          UNUSED double f2mf4 = f2-f4;
-          UNUSED double f3mf4 = f3-f4;
+          double f1mf2 = f1-f2;
+          double f1mf3 = f1-f3;
+          double f1mf4 = f1-f4;
+          double f2mf3 = f2-f3;
+          double f2mf4 = f2-f4;
+          double f3mf4 = f3-f4;
 
-          UNUSED double f1mf22 = f1mf2*f1mf2;
-          UNUSED double f1mf32 = f1mf3*f1mf3;
-          UNUSED double f1mf42 = f1mf4*f1mf4;
-          UNUSED double f2mf32 = f2mf3*f2mf3;
-          UNUSED double f2mf42 = f2mf4*f2mf4;
-          UNUSED double f3mf42 = f3mf4*f3mf4;
-          UNUSED double f1mf43 = f1mf4*f1mf4*f1mf4;
+          double f1mf22 = f1mf2*f1mf2;
+          double f1mf32 = f1mf3*f1mf3;
+          double f2mf42 = f2mf4*f2mf4;
+          double f3mf42 = f3mf4*f3mf4;
+          double f1mf43 = f1mf4*f1mf4*f1mf4;
 
           retVal = (
             (d4*f1mf22*f1mf32*f1mf4*f2mf3*f2mf4*f3mf4 + d1*f1mf2*f1mf3*f1mf4*f2mf3*f2mf42*f3mf42 - 4*f12*f23*f32*v1 + 3*f1*f24*f32*v1 + 4*f12*f22*f33*v1 - 2*f24*f33*v1 - 3*f1*f22*f34*v1 + 2*f23*f34*v1 +
