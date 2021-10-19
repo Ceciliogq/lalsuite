@@ -419,103 +419,132 @@ static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double S, double chi1,
 }
 
 /**************** 32 specific fits ***************/
-static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double S, double chi1, double chi2, UNUSED int RDPhaseFlag) {
-
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,eta3,eta4,eta5,S2,S3,S4;
-    eta2 = pow(eta,2);
-    eta3 = pow(eta,3);
-    eta4 = pow(eta,4);
-    eta5 = pow(eta,5);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    double noSpin = 11.851438981981772 + 167.95086712701223*eta - 4565.033758777737*eta2 + 61559.132976189896*eta3 - 364129.24735853914*eta4 + 739270.8814129328*eta5;
-    double eqSpin = (9.506768471271634 + 434.31707030999445*eta - 8046.364492927503*eta2 + 26929.677144312944*eta3)*S + (-5.949655484033632 - 307.67253970367034*eta + 1334.1062451631644*eta2 + 3575.347142399199*eta3)*S2 + (3.4881615575084797 - 2244.4613237912527*eta + 24145.932943269272*eta2 - 60929.87465551446*eta3)*S3 + (15.585154698977842 - 2292.778112523392*eta + 24793.809334683185*eta2 - 65993.84497923202*eta3)*S4;
-    double uneqSpin = 465.7904934097202*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            eta3 = pow(eta,3);
+            eta4 = pow(eta,4);
+            eta5 = pow(eta,5);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            double noSpin = 11.851438981981772 + 167.95086712701223*eta - 4565.033758777737*eta2 + 61559.132976189896*eta3 - 364129.24735853914*eta4 + 739270.8814129328*eta5;
+            double eqSpin = (9.506768471271634 + 434.31707030999445*eta - 8046.364492927503*eta2 + 26929.677144312944*eta3)*S + (-5.949655484033632 - 307.67253970367034*eta + 1334.1062451631644*eta2 + 3575.347142399199*eta3)*S2 + (3.4881615575084797 - 2244.4613237912527*eta + 24145.932943269272*eta2 - 60929.87465551446*eta3)*S3 + (15.585154698977842 - 2292.778112523392*eta + 24793.809334683185*eta2 - 65993.84497923202*eta3)*S4;
+            double uneqSpin = 465.7904934097202*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 
-static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double S, double chi1, double chi2, UNUSED int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
-    eta2 = pow(eta,2);
-    eta3 = pow(eta,3);
-    eta4 = pow(eta,4);
-    eta5 = pow(eta,5);
-    eta6 = pow(eta,6);
-    eta7 = pow(eta,7);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    double noSpin = -1.3328895897490733 - 22.209549522908667*eta + 1056.2426481245027*eta2 - 21256.376324666326*eta3 + 246313.12887984765*eta4 - 1.6312968467540336e6*eta5 + 5.614617173188322e6*eta6 - 7.612233821752137e6*eta7;
-    double eqSpin = (S*(-1.622727240110213 + 0.9960210841611344*S - 1.1239505323267036*S2 - 1.9586085340429995*S3 + eta2*(196.7055281997748 + 135.25216875394943*S + 1086.7504825459278*S2 + 546.6246807461155*S3 - 312.1010566468068*S4) + 0.7638287749489343*S4 + eta*(-47.475568056234245 - 35.074072557604445*S - 97.16014978329918*S2 - 34.498125910065156*S3 + 24.02858084544326*S4) + eta3*(62.632493533037625 - 22.59781899512552*S - 2683.947280170815*S2 - 1493.177074873678*S3 + 805.0266029288334*S4)))/(-2.950271397057221 + 1.*S);
-    double uneqSpin = (sqrt(1. - 4.*eta)*(chi2*pow(eta,2.5)*(88.56162028006072 - 30.01812659282717*S) + chi2*eta2*(43.126266433486435 - 14.617728550838805*S) + chi1*eta2*(-43.126266433486435 + 14.617728550838805*S) + chi1*pow(eta,2.5)*(-88.56162028006072 + 30.01812659282717*S)))/(-2.950271397057221 + 1.*S);
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            eta3 = pow(eta,3);
+            eta4 = pow(eta,4);
+            eta5 = pow(eta,5);
+            eta6 = pow(eta,6);
+            eta7 = pow(eta,7);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            double noSpin = -1.3328895897490733 - 22.209549522908667*eta + 1056.2426481245027*eta2 - 21256.376324666326*eta3 + 246313.12887984765*eta4 - 1.6312968467540336e6*eta5 + 5.614617173188322e6*eta6 - 7.612233821752137e6*eta7;
+            double eqSpin = (S*(-1.622727240110213 + 0.9960210841611344*S - 1.1239505323267036*S2 - 1.9586085340429995*S3 + eta2*(196.7055281997748 + 135.25216875394943*S + 1086.7504825459278*S2 + 546.6246807461155*S3 - 312.1010566468068*S4) + 0.7638287749489343*S4 + eta*(-47.475568056234245 - 35.074072557604445*S - 97.16014978329918*S2 - 34.498125910065156*S3 + 24.02858084544326*S4) + eta3*(62.632493533037625 - 22.59781899512552*S - 2683.947280170815*S2 - 1493.177074873678*S3 + 805.0266029288334*S4)))/(-2.950271397057221 + 1.*S);
+            double uneqSpin = (sqrt(1. - 4.*eta)*(chi2*pow(eta,2.5)*(88.56162028006072 - 30.01812659282717*S) + chi2*eta2*(43.126266433486435 - 14.617728550838805*S) + chi1*eta2*(-43.126266433486435 + 14.617728550838805*S) + chi1*pow(eta,2.5)*(-88.56162028006072 + 30.01812659282717*S)))/(-2.950271397057221 + 1.*S);
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double S, double chi1, double chi2, UNUSED int RingdownPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,eta3,eta4,eta5,S2,S3,S4,S5;
-    eta2 = pow(eta,2);
-    eta3 = pow(eta,3);
-    eta4 = pow(eta,4);
-    eta5 = pow(eta,5);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    S5 = pow(S,5);
-    double noSpin = 3169.372056189274 + 426.8372805022653*eta - 12569.748101922158*eta2 + 149846.7281073725*eta3 - 817182.2896823225*eta4 + 1.5674053633767858e6*eta5;
-    double eqSpin = (19.23408352151287 - 1762.6573670619173*eta + 7855.316419853637*eta2 - 3785.49764771212*eta3)*S + (-42.88446003698396 + 336.8340966473415*eta - 5615.908682338113*eta2 + 20497.5021807654*eta3)*S2 + (13.918237996338371 + 10145.53174542332*eta - 91664.12621864353*eta2 + 201204.5096556517*eta3)*S3 + (-24.72321125342808 - 4901.068176970293*eta + 53893.9479532688*eta2 - 139322.02687945773*eta3)*S4 + (-61.01931672442576 - 16556.65370439302*eta + 162941.8009556697*eta2 - 384336.57477596396*eta3)*S5;
-    double uneqSpin = (chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2*(641.2473192044652 - 1600.240100295189*chi1*eta + 1600.240100295189*chi2*eta + 13275.623692212472*eta*S);
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            eta3 = pow(eta,3);
+            eta4 = pow(eta,4);
+            eta5 = pow(eta,5);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            S5 = pow(S,5);
+            double noSpin = 3169.372056189274 + 426.8372805022653*eta - 12569.748101922158*eta2 + 149846.7281073725*eta3 - 817182.2896823225*eta4 + 1.5674053633767858e6*eta5;
+            double eqSpin = (19.23408352151287 - 1762.6573670619173*eta + 7855.316419853637*eta2 - 3785.49764771212*eta3)*S + (-42.88446003698396 + 336.8340966473415*eta - 5615.908682338113*eta2 + 20497.5021807654*eta3)*S2 + (13.918237996338371 + 10145.53174542332*eta - 91664.12621864353*eta2 + 201204.5096556517*eta3)*S3 + (-24.72321125342808 - 4901.068176970293*eta + 53893.9479532688*eta2 - 139322.02687945773*eta3)*S4 + (-61.01931672442576 - 16556.65370439302*eta + 162941.8009556697*eta2 - 384336.57477596396*eta3)*S5;
+            double uneqSpin = (chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2*(641.2473192044652 - 1600.240100295189*chi1*eta + 1600.240100295189*chi2*eta + 13275.623692212472*eta*S);
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p1: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double S, double chi1, double chi2, UNUSED int RingdownPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,eta3,S2,S3,S4;
-    eta2 = pow(eta,2);
-    eta3 = pow(eta,3);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    double noSpin = 3131.0260952676376 + 206.09687819102305*eta - 2636.4344627081873*eta2 + 7475.062269742079*eta3;
-    double eqSpin = (49.90874152040307 - 691.9815135740145*eta - 434.60154548208334*eta2 + 10514.68111669422*eta3)*S + (97.3078084654917 - 3458.2579971189534*eta + 26748.805404989867*eta2 - 56142.13736008524*eta3)*S2 + (-132.49105074500454 + 429.0787542102207*eta + 7269.262546204149*eta2 - 27654.067482558712*eta3)*S3 + (-227.8023564332453 + 5119.138772157134*eta - 34444.2579678986*eta2 + 69666.01833764123*eta3)*S4;
-    double uneqSpin = 477.51566939885424*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            eta3 = pow(eta,3);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            double noSpin = 3131.0260952676376 + 206.09687819102305*eta - 2636.4344627081873*eta2 + 7475.062269742079*eta3;
+            double eqSpin = (49.90874152040307 - 691.9815135740145*eta - 434.60154548208334*eta2 + 10514.68111669422*eta3)*S + (97.3078084654917 - 3458.2579971189534*eta + 26748.805404989867*eta2 - 56142.13736008524*eta3)*S2 + (-132.49105074500454 + 429.0787542102207*eta + 7269.262546204149*eta2 - 27654.067482558712*eta3)*S3 + (-227.8023564332453 + 5119.138772157134*eta - 34444.2579678986*eta2 + 69666.01833764123*eta3)*S4;
+            double uneqSpin = 477.51566939885424*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p2: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double S, double chi1, double chi2, UNUSED int RingdownPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,eta3,S2,S3,S4;
-    eta2 = pow(eta,2);
-    eta3 = pow(eta,3);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    double noSpin = 3082.803556599222 + 76.94679795837645*eta - 586.2469821978381*eta2 + 977.6115755788503*eta3;
-    double eqSpin = (45.08944710349874 - 807.7353772747749*eta + 1775.4343704616288*eta2 + 2472.6476419567534*eta3)*S + (95.57355060136699 - 2224.9613131172046*eta + 13821.251641893134*eta2 - 25583.314298758105*eta3)*S2 + (-144.96370424517866 + 2268.4693587493093*eta - 10971.864789147161*eta2 + 16259.911572457446*eta3)*S3 + (-227.8023564332453 + 5119.138772157134*eta - 34444.2579678986*eta2 + 69666.01833764123*eta3)*S4;
-    double uneqSpin = 378.2359918274837*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            eta3 = pow(eta,3);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            double noSpin = 3082.803556599222 + 76.94679795837645*eta - 586.2469821978381*eta2 + 977.6115755788503*eta3;
+            double eqSpin = (45.08944710349874 - 807.7353772747749*eta + 1775.4343704616288*eta2 + 2472.6476419567534*eta3)*S + (95.57355060136699 - 2224.9613131172046*eta + 13821.251641893134*eta2 - 25583.314298758105*eta3)*S2 + (-144.96370424517866 + 2268.4693587493093*eta - 10971.864789147161*eta2 + 16259.911572457446*eta3)*S3 + (-227.8023564332453 + 5119.138772157134*eta - 34444.2579678986*eta2 + 69666.01833764123*eta3)*S4;
+            double uneqSpin = 378.2359918274837*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p3: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double S, double chi1, double chi2, UNUSED int RingdownPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
     double total,eta2,S2,S3,S4;
-    eta2 = pow(eta,2);
-    S2 = pow(S,2);
-    S3 = pow(S,3);
-    S4 = pow(S,4);
-    double noSpin = 3077.0657367004565 + 64.99844502520415*eta - 357.38692756785395*eta2;
-    double eqSpin = (34.793450080444714 - 986.7751755509875*eta - 9490.641676924794*pow(eta,3) + 5700.682624203565*eta2)*S + (57.38106384558743 - 1644.6690499868596*eta - 19906.416384606226*pow(eta,3) + 11008.881935880598*eta2)*S2 + (-126.02362949830213 + 3169.3397351803583*eta + 62863.79877094988*pow(eta,3) - 26766.730897942085*eta2)*S3 + (-169.30909412804587 + 4900.706039920717*eta + 95314.99988114933*pow(eta,3) - 41414.05689348732*eta2)*S4;
-    double uneqSpin = 390.5443469721231*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
-    total = noSpin + eqSpin + uneqSpin;
-
+    switch (RDPhaseFlag){
+        case 122019:{
+            eta2 = pow(eta,2);
+            S2 = pow(S,2);
+            S3 = pow(S,3);
+            S4 = pow(S,4);
+            double noSpin = 3077.0657367004565 + 64.99844502520415*eta - 357.38692756785395*eta2;
+            double eqSpin = (34.793450080444714 - 986.7751755509875*eta - 9490.641676924794*pow(eta,3) + 5700.682624203565*eta2)*S + (57.38106384558743 - 1644.6690499868596*eta - 19906.416384606226*pow(eta,3) + 11008.881935880598*eta2)*S2 + (-126.02362949830213 + 3169.3397351803583*eta + 62863.79877094988*pow(eta,3) - 26766.730897942085*eta2)*S3 + (-169.30909412804587 + 4900.706039920717*eta + 95314.99988114933*pow(eta,3) - 41414.05689348732*eta2)*S4;
+            double uneqSpin = 390.5443469721231*(chi1 - 1.*chi2)*sqrt(1. - 4.*eta)*eta2;
+            total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p4: version is not valid. Recommended version is 122019.");}
+    }
     return total;
 }
 
