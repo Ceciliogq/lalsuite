@@ -46,9 +46,10 @@
 
 
 static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,S2;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,S2;
       eta2 = pow(eta,2);
       S2 = pow(S,2);
       double noSpin = sqrt(eta - 4.*eta2)*(21.256776327599113 - 25.594352690383847*eta + 30.14761650482866*eta2);
@@ -63,10 +64,10 @@ static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, eta2;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
-      eta2 = pow(eta,2);
+      double eta2 = pow(eta,2);
       double noSpin = sqrt(eta - 4.*eta2)*(19.15445065708005 - 21.13596229438309*eta + 29.742565944285772*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(-12.766814596085734 - 2.123816950673979*S + eta*(-2.913184982025043 + 6.006571549661901*S));
       double uneqSpin = -25.856046423804255*(chi1 - 1.*chi2)*eta2*(1. + 5.7871199275552*eta2);
@@ -79,9 +80,10 @@ static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, eta2,eta3,eta4,eta6;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3,eta4,eta6;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
@@ -98,9 +100,10 @@ static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, eta2,eta6;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta6;
       eta2 = pow(eta,2);
       eta6 = pow(eta,6);
       double noSpin = sqrt(eta - 4.*eta2)*(20.162169689041903 - 18.666422946967764*eta + 53.04107631052987*eta2);
@@ -115,9 +118,10 @@ static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
@@ -135,9 +139,10 @@ static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
@@ -154,9 +159,10 @@ static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
@@ -172,9 +178,10 @@ static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       eta4 = pow(eta,4);
@@ -193,9 +200,10 @@ static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, 
 Fits for the extra collocation point for EMR cases with 2 intermediate regions
 */
 static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       double noSpin = 0.872895771366973 + 441.76285124642845*eta - 24617.068739152524*eta2 + 518054.9485981792*eta3;
@@ -210,9 +218,10 @@ static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       double noSpin = -0.8535048463050732 - 93.1876950411214*eta + 13641.071903017495*eta2 - 337621.44851304166*eta3;
@@ -227,9 +236,10 @@ static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1,
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       double noSpin = 1.5852399637975103 + 549.5183711492834*eta - 34257.76380246282*eta2 + 743142.8286902909*eta3;
@@ -244,9 +254,10 @@ static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       double noSpin = -4.691600252198376 + 101.4338937535679*eta + 9262.994550540048*eta2 - 310993.1309846956*eta3;
@@ -261,9 +272,10 @@ static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1,
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3,S2,S3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3,S2,S3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       S2 = pow(S,2);
@@ -280,9 +292,10 @@ static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       double noSpin = -0.3391808620221253 - 14.604141885467747*eta + 3694.1706648870427*eta2 - 95482.02951271653*eta3;
@@ -297,9 +310,10 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1,
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2,eta3,S2,S3;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double eta2,eta3,S2,S3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
       S2 = pow(S,2);
@@ -316,10 +330,10 @@ static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
-  double total=0,eta2;
+  double total=0;
   switch (InterAmpFlag){
     case 122018:{
-      eta2 = pow(eta,2);
+      double eta2 = pow(eta,2);
       double noSpin = -1.796444922382065 + 111.51170611049032*eta - 1728.7493675776548*eta2;
       double eqSpin = S*(-1.842119860613924 + eta2*(-11235.484645624338 - 2927.019210835522*S) - 0.36655273031432567*S + eta*(312.34531117524097 + 128.64488103364167*S));
       double uneqSpin = 0.*(chi1+chi2);
@@ -2055,11 +2069,11 @@ void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficien
 // Fits of phase derivatives at collocation points for each mode
 
 static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     //double delta=sqrt(1-4.*eta);
     switch (InterPhaseFlag){
         case 122019:{
-
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2080,9 +2094,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2101,9 +2116,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2124,9 +2140,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2147,9 +2164,10 @@ static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double S, double chi1, 
 
 
 static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = eta2*eta;
             eta4 = eta3*eta;
@@ -2170,9 +2188,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2191,9 +2210,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2214,9 +2234,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2237,10 +2258,11 @@ static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double S, double chi1, 
 
 
 static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     double delta=sqrt(1.-4*eta);
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = eta2*eta;
             eta4 = eta2*eta2;
@@ -2261,9 +2283,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2282,9 +2305,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2305,9 +2329,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4, eta5, eta6, S2, S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4, eta5, eta6, S2, S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2328,10 +2353,10 @@ static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double S, double chi1, 
 
 
 static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
-    //double delta=sqrt(1.-4.*eta);
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2352,9 +2377,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5, eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5, eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2374,9 +2400,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2397,9 +2424,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2420,9 +2448,10 @@ static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double S, double chi1, 
 
 
 static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0, eta2,eta3,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             S2 = pow(S,2);
@@ -2440,9 +2469,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2462,9 +2492,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2486,9 +2517,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,eta7,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2510,9 +2542,10 @@ static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double S, double chi1, 
 
 
 static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             S2 = pow(S,2);
@@ -2530,9 +2563,10 @@ static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3, eta4, eta5, eta6,S2,S3;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3, eta4, eta5, eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2552,9 +2586,10 @@ static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0,eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
+    double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -2576,9 +2611,10 @@ static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double S, double chi1, 
 }
 
 static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
-    double total=0.,eta2,eta3,eta4,eta5,eta6,S2,S3;
+    double total=0.;
     switch (InterPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);

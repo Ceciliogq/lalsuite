@@ -46,9 +46,10 @@
 
 
 static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, eta2,eta3,eta4,eta5,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double eta2,eta3,eta4,eta5,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -66,9 +67,10 @@ static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -85,9 +87,10 @@ static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,S2;
             eta2 = pow(eta,2);
             S2 = pow(S,2);
             double noSpin = sqrt(1. - 4.*eta)*(0.059110044024271766 - 0.0024538774422098405*eta + 0.2428578654261086*eta2);
@@ -102,9 +105,10 @@ static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, eta2,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double eta2,S2;
             eta2 = pow(eta,2);
             S2 = pow(S,2);
             double noSpin = (sqrt(1. - 4.*eta)*(-0.056586690934283326 - 0.14374841547279146*eta + 0.5584776628959615*eta2))/(-0.3996185676368123 + eta);
@@ -119,9 +123,10 @@ static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, eta2,eta3,eta4,eta5,eta6,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -140,9 +145,10 @@ static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, eta2,eta3,eta4,eta5,eta6,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -161,9 +167,10 @@ static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-  double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta8,S2,S3;
+  double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta8,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -184,9 +191,10 @@ static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta8,S2,S3;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta8,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -205,9 +213,10 @@ static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta8,S2,S3;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,eta8,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta8 = pow(eta,8);
@@ -225,9 +234,10 @@ static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, eta2,eta3,eta4,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double eta2,eta3,eta4,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -244,9 +254,10 @@ static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,S2,S3;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             S2 = pow(S,2);
@@ -263,9 +274,10 @@ static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta, double S, double chi1, do
 }
 
 static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag) {
-    double total=0, delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
+    double total=0;
     switch (InspAmpFlag){
         case 122018:{
+            double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -588,9 +600,10 @@ int WavyPoints(double p1, double p2, double p3){
 // Below we give paramater-space fits for the weighted difference between each mode's phase and the 22-phase: phi_lm-m/2 phi_22(2/m f), see Eqs. (4.10-4.12)
 
 static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag) {
-    double total,eta2,eta3,eta4,eta5,S2;
+    double total;
     switch (InspPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -608,10 +621,11 @@ static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta, double S, double chi
 }
 
 static double IMRPhenomXHM_Insp_Phase_33_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag) {
-    double total=0,eta2,eta3;
+    double total=0;
     double delta=sqrt(1. - 4.*eta);
     switch (InspPhaseFlag){
         case 122019:{
+            double eta2,eta3;
             eta2 = pow(eta,2);
             eta3 = eta2*eta;
             double noSpin = 4.1138398568400705 + 9.772510519809892*eta - 103.92956504520747*eta2 + 242.3428625556764*eta3;
@@ -626,9 +640,10 @@ static double IMRPhenomXHM_Insp_Phase_33_lambda(double eta, double S, double chi
 }
 
 static double IMRPhenomXHM_Insp_Phase_32_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag) {
-    double total,eta2,eta3,eta4,S2,S3,S4;
+    double total;
     switch (InspPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
@@ -648,9 +663,10 @@ static double IMRPhenomXHM_Insp_Phase_32_lambda(double eta, double S, double chi
 
 
 static double IMRPhenomXHM_Insp_Phase_44_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag) {
-    double total,eta2,eta3,eta4,eta5,S2;
+    double total;
     switch (InspPhaseFlag){
         case 122019:{
+            double eta2,eta3,eta4,eta5,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
             eta4 = pow(eta,4);
