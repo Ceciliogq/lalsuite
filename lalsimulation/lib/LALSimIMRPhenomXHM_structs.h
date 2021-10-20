@@ -54,7 +54,7 @@ typedef struct tagQNMFits {
 
 
 // General fit function. This is a type for defining the functions for the parameter space fits.
-typedef double (*ParameterSpaceFit) (double eta, double S, double chi1, double chi2, int flag);
+typedef double (*ParameterSpaceFit) (double eta, double chi1, double chi2, int flag);
 
 // Waveform struct.  Store useful variable specific of the higher modes that are not in 22 IMRPhenomXWaveformStruct or that need to be updated mode-by-mode. */
 typedef struct tagIMRPhenomXHMWaveformStruct

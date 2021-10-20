@@ -45,10 +45,11 @@
 // The dominant spin parameter is S = (m1^2*chi1 + m2^2*chi2)/(m1^2 + m2^2)
 
 
-static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,S2;
       eta2 = pow(eta,2);
       S2 = pow(S,2);
@@ -63,10 +64,11 @@ static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2 = pow(eta,2);
       double noSpin = sqrt(eta - 4.*eta2)*(19.15445065708005 - 21.13596229438309*eta + 29.742565944285772*eta2);
       double eqSpin = sqrt(eta - 4.*eta2)*S*(-12.766814596085734 - 2.123816950673979*S + eta*(-2.913184982025043 + 6.006571549661901*S));
@@ -79,10 +81,11 @@ static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3,eta4,eta6;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -99,10 +102,11 @@ static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta6;
       eta2 = pow(eta,2);
       eta6 = pow(eta,6);
@@ -117,10 +121,11 @@ static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -138,10 +143,11 @@ static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,S2;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -158,10 +164,11 @@ static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -177,10 +184,11 @@ static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -199,10 +207,11 @@ static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, 
 /*
 Fits for the extra collocation point for EMR cases with 2 intermediate regions
 */
-static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -217,10 +226,11 @@ static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -235,10 +245,11 @@ static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1,
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -253,10 +264,11 @@ static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -271,10 +283,11 @@ static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1,
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3,S2,S3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -291,10 +304,11 @@ static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -309,10 +323,11 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1,
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3,S2,S3;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -329,10 +344,11 @@ static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag) {
+static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double chi1, double chi2, int InterAmpFlag) {
   double total=0;
   switch (InterAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2 = pow(eta,2);
       double noSpin = -1.796444922382065 + 111.51170611049032*eta - 1728.7493675776548*eta2;
       double eqSpin = S*(-1.842119860613924 + eta2*(-11235.484645624338 - 2927.019210835522*S) - 0.36655273031432567*S + eta*(312.34531117524097 + 128.64488103364167*S));
@@ -2068,11 +2084,11 @@ void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficien
 
 // Fits of phase derivatives at collocation points for each mode
 
-static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
-    //double delta=sqrt(1-4.*eta);
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2093,10 +2109,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2115,10 +2132,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2139,10 +2157,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2163,10 +2182,11 @@ static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double S, double chi1, 
 }
 
 
-static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = eta2*eta;
@@ -2187,10 +2207,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2209,10 +2230,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2233,10 +2255,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2257,11 +2280,12 @@ static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double S, double chi1, 
 }
 
 
-static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     double delta=sqrt(1.-4*eta);
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = eta2*eta;
@@ -2282,10 +2306,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2304,10 +2329,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2328,10 +2354,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4, eta5, eta6, S2, S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2352,10 +2379,11 @@ static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double S, double chi1, 
 }
 
 
-static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2376,10 +2404,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5, eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2399,10 +2428,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2423,10 +2453,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2447,10 +2478,11 @@ static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double S, double chi1, 
 }
 
 
-static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2468,10 +2500,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2491,10 +2524,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2516,10 +2550,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2541,10 +2576,11 @@ static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double S, double chi1, 
 }
 
 
-static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2562,10 +2598,11 @@ static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3, eta4, eta5, eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2585,10 +2622,11 @@ static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -2610,10 +2648,11 @@ static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double S, double chi1, double chi2, int InterPhaseFlag) {
+static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double chi1, double chi2, int InterPhaseFlag) {
     double total=0.;
     switch (InterPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,S2,S3;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);

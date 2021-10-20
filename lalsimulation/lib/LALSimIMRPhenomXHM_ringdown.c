@@ -41,10 +41,11 @@
 // alambda, lambda and sigma are the coefficients of the ringdown ansatz, see Eq. (6.2)
 
 
-static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1. - 4.*eta),eta2,S2;
             eta2 = pow(eta,2);
             S2 = pow(S,2);
@@ -59,10 +60,11 @@ static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1. - 4.*eta), eta2;
             eta2 = pow(eta,2);
             double noSpin = 0.5566284518926176 + 0.12651770333481904*eta + 1.8084545267208734*eta2;
@@ -76,10 +78,11 @@ static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double S, double chi1, d
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double chi1, double chi2, int RDAmpFlag) {
   double total=0;
   switch (RDAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta4,delta=sqrt(1-4*eta);
       eta2 = pow(eta,2);
       eta4 = pow(eta,4);
@@ -94,10 +97,11 @@ static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double chi1, double chi2, int RDAmpFlag) {
   double total=0;
   switch (RDAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,S2,delta=sqrt(1-4*eta);
       eta2 = pow(eta,2);
       S2 = pow(S,2);
@@ -112,10 +116,11 @@ static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double S, double chi1, d
   return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double chi1, double chi2, int RDAmpFlag) {
   double total=0;
   switch (RDAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3,eta4,eta5,eta6;
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -133,10 +138,11 @@ static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double S, double chi1, 
   return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double chi1, double chi2, int RDAmpFlag) {
   double total=0;
   switch (RDAmpFlag){
     case 122018:{
+      double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
       double eta2,eta3,delta=sqrt(1.-4*eta);
       eta2 = pow(eta,2);
       eta3 = pow(eta,3);
@@ -151,10 +157,11 @@ static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double S, double chi1, d
   return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -172,10 +179,11 @@ static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double S, double chi1, 
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1. - 4.*eta),eta2,eta3,eta4,eta5,eta6,eta7;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -194,10 +202,11 @@ static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double S, double chi1, d
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1. - 4.*eta),eta2;
             eta2 = pow(eta,2);
             double noSpin = 1.2922261617161441 + 0.0019318405961363861*eta;
@@ -211,12 +220,12 @@ static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double S, double chi1, do
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.3;
-            double eqSpin = 0.*eta*S*chi1*chi2;
+            double eqSpin = 0.*eta*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;
@@ -226,12 +235,12 @@ static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double S, double chi1, do
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
-            double eqSpin = 0.*eta*S*chi1*chi2;
+            double eqSpin = 0.*eta*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;
@@ -241,12 +250,12 @@ static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double S, double chi1, do
     return total;
 }
 
-static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double S, double chi1, double chi2, int RDAmpFlag) {
+static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double chi1, double chi2, int RDAmpFlag) {
     double total=0;
     switch (RDAmpFlag){
         case 122018:{
             double noSpin = 1.33;
-            double eqSpin = 0.*eta*S*chi1*chi2;
+            double eqSpin = 0.*eta*chi1*chi2;
             double uneqSpin = 0.;
             total = noSpin + eqSpin + uneqSpin;
             break;
@@ -390,10 +399,11 @@ void IMRPhenomXHM_Ringdown_Amplitude_Veto(double *V2, double *V3, double V4, IMR
 
 // The spin parameter S = (m1^2*chi1 + m2^2*chi2)/(m1^2 + m2^2)
 
-static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total=0;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,delta=sqrt(1-4*eta);
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -409,10 +419,11 @@ static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double S, double chi1,
     return total;
 }
 
-static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total=0;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1.- 4.*eta),eta2,eta3,eta4,S2;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -430,10 +441,11 @@ static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double S, double chi1,
 }
 
 /**************** 32 specific fits ***************/
-static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -453,10 +465,11 @@ static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double S,
     return total;
 }
 
-static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,eta6,eta7,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -479,10 +492,11 @@ static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double S
 }
 
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,S2,S3,S4,S5;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -503,10 +517,11 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double S, double chi
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -524,10 +539,11 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double S, double chi
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,S2,S3,S4;
             eta2 = pow(eta,2);
             eta3 = pow(eta,3);
@@ -545,10 +561,11 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double S, double chi
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double S, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
+            double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,S2,S3,S4;
             eta2 = pow(eta,2);
             S2 = pow(S,2);

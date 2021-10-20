@@ -45,18 +45,18 @@ extern "C" {
 /********** AMPLITUDE ***************/
 
 //Collocations Points Fits
-static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta, double S, double chi1, double chi2, int InspAmpFlag);
-static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double S, double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_21_iv1(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_21_iv2(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_21_iv3(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_33_iv1(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_33_iv2(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_33_iv3(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_32_iv1(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_32_iv2(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_32_iv3(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta,  double chi1, double chi2, int InspAmpFlag);
+static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta,  double chi1, double chi2, int InspAmpFlag);
 
 /******************* Pseudo PN Amplitude coefficients ***************************/
 static double IMRPhenomXHM_Inspiral_Amp_rho1(double v1, double v2, double v3, IMRPhenomX_UsefulPowers *powers_of_fcut3, IMRPhenomX_UsefulPowers *powers_of_f1, IMRPhenomX_UsefulPowers *powers_of_f2, IMRPhenomX_UsefulPowers *powers_of_f3, IMRPhenomXHMWaveformStruct *pWFHM);
@@ -84,10 +84,10 @@ static int WavyPoints(double p1, double p2, double p3);
 /*********** PHASE ***************/
 
 //Fits across parameter space
-static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag);
-static double IMRPhenomXHM_Insp_Phase_32_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag);
-static double IMRPhenomXHM_Insp_Phase_33_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag);
-static double IMRPhenomXHM_Insp_Phase_44_lambda(double eta, double S, double chi1, double chi2, int InspPhaseFlag);
+static double IMRPhenomXHM_Insp_Phase_21_lambda(double eta,  double chi1, double chi2, int InspPhaseFlag);
+static double IMRPhenomXHM_Insp_Phase_32_lambda(double eta,  double chi1, double chi2, int InspPhaseFlag);
+static double IMRPhenomXHM_Insp_Phase_33_lambda(double eta,  double chi1, double chi2, int InspPhaseFlag);
+static double IMRPhenomXHM_Insp_Phase_44_lambda(double eta,  double chi1, double chi2, int InspPhaseFlag);
 static double IMRPhenomXHM_Insp_Phase_LambdaPN(double eta, int modeInt);
 
 //Ansatzs

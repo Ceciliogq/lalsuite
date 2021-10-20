@@ -849,7 +849,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
     for(int i = 0; i<nCollocPtsInspAmp; i++)
     {
-      pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chiPNHat,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
+      pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
     }
 
     // Values of the collocation point minus the Post-Newtonian value. This gives a "collocation point" for the pseudo-PN part.
@@ -993,9 +993,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     #endif
 
     // We have three "fitted" coefficients across parameter space: alambda, lambda and sigma. Sigma will be constat for all the modes except the 21.
-    pAmp->alambda = fabs(pAmp->RingdownAmpFits[modeint*3](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
-    pAmp->lambda  = pAmp->RingdownAmpFits[modeint*3+1](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
-    pAmp->sigma   = pAmp->RingdownAmpFits[modeint*3+2](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+    pAmp->alambda = fabs(pAmp->RingdownAmpFits[modeint*3](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
+    pAmp->lambda  = pAmp->RingdownAmpFits[modeint*3+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+    pAmp->sigma   = pAmp->RingdownAmpFits[modeint*3+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
     pAmp->lc      = 1./12.;
 
     #if DEBUG == 1
@@ -1028,7 +1028,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     // Initialize values of collocation points. They are taken from the parameter space fits.
     for(int i = 0; i<nCollocPtsInterAmp; i++)
     {
-      pAmp->CollocationPointsValuesAmplitudeInter[i] = fabs(pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+i](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion));
+      pAmp->CollocationPointsValuesAmplitudeInter[i] = fabs(pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion));
     }
 
     /* For reconstructing the intermediate region we need value and derivative at the beginning and at the end of the intermediate region, given by the inspiral and ringdown ansatzs.
@@ -1163,8 +1163,8 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
       pAmp->fAmpMatchInt12 = F0;
 
       // Take the value and derivative from the parameter space fits.
-      V0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+8](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
-      d0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+9](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+      V0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+8](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+      d0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+9](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
 
       #if DEBUG == 1
       printf("F0 = %.16f\n",F0);
@@ -1421,7 +1421,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
     //for each collocation point, call fit giving the value of the phase derivative at that point
     for(int i = 0; i<N_MAX_COEFFICIENTS_PHASE_INTER; i++)
     {
-        pPhase->CollocationPointsValuesPhaseInter[i] = pPhase->IntermediatePhaseFits[modeint*N_MAX_COEFFICIENTS_PHASE_INTER+i](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediatePhaseVersion);
+        pPhase->CollocationPointsValuesPhaseInter[i] = pPhase->IntermediatePhaseFits[modeint*N_MAX_COEFFICIENTS_PHASE_INTER+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediatePhaseVersion);
         // time-shift wf so that modes peak around t=0
         // our hybrids are built so that their inverse FT peaks ~500 M before the end of the time-interval. Our reconstructed WFs will have the same normalization, so we shift the phase here so that the modes peak around t=0
         pPhase->CollocationPointsValuesPhaseInter[i]=pPhase->CollocationPointsValuesPhaseInter[i]+pWFHM->DeltaT;
@@ -1471,7 +1471,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
     // else use some phenomenological fits: the fits give the coefficient of a linear-in-f term to be added to the orbital phase
     else{
 
-      pPhase->LambdaPN= pPhase->InspiralPhaseFits[pWFHM->modeInt](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralPhaseVersion);
+      pPhase->LambdaPN= pPhase->InspiralPhaseFits[pWFHM->modeInt](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralPhaseVersion);
       #if DEBUG == 1
       printf("\nLambdaPN = %.16f\n", pPhase->LambdaPN);
       #endif
@@ -1565,14 +1565,14 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
         if(pWFHM->ell==pWFHM->emm) wlm=2;
         else wlm=pWFHM->emm/3.;
 
-        pPhase->alpha2=1./pow(pWFHM->fRING,2)*wlm*IMRPhenomXHM_RD_Phase_22_alpha2(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+        pPhase->alpha2=1./pow(pWFHM->fRING,2)*wlm*IMRPhenomXHM_RD_Phase_22_alpha2(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
 
 
         // compute alphaL
-        pPhase->alphaL=eta_m1*IMRPhenomXHM_RD_Phase_22_alphaL(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+        pPhase->alphaL=eta_m1*IMRPhenomXHM_RD_Phase_22_alphaL(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
 
         #if DEBUG == 1
-        printf("alpha2_fit=%f\n",IMRPhenomXHM_RD_Phase_22_alpha2(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
+        printf("alpha2_fit=%f\n",IMRPhenomXHM_RD_Phase_22_alpha2(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
         printf("Ringdown parameters: \n alpha2=%f \n alphaL=%f\n",pPhase->alpha2,pPhase->alphaL);
         # endif
 
@@ -1831,8 +1831,8 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
 
       fprintf(file, "\n*** Ringdown Phase Spheroidal ***\n f_i \t dphi(f_i)\n");
       for(int i=0; i<pWFHM->nCollocPtsRDPhase; i++)
-          fprintf(file, "%.16f \t %.16f \n", pPhase->CollocationPointsFreqsPhaseRD[i],pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
-      fprintf(file,"Deltadphi=%.16f\n Deltaphi=%.16f \n", IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion),IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
+          fprintf(file, "%.16f \t %.16f \n", pPhase->CollocationPointsFreqsPhaseRD[i],pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
+      fprintf(file,"Deltadphi=%.16f\n Deltaphi=%.16f \n", IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion),IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
 
   }
 
@@ -1880,7 +1880,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     for(int i=0; i<nCollocationPts_RD_Phase; i++)
     {
 
-      CollocValuesPhaseRingdown[i] =pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+      CollocValuesPhaseRingdown[i] =pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
       CollocFreqsPhaseRingdown[i] =pPhase->CollocationPointsFreqsPhaseRD[i];
       gsl_vector_set(b,i,CollocValuesPhaseRingdown[i]);
       REAL8 ff=CollocFreqsPhaseRingdown[i], ffm1=1./ff, ffm2=ffm1*ffm1;
@@ -1924,7 +1924,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     double frefRD=pWF22->fRING+pWF22->fDAMP;
     IMRPhenomX_Initialize_Powers(&powers_of_FREF,frefRD);
     // here we call a fit for dphiS(fref)-dphi22(fref)
-    double tshift=IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+    double tshift=IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
 
     // we compute dphi22(fref)
     IMRPhenomX_Phase_22_ConnectionCoefficients(pWF22,pPhase22);
@@ -1944,7 +1944,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     pWFHM->phiref22 = -1./pWF22->eta*IMRPhenomX_Phase_22(pWF22->MfRef, &powers_of_MfRef, pPhase22, pWF22) - pWFHM->timeshift*pWF22->MfRef - pWFHM->phaseshift + 2.0*pWF22->phi0 + LAL_PI_4;
     double phi22ref=1./pWF22->eta*IMRPhenomX_Phase_22(frefRD, &powers_of_FREF,pPhase22,pWF22) + pWFHM->timeshift*frefRD + pWFHM->phaseshift + pWFHM->phiref22;
     // we call a fit for Mod[phiS(fref)-phi22(fref),2*Pi]
-    double phishift=IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+    double phishift=IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
 
     pPhase->phi0_S = 0;
     //we adjust the relative phase of our reconstruction

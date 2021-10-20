@@ -48,24 +48,24 @@ extern "C" {
 /*********** AMPLITUDE *****************/
 
 //Fits int1, int2. 2 collocation points
-static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double S, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_int1(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_int2(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_int1(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_int2(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double chi1, double chi2, int InterAmpFlag);
 
 //Fits int0, dint0. Extra collocation point for EMR cases
-static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
-static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double S, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_int0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_dint0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_int0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_dint0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_int0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double chi1, double chi2, int InterAmpFlag);
 
 //Coefficients of polynomial. They are feed with the some collocation points.
 static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
@@ -106,35 +106,35 @@ static void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoe
 /************** PHASE ******************/
 
 //Fits of the collocation points across paramter space
-static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double S, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p1(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p2(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p3(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p4(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p5(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_21_p6(double eta, double chi1, double chi2, int);
 
 
-static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double S, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p1(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p2(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p3(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p4(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p5(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_33_p6(double eta, double chi1, double chi2, int);
 
-static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double S, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p1(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p2(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p3(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p4(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p5(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_32_p6(double eta, double chi1, double chi2, int);
 
 
-static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double S, double chi1, double chi2, int);
-static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double S, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p1(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p2(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p3(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p4(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p5(double eta, double chi1, double chi2, int);
+static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double chi1, double chi2, int);
 
 //Ansatz
 static double IMRPhenomXHM_Inter_Phase_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f,IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMPhaseCoefficients *pPhase);
