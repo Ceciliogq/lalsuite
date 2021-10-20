@@ -365,7 +365,8 @@ double IMRPhenomXHM_Amplitude_fcutInsp(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhe
   //Return the end frequency of the inspiral region and the beginning of the intermediate for the amplitude of one mode.
 
   int  version  = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
-   double fcut = 0.;   //Cutting frequency for comparable mass ratios
+  double fcut = 0.;   //Cutting frequency for comparable mass ratios
+  double fMECO  = pWFHM->fMECOlm;
 
   switch(version){
     case 122018: // default version
@@ -375,7 +376,6 @@ double IMRPhenomXHM_Amplitude_fcutInsp(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhe
         double eta    = pWF22->eta;
         double chi1   = pWF22->chi1L;
         double chieff = pWF22->chiEff;
-        double fMECO  = pWFHM->fMECOlm;
         double fISCO  = (pWF22->fISCO)*emm*0.5;
         //fcutEMR is the cutting frequency for extreme mass ratios that is given by a fit to the frequncy of a particular geometrical structure of the amplitude
         double fcutEMR = 1.25*emm*((0.011671068725758493 - 0.0000858396080377194*chi1 + 0.000316707064291237*pow(chi1,2))*(0.8447212540381764 + 6.2873167352395125*eta))/(1.2857082764038923 - 0.9977728883419751*chi1);
@@ -425,6 +425,7 @@ double IMRPhenomXHM_Amplitude_fcutInsp(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhe
     case 102021:
     {
         fcut = fMECO;
+        break;
     }
     default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_CollocPtsFreqs: version is not valid. Version recommended is 122018.");}
   }
@@ -484,6 +485,7 @@ double IMRPhenomXHM_Amplitude_fcutRD(IMRPhenomXHMWaveformStruct *pWFHM, IMRPheno
             fcut = pWF22->fRING - pWF22->fDAMP;
         else
             fcut = fring - fdamp;
+        break;
     }
     default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_CollocPtsFreqs: version is not valid. Version is recommended is 122018.");}
   }
