@@ -38,49 +38,51 @@ extern "C" {
 #include "LALSimIMRPhenomXHM_structs.h"
 
 
-    //----AMPLITUDE----
+//----AMPLITUDE----
 
-    //Fits of the ringdown coefficients over parameter space
-    static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double chi1, double chi2, int RDAmpFlag);
-    static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
-    static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
-    static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
+//Fits of the ringdown coefficients over parameter space
+static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_21_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_33_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_33_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_44_alambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_44_lambda(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
+static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
+static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
 
-    //ansatz, and its derivative: analytical for no mixing and numerical for mixing
-    static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXHMAmpCoefficients *pAmp);
-    static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp);
-    static double IMRPhenomXHM_RD_Amp_NDAnsatz(double ff, IMRPhenomXHMAmpCoefficients *pAmp,  IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXAmpCoefficients *pAmp22,  IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22);
+/* End of Parameter Space Fits */
 
-    // Feeding the ansatz with the coefficients is how we get the final reconstruction
+//ansatz, and its derivative: analytical for no mixing and numerical for mixing
+static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXHMAmpCoefficients *pAmp);
+static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp);
+static double IMRPhenomXHM_RD_Amp_NDAnsatz(double ff, IMRPhenomXHMAmpCoefficients *pAmp,  IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXAmpCoefficients *pAmp22,  IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22);
 
-    //veto
-    static void IMRPhenomXHM_Ringdown_Amplitude_Veto(double *pV2, double *pV3, double V4, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22);
+// Feeding the ansatz with the coefficients is how we get the final reconstruction
+
+//veto
+static void IMRPhenomXHM_Ringdown_Amplitude_Veto(double *pV2, double *pV3, double V4, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22);
 
 
-    //----PHASE-----
+//----PHASE-----
 
-    // no mixing fits
-    static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double chi1, double chi2, int RDPhaseFlag);
-    static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double chi1, double chi2, int RDPhaseFlag);
-    // 32 specific fits
-    static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double chi1, double chi2, int RDPhaseFlag);
-    static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double chi1, double chi2, int RDPhaseFlag);
-    static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double chi1, double chi2, int RingdownPhaseFlag);
-    static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double chi1, double chi2, int RingdownPhaseFlag);
-    static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double chi1, double chi2, int RingdownPhaseFlag);
-    static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double chi1, double chi2, int RingdownPhaseFlag);
+// no mixing fits
+static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double chi1, double chi2, int RDPhaseFlag);
+static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double chi1, double chi2, int RDPhaseFlag);
+// 32 specific fits
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double chi1, double chi2, int RDPhaseFlag);
+static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double chi1, double chi2, int RDPhaseFlag);
+static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double chi1, double chi2, int RingdownPhaseFlag);
+static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double chi1, double chi2, int RingdownPhaseFlag);
+static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double chi1, double chi2, int RingdownPhaseFlag);
+static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double chi1, double chi2, int RingdownPhaseFlag);
 
-    //ansatz
-    static double IMRPhenomXHM_RD_Phase_Ansatz(double ff,IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase);
-    static double IMRPhenomXHM_RD_Phase_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f,IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase);
+//ansatz
+static double IMRPhenomXHM_RD_Phase_Ansatz(double ff,IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase);
+static double IMRPhenomXHM_RD_Phase_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f,IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase);
 
 #ifdef __cplusplus
 }

@@ -67,6 +67,8 @@ static double IMRPhenomXHM_Inter_Amp_32_dint0(double eta, double chi1, double ch
 static double IMRPhenomXHM_Inter_Amp_44_int0(double eta, double chi1, double chi2, int InterAmpFlag);
 static double IMRPhenomXHM_Inter_Amp_44_dint0(double eta, double chi1, double chi2, int InterAmpFlag);
 
+/* End of Parameter Space Fits */
+
 //Coefficients of polynomial. They are feed with the some collocation points.
 static double IMRPhenomXHM_Intermediate_Amp_delta0(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);
 static double IMRPhenomXHM_Intermediate_Amp_delta1(double d1, double d4, double v1, double v2, double v3, double v4, double f1, double f2, double f3, double f4, int IntAmpFlag);

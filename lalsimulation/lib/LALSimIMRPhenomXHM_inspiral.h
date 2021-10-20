@@ -58,6 +58,8 @@ static double IMRPhenomXHM_Insp_Amp_44_iv1(double eta,  double chi1, double chi2
 static double IMRPhenomXHM_Insp_Amp_44_iv2(double eta,  double chi1, double chi2, int InspAmpFlag);
 static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta,  double chi1, double chi2, int InspAmpFlag);
 
+/* End of Parameter Space Fits */
+
 /******************* Pseudo PN Amplitude coefficients ***************************/
 static double IMRPhenomXHM_Inspiral_Amp_rho1(double v1, double v2, double v3, IMRPhenomX_UsefulPowers *powers_of_fcut3, IMRPhenomX_UsefulPowers *powers_of_f1, IMRPhenomX_UsefulPowers *powers_of_f2, IMRPhenomX_UsefulPowers *powers_of_f3, IMRPhenomXHMWaveformStruct *pWFHM);
 static double IMRPhenomXHM_Inspiral_Amp_rho2(double v1, double v2, double v3, IMRPhenomX_UsefulPowers *powers_of_fcut3, IMRPhenomX_UsefulPowers *powers_of_f1, IMRPhenomX_UsefulPowers *powers_of_f2, IMRPhenomX_UsefulPowers *powers_of_f3, IMRPhenomXHMWaveformStruct *pWFHM);
