@@ -126,7 +126,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
 
         // Variable to control the use of FAmpPN function for 21 instead of the power series
         INT4 useFAmpPN;
-    
+
         /* time-shift of the peak of the hybrids' 22 wrt end of the waveform*/
         REAL8 DeltaT;
 
@@ -215,9 +215,9 @@ typedef struct tagIMRPhenomXHMPhaseCoefficients
         /* Phase Transition Frequencies */
         REAL8 fPhaseMatchIN;
         REAL8 fPhaseMatchIM;
-    
+
         REAL8 deltaphiLM;
-         
+
         /* These are the RD phenomenological coefficients, with mode-mixing off */
         REAL8 alpha0, alpha2, alphaL;
         REAL8 phi0RD, dphi0RD;

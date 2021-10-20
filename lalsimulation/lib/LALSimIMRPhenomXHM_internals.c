@@ -365,61 +365,66 @@ double IMRPhenomXHM_Amplitude_fcutInsp(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhe
   //Return the end frequency of the inspiral region and the beginning of the intermediate for the amplitude of one mode.
 
   int  version  = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
-  double emm    = 1.*(pWFHM->emm);
-  double fring  = pWFHM->fRING;
-  double eta    = pWF22->eta;
-  double chi1   = pWF22->chi1L;
-  double chieff = pWF22->chiEff;
-  double fMECO  = pWFHM->fMECOlm;
-  double fISCO  = (pWF22->fISCO)*emm*0.5;
-  double fcut = 0.;   //Cutting frequency for comparable mass ratios
-  //fcutEMR is the cutting frequency for extreme mass ratios that is given by a fit to the frequncy of a particular geometrical structure of the amplitude
-  double fcutEMR = 1.25*emm*((0.011671068725758493 - 0.0000858396080377194*chi1 + 0.000316707064291237*pow(chi1,2))*(0.8447212540381764 + 6.2873167352395125*eta))/(1.2857082764038923 - 0.9977728883419751*chi1);
+   double fcut = 0.;   //Cutting frequency for comparable mass ratios
 
   switch(version){
     case 122018: // default version
     {
-      switch(pWFHM->modeTag)
-      {
-        case 21:{
-          if(eta < 0.023795359904818562){ //for EMR (q>40.)
-            fcut = fcutEMR;
-          }
-          else{                //for comparable q
-            fcut = fMECO + (0.75-0.235*chieff - 5./6.*chieff*chieff)*fabs(fISCO-fMECO);
-          }
-          break;
+        double emm    = 1.*(pWFHM->emm);
+        double fring  = pWFHM->fRING;
+        double eta    = pWF22->eta;
+        double chi1   = pWF22->chi1L;
+        double chieff = pWF22->chiEff;
+        double fMECO  = pWFHM->fMECOlm;
+        double fISCO  = (pWF22->fISCO)*emm*0.5;
+        //fcutEMR is the cutting frequency for extreme mass ratios that is given by a fit to the frequncy of a particular geometrical structure of the amplitude
+        double fcutEMR = 1.25*emm*((0.011671068725758493 - 0.0000858396080377194*chi1 + 0.000316707064291237*pow(chi1,2))*(0.8447212540381764 + 6.2873167352395125*eta))/(1.2857082764038923 - 0.9977728883419751*chi1);
+
+        switch(pWFHM->modeTag)
+        {
+            case 21:{
+              if(eta < 0.023795359904818562){ //for EMR (q>40.)
+                fcut = fcutEMR;
+              }
+              else{                //for comparable q
+                fcut = fMECO + (0.75-0.235*chieff - 5./6.*chieff*chieff)*fabs(fISCO-fMECO);
+              }
+              break;
+            }
+            case 33:{
+              if(eta < 0.04535147392290249){ //for EMR (q>20.)
+                fcut = fcutEMR;
+              }
+              else{                //for comparable q
+                fcut = fMECO + (0.75-0.235*chieff-5./6.*chieff)*fabs(fISCO-fMECO);
+              }
+              break;
+            }
+            case 32:{
+              if(eta < 0.04535147392290249){ //for extreme mass ratios (q>20)
+                fcut = fcutEMR;
+              }
+              else{               //for comparable mass ratios
+                fcut = fMECO + (0.75-0.235*fabs(chieff))*fabs(fISCO-fMECO);
+                fcut = fcut*fring/pWF22->fRING;
+              }
+              break;
+            }
+            case 44:{
+              if(eta <  0.04535147392290249){  //for EMR (q>20)
+                fcut = fcutEMR;
+              }
+              else{                  //for comparable q
+                fcut = fMECO + (0.75-0.235*chieff)*fabs(fISCO-fMECO);
+              }
+              break;
+            }
         }
-        case 33:{
-          if(eta < 0.04535147392290249){ //for EMR (q>20.)
-            fcut = fcutEMR;
-          }
-          else{                //for comparable q
-            fcut = fMECO + (0.75-0.235*chieff-5./6.*chieff)*fabs(fISCO-fMECO);
-          }
-          break;
-        }
-        case 32:{
-          if(eta < 0.04535147392290249){ //for extreme mass ratios (q>20)
-            fcut = fcutEMR;
-          }
-          else{               //for comparable mass ratios
-            fcut = fMECO + (0.75-0.235*fabs(chieff))*fabs(fISCO-fMECO);
-            fcut = fcut*fring/pWF22->fRING;
-          }
-          break;
-        }
-        case 44:{
-          if(eta <  0.04535147392290249){  //for EMR (q>20)
-            fcut = fcutEMR;
-          }
-          else{                  //for comparable q
-            fcut = fMECO + (0.75-0.235*chieff)*fabs(fISCO-fMECO);
-          }
-          break;
-        }
-      }
-      break;
+        break;
+    }
+    case 102021:
+    {
+        fcut = fMECO;
     }
     default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_CollocPtsFreqs: version is not valid. Version recommended is 122018.");}
   }
@@ -472,6 +477,13 @@ double IMRPhenomXHM_Amplitude_fcutRD(IMRPhenomXHMWaveformStruct *pWFHM, IMRPheno
         }
       }
       break;
+    }
+    case 102021:
+    {
+        if(pWFHM->MixingOn == 1)
+            fcut = pWF22->fRING - pWF22->fDAMP;
+        else
+            fcut = fring - fdamp;
     }
     default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_CollocPtsFreqs: version is not valid. Version is recommended is 122018.");}
   }
