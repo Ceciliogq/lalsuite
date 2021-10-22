@@ -885,15 +885,12 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     // FIXME
     if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
-        printf("\nVersion 102021\n");
-        printf("pWFHM->IMRPhenomXHMInspiralAmpFitsVersion = %d\n", pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
         // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
         pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f3.m_seven_sixths/pWF22->ampNorm;
         pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f2.m_seven_sixths/pWF22->ampNorm;
         pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f1.m_seven_sixths/pWF22->ampNorm;
     }
     else{
-        printf("\nOld Version\n");
         // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
         for(int i = 0; i<nCollocPtsInspAmp; i++)
         {
