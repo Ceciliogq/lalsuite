@@ -163,10 +163,33 @@ void IMRPhenomXHM_SetHMWaveformVariables(
   wf->IMRPhenomXHMInspiralAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMIntermediateAmpFitsVersion = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFitsVersion(LALParams); //122018
+  wf->IMRPhenomXHMInspiralAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFreqsVersion(LALParams); //122018
   /* Reconstruction version for the amplitude */
   wf->IMRPhenomXHMInspiralAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpVersion(LALParams); //3  (3 collocation points)
   wf->IMRPhenomXHMIntermediateAmpVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpVersion(LALParams); //2   (2 collocation points)
   wf->IMRPhenomXHMRingdownAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpVersion(LALParams); //0  (0 collocation points)
+
+  if(wf->IMRPhenomXHMInspiralAmpFitsVersion == 102021){
+      switch(wf->modeTag)
+      {
+          case 21:{
+            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            break;
+          }
+          case 33:{
+            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
+            break;
+          }
+          case 32:{
+            wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
+            break;
+          }
+          case 44:{
+            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            break;
+          }
+      }
+  }
 
 
   // Default collocation points for amplitude
@@ -364,7 +387,7 @@ double IMRPhenomXHM_Amplitude_fcutInsp(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhe
 
   //Return the end frequency of the inspiral region and the beginning of the intermediate for the amplitude of one mode.
 
-  int  version  = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
+  int  version  = pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion;
   double fcut = 0.;   //Cutting frequency for comparable mass ratios
   double fMECO  = pWFHM->fMECOlm;
 
@@ -593,18 +616,18 @@ void IMRPhenomXHM_GetPNAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, 
 
   /* The coefficients below correspond to those in eqs E10-E14 in arXiv:2001.10914 */
 
-  int inspversion = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
+  //int inspversion = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
   double chiA = pWFHM->chi_a;
   double chiS = pWFHM->chi_s;
   double eta  = pWF22->eta, delta = pWF22->delta;
   double PI   = powers_of_lalpiHM.itself;
 
-  const double prefactors[] = {sqrt(2)/3., 0.75*sqrt(5/7.), sqrt(5/7.)/3., 4*sqrt(2)/9*sqrt(5/7.)};
+  const double prefactors[] = {sqrt(2)/3., 0.75*sqrt(5/7.), sqrt(5/7.)/3., 4*sqrt(2)/9*sqrt(5/7.)}; //Global factors of each PN hlm
   pAmp->PNglobalfactor = pow(2./(pWFHM->emm),-7/6.)*prefactors[pWFHM->modeInt]; //This is to compensate that we rescale data with the leading order of the 22
 
-  switch(inspversion){
+  /*switch(inspversion){  FIXMEE
     case 122018: // default version
-    {
+    {*/
       switch(pWFHM->modeTag)
       {
         case 21:{
@@ -665,11 +688,11 @@ void IMRPhenomXHM_GetPNAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, 
           pAmp->pnSixThirds = (7888301437 - 147113366400*chiA*chiS*delta - 745140957231*eta + 441340099200*chiA*chiS*delta*eta - 73556683200*chiA*chiA + 511264353600*eta*chiA*chiA - 73556683200*chiS*chiS + 224302478400*eta*chiS*chiS + 2271682065240*eta*eta - 871782912000*chiA*chiA*eta*eta - 10897286400*chiS*chiS*eta*eta - 805075876080*pow(eta,3))/2.90594304e10*powers_of_lalpiHM.two*powers_of_2d4.two;
           break;
         }
-      }
+    }/*
       break;
     }
     default: {XLALPrintError("Error in IMRPhenomXHM_GetPNAmplitudeCoefficients: version is not valid. Version recommended is 122018. ");}
-  }
+}*/
 }
 
 /*** Post-Newtonian Inspiral Ansatz Coefficients for the 21 mode ***/
@@ -860,11 +883,24 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     pAmp->PNAmplitudeInsp[1] = PNf2;
     pAmp->PNAmplitudeInsp[2] = PNf3;
 
-    // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
-    for(int i = 0; i<nCollocPtsInspAmp; i++)
-    {
-      pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
+    // FIXME
+    if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
+        printf("\nVersion 102021\n");
+        printf("pWFHM->IMRPhenomXHMInspiralAmpFitsVersion = %d\n", pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
+        // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
+        pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f3.m_seven_sixths/pWF22->ampNorm;
+        pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f2.m_seven_sixths/pWF22->ampNorm;
+        pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f1.m_seven_sixths/pWF22->ampNorm;
     }
+    else{
+        printf("\nOld Version\n");
+        // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
+        for(int i = 0; i<nCollocPtsInspAmp; i++)
+        {
+          pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
+        }
+    }
+
 
     // Values of the collocation point minus the Post-Newtonian value. This gives a "collocation point" for the pseudo-PN part.
     // This way is more convenient becuase the reconstuction does not depended on the PN ansatz used.

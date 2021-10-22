@@ -68,6 +68,8 @@ typedef struct tagIMRPhenomXHMWaveformStruct
         INT4  IMRPhenomXHMIntermediateAmpFitsVersion;
         INT4  IMRPhenomXHMRingdownAmpFitsVersion;
 
+        INT4  IMRPhenomXHMInspiralAmpFreqsVersion;
+
         INT4  IMRPhenomXHMInspiralAmpVersion;
         INT4  IMRPhenomXHMIntermediateAmpVersion;
         INT4  IMRPhenomXHMRingdownAmpVersion;
