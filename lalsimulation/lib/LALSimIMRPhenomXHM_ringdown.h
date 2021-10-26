@@ -53,6 +53,9 @@ static double IMRPhenomXHM_RD_Amp_21_sigma(double eta, double chi1, double chi2,
 static double IMRPhenomXHM_RD_Amp_33_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
 static double IMRPhenomXHM_RD_Amp_32_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
 static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double chi1, double chi2, int RDAmpFlag);// currently constant
+static double IMRPhenomXHM_RD_Amp_32_rdcp1(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_rdcp2(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2, int RDAmpFlag);
 
 /* End of Parameter Space Fits */
 

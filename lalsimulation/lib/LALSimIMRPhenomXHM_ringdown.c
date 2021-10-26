@@ -265,6 +265,89 @@ static double IMRPhenomXHM_RD_Amp_44_sigma(double eta, double chi1, double chi2,
     return total;
 }
 
+static double IMRPhenomXHM_RD_Amp_32_rdcp1(double eta, double chi1, double chi2, int RDAmpFlag){
+	double total=0;
+	switch (RDAmpFlag){
+        case 202109302:{
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double S4 = S * S3;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -6.822235547187327 + 300.3222592864735*eta1 - 5220.616407680465*eta2 + 47114.93093754242*eta3 - 232018.0218803851*eta4 + 588380.7756269239*eta5 + chidiff1*(76.61240796356553*eta1 - 2612.2487156806665*eta2 + 34822.055153006106*eta3 - 227048.62432162624*eta4 + 720877.381147094*eta5 - 889046.534662956*eta6) - 599011.0849025598*eta6 + chidiff2*(-227.44514843951865*eta1 + 6925.1093725568235*eta2 - 81688.78441284063*eta3 + 467077.5101307338*eta4 - 1.296874575555808e6*eta5 + 1.4027390173101192e6*eta6) - 0.07409742279252131*(427.83333487676146*eta1 - 13536.024987057857*eta2 + 173825.95140201083*eta3 - 1.0861183206860311e6*eta4 + 3.2645091005036836e6*eta5 - 3.7668375989753315e6*eta6)*S1 + chidiff1*(102.36046776805539*eta1 - 3166.8884264898625*eta2 + 38185.29992683551*eta3 - 224388.10811676743*eta4 + 642665.5088178852*eta5 - 718414.1705569029*eta6)*S1 + chidiff3*(95.72312490276768*eta1 - 2507.663319520619*eta2 + 23739.253330277224*eta3 - 97714.77665477365*eta4 + 157120.9121390766*eta5 - 40315.92781119302*eta6)*S1 + chidiff2*(-88.46209784031781*eta1 + 2967.1204927188915*eta2 - 39072.586293354085*eta3 + 250318.54842605675*eta4 - 776025.2137119186*eta5 + 930826.3260392629*eta6)*S1 + 0.015665249812172485*(2010.4471980827796*eta1 - 56099.78878703192*eta2 + 602019.6623829821*eta3 - 3.1444663442065194e6*eta4 + 8.065664786128818e6*eta5 - 8.176206915676821e6*eta6)*S2 + 0.01095110138017288*(-1504.0539786979614*eta1 + 43208.563319571476*eta2 - 502500.0377523047*eta3 + 2.915754035844863e6*eta4 - 8.361923375746082e6*eta5 + 9.440446780450135e6*eta6)*S3 + 0.020259436408036086*(-4594.26688808133*eta1 + 131033.85546987488*eta2 - 1.4506235662806157e6*eta3 + 7.796683114999688e6*eta4 - 2.0395886097016122e7*eta5 + 2.0840674788231738e7*eta6)*S4;
+            break;
+        }
+    default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_32_rdcp1: version is not valid. Recommended version is 202109302.");}
+  }
+  return total;
+}
+
+static double IMRPhenomXHM_RD_Amp_32_rdcp2(double eta, double chi1, double chi2, int RDAmpFlag){
+	double total=0;
+	switch (RDAmpFlag){
+        case 202109302:{
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double eta7 = eta * eta6;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = 8.763480668702242 - 458.02940434616187*eta1 + 10126.253007735617*eta2 - 120815.82818116107*eta3 + 841404.0238292966*eta4 - 3.4230844657678525e6*eta5 + chidiff1*(41.028692902287375*eta1 - 1518.871124709351*eta2 + 21622.273763182926*eta3 - 148467.38554977145*eta4 + 490339.5821848636*eta5 - 622878.6131581612*eta6) + chidiff3*(103.56340151458167*eta1 - 2811.503962967481*eta2 + 28855.76260333522*eta3 - 140139.55517449943*eta4 + 322462.359930292*eta5 - 280682.69262428395*eta6) + 7.528819374776557e6*eta6 + chidiff2*(-225.22174853514244*eta1 + 6942.422954387391*eta2 - 82782.09880920834*eta3 + 478231.3623755914*eta4 - 1.3416979454129427e6*eta5 + 1.466778990570272e6*eta6) - 6.901771098862562e6*eta7 - 0.06351836026455736*(648.5677918866548*eta1 - 20085.549937876607*eta2 + 249545.6133245487*eta3 - 1.5155150236980345e6*eta4 + 4.464662276344129e6*eta5 - 5.093800426559703e6*eta6)*S1 + chidiff1*(95.16350325315915*eta1 - 3117.4190328224877*eta2 + 39359.200537089026*eta3 - 239757.59060947507*eta4 + 706117.5050783701*eta5 - 806733.8366611812*eta6)*S1 + chidiff2*(295.5186336539724*eta1 - 8319.112678555999*eta2 + 89640.53297021345*eta3 - 463738.95414659*eta4 + 1.156239681389252e6*eta5 - 1.115104900932542e6*eta6)*S2 + 0.03406566631494136*(-1441.1367459145793*eta1 + 43313.39314788006*eta2 - 506415.69652351993*eta3 + 2.8645268401819975e6*eta4 - 7.845294679212493e6*eta5 + 8.350695992321145e6*eta6)*S2 + 0.00899104609418315*(2063.6704765160025*eta1 - 64372.69960758062*eta2 + 767226.9014115589*eta3 - 4.421304317403424e6*eta4 + 1.2415785669046635e7*eta5 - 1.3656093012453858e7*eta6)*S3;
+            break;
+        }
+    default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_32_rdcp2: version is not valid. Recommended version is 202109302.");}
+  }
+  return total;
+}
+
+static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2, int RDAmpFlag){
+	double total=0;
+	switch (RDAmpFlag){
+        case 202109302:{
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -1.9011746767530397 + 82.51106935537855*eta1 - 1416.2753019529684*eta2 + 12600.314529001238*eta3 - 61109.798994247605*eta4 + chidiff1*(-16.71939200270341*eta1 + 430.6706450469782*eta2 - 4008.185448573371*eta3 + 15912.224702158319*eta4 - 22798.383057487386*eta5) + chidiff2*(-0.08350775431902237*eta1 + 8.02675179235675*eta2 - 152.77118945423678*eta3 + 954.2947698573355*eta4 - 1849.9347091834359*eta5) + 152619.15178579223*eta5 + chidiff3*(13.447892439457656*eta1 - 343.23006478286015*eta2 + 3116.276120852143*eta3 - 11989.410031555411*eta4 + 16620.699669752583*eta5) - 153130.7565986546*eta6 - 0.015073466950220946*(-117.13465015425008*eta1 + 3371.418653646607*eta2 - 27917.85500498548*eta3 + 88137.89954223055*eta4 - 88330.43606079376*eta5)*S1 - 0.0029460669020865845*(-396.7195547491311*eta1 + 7649.13529943435*eta2 - 40887.61565851644*eta3 + 49355.329726410215*eta4 + 64690.4635720466*eta5)*S2 + 0.004319083592890912*(1292.3005027933802*eta1 - 31765.10151480095*eta2 + 283020.29493154184*eta3 - 1.0852276873896276e6*eta4 + 1.5151418324220637e6*eta5)*S3;
+            break;
+        }
+    default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_32_rdcp3: version is not valid. Recommended version is 202109302.");}
+  }
+  return total;
+}
+
 /* End of Parameter Space Fits */
 
 
