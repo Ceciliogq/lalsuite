@@ -59,6 +59,9 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2,
 
 /* End of Parameter Space Fits */
 
+// Ringdown coefficients from collocation points
+static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp);
+
 //ansatz, and its derivative: analytical for no mixing and numerical for mixing
 static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXHMAmpCoefficients *pAmp);
 static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp);

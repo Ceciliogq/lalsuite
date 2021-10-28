@@ -40,7 +40,7 @@ extern "C" {
 
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INS 3    //Maximun number of collocation points in the inspiral
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INTER 4  //Maximun number of collocation points in the intermediate. The fourth is for the EMR
-#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 3   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2.
+#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 6   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2.
 
 
 // Data structure to hold QNM frequencies

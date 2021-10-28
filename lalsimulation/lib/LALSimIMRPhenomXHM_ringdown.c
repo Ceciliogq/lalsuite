@@ -351,6 +351,25 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2,
 /* End of Parameter Space Fits */
 
 
+/************** Ringdown coefficients from collocation points *************/
+
+static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp){
+    switch (pWFHM->IMRPhenomXHMRingdownAmpVersion){
+        case 1:{
+            double rdcp1 = pAmp->RingdownAmpFits[12 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            double rdcp2 = pAmp->RingdownAmpFits[13 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            double rdcp3 = pAmp->RingdownAmpFits[14 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            pAmp->r1 = rdcp1 * pWFHM->fDAMP / (sqrt(rdcp1 / rdcp3) - (rdcp1 / rdcp2));
+            pAmp->r3 = sqrt(pAmp->r1 / (rdcp2 * pWFHM->fDAMP));
+            pAmp->r2 = 0.5 * pAmp->r3 * log(rdcp1 / rdcp3);
+            break;
+        }
+        default:{
+            XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_RD_Amp_Coefficients: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 1. \n");
+        }
+    }
+}
+
 /************** Amplitude Ringdown Ansatz *************/
 
 // For the modes with mixing this is the ansatz of the spheroidal part.
