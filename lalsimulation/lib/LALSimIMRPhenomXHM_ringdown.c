@@ -55,7 +55,7 @@ static double IMRPhenomXHM_RD_Amp_21_alambda(double eta, double chi1, double chi
             total = noSpin + eqSpin + uneqSpin;
             break;
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_21_a: version is not valid. Recommended version is 122018.");}
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_21_alambda: version %i is not valid. Recommended version is 122018.", RDAmpFlag);}
     }
     return total;
 }
@@ -598,7 +598,7 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
             break;
         }
         default:{
-            XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_RD_Amp_Coefficients: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 1. \n");
+            XLAL_ERROR_VOID(XLAL_EINVAL, "Error in IMRPhenomXHM_RD_Amp_Coefficients: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 1. \n");
         }
     }
 }
@@ -612,25 +612,27 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
     double frd = pWF->fRING;
     double fda = pWF->fDAMP;
     double dfr = ff - frd;
-    double dfd = fda * pAmp->sigma;
-    double lc  = pAmp->lc;
     double ampRD;
 
     switch ( RDAmpFlag )
     {
         case 0: /* Canonical, 3 fitted coefficients + fring, fdamp, lc that are fixed. sigma is also fixed except for the 21 mode. */
         {
+            double dfd = fda * pAmp->sigma;
+            double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
             break;
         }
         case 1:
         {
-            ampRD = pAmp->r1 * fda / ( exp(pAmp->r2 / (fda * pAmp->r3) * (ff - frd)) * (dfr * dfr + fda * fda);
+            double dfd = fda * pAmp->r3;
+            double factor = pow(2./(pWF->emm),-7/6.);
+            ampRD = pWF->ampNorm * factor * pAmp->r1 * fda / ( exp(pAmp->r2 / dfd * dfr) * (dfr * dfr + dfd * dfd));
             break;
         }
         default:
         {
-            XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Amp_lm_Ansatz: IMRPhenomXHMRingdownAmpFitsVersion is not valid. Use version 0. \n");
+            XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Amp_Ansatz: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 0 or 1. \n");
         }
     }
 
@@ -668,10 +670,10 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct 
         case 1:
         {
             double dfr = ff - frd;
-            numerator = -1. * pAmp->r1 * (dfr * dfr * pAmp->r2 + 2 * fda * dfr * pAmp->r3 + fda * fda * pAmp->r2 * pAmp->r3 * pAmp->r3);
+            numerator = pAmp->r1 * (dfr * dfr * pAmp->r2 + 2 * fda * dfr * pAmp->r3 + fda * fda * pAmp->r2 * pAmp->r3 * pAmp->r3);
             denom = (dfr * dfr + fda * fda * pAmp->r3 * pAmp->r3);
             denom = pAmp->r3 * denom * denom * exp(dfr * pAmp->r2 / (fda * pAmp->r3));
-            DampRD = - numerator * denom;
+            DampRD = - pWF->ampNorm * numerator * denom;
             break;
         }
         default:

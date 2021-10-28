@@ -164,13 +164,15 @@ void IMRPhenomXHM_SetHMWaveformVariables(
   wf->IMRPhenomXHMIntermediateAmpFitsVersion = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMInspiralAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFreqsVersion(LALParams); //122018
+  wf->IMRPhenomXHMRingdownAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFreqsVersion(LALParams); //122018
   /* Reconstruction version for the amplitude */
   wf->IMRPhenomXHMInspiralAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpVersion(LALParams); //3  (3 collocation points)
   wf->IMRPhenomXHMIntermediateAmpVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpVersion(LALParams); //2   (2 collocation points)
   wf->IMRPhenomXHMRingdownAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpVersion(LALParams); //0  (0 collocation points)
 
-  if(wf->IMRPhenomXHMInspiralAmpFitsVersion == 102021){
-      wf->IMRPhenomXHMRingdownAmpFitsVersion = 1;
+
+  if(wf->IMRPhenomXHMInspiralAmpFitsVersion == 102021 && wf->IMRPhenomXHMRingdownAmpFitsVersion == 102021){
+      wf->IMRPhenomXHMRingdownAmpVersion = 1;
       switch(wf->modeTag)
       {
           case 21:{
@@ -489,7 +491,7 @@ double IMRPhenomXHM_Amplitude_fcutRD(IMRPhenomXHMWaveformStruct *pWFHM, IMRPheno
   //Returns the end of the intermediate region and the beginning of the ringdown for the amplitude of one mode
 
   double fring = pWFHM->fRING, fdamp=pWFHM->fDAMP;
-  int  version = pWFHM->IMRPhenomXHMRingdownAmpFitsVersion;
+  int  version = pWFHM->IMRPhenomXHMRingdownAmpFreqsVersion;
   double eta   = pWF22->eta;
   double chi1  = pWF22->chi1L;
   double fcut = 0.;  //This is the cutting frequency
@@ -1067,30 +1069,36 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     printf("\n\n**** RINGDOWN ****\n\n");
     #endif
 
-    // We have three "fitted" coefficients across parameter space: alambda, lambda and sigma. Sigma will be constat for all the modes except the 21.
-    pAmp->alambda = fabs(pAmp->RingdownAmpFits[modeint*3](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
-    pAmp->lambda  = pAmp->RingdownAmpFits[modeint*3+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
-    pAmp->sigma   = pAmp->RingdownAmpFits[modeint*3+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
-    pAmp->lc      = 1./12.;
+    if(pWFHM->IMRPhenomXHMRingdownAmpVersion==1){
+        IMRPhenomXHM_RD_Amp_Coefficients(pWF22, pWFHM, pAmp);
+    }
+    else{
+        // We have three "fitted" coefficients across parameter space: alambda, lambda and sigma. Sigma will be constat for all the modes except the 21.
+        pAmp->alambda = fabs(pAmp->RingdownAmpFits[modeint*3](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
+        pAmp->lambda  = pAmp->RingdownAmpFits[modeint*3+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+        pAmp->sigma   = pAmp->RingdownAmpFits[modeint*3+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+        pAmp->lc      = 1./12.;
 
-    #if DEBUG == 1
-    printf("\nuseInspAnsatzRigndown = %i\n",pAmp->useInspAnsatzRingdown);
-    printf("alambda = %.16f\r\n",pAmp->alambda);
-    #endif
+        #if DEBUG == 1
+        printf("\nuseInspAnsatzRigndown = %i\n",pAmp->useInspAnsatzRingdown);
+        printf("alambda = %.16f\r\n",pAmp->alambda);
+        #endif
 
-    // For some cases with extreme spins there is almost no merger and the transition to the ringdown is very sharp.
-    // The coefficients of the ringdown do not work well here and we take an approximation of the inspiral.
-    if(pAmp->useInspAnsatzRingdown==1){
-      // The Ringdown amp at fAmpMatchIM is set to be 0.9 the amplitude in the last inspiral collocation point
-      pAmp->alambda = 0.9*fabs(IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_fcutInsp, pWFHM, pAmp)/(IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp)/pAmp->alambda));
+        // For some cases with extreme spins there is almost no merger and the transition to the ringdown is very sharp.
+        // The coefficients of the ringdown do not work well here and we take an approximation of the inspiral.
+        if(pAmp->useInspAnsatzRingdown==1){
+          // The Ringdown amp at fAmpMatchIM is set to be 0.9 the amplitude in the last inspiral collocation point
+          pAmp->alambda = 0.9*fabs(IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_fcutInsp, pWFHM, pAmp)/(IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp)/pAmp->alambda));
+        }
+
+        #if DEBUG == 1
+        printf("alambda = %.16f\r\n",pAmp->alambda);
+        printf("lambda  = %.16f\r\n",pAmp->lambda);
+        printf("sigma   = %.16f\r\n",pAmp->sigma);
+        printf("lc      = %.16f\r\n",pAmp->lc);
+        #endif
     }
 
-    #if DEBUG == 1
-    printf("alambda = %.16f\r\n",pAmp->alambda);
-    printf("lambda  = %.16f\r\n",pAmp->lambda);
-    printf("sigma   = %.16f\r\n",pAmp->sigma);
-    printf("lc      = %.16f\r\n",pAmp->lc);
-    #endif
 
 
     /*******************/
