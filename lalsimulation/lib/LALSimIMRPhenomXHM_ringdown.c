@@ -371,6 +371,11 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
             break;
         }
+        case 1:
+        {
+            ampRD = pAmp->r1 * fda / ( exp(pAmp->r2 / (fda * pAmp->r3) * (ff - frd)) * (dfr * dfr + fda * fda);
+            break;
+        }
         default:
         {
             XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Amp_lm_Ansatz: IMRPhenomXHMRingdownAmpFitsVersion is not valid. Use version 0. \n");
@@ -388,16 +393,16 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct 
     int RDAmpFlag = pWF->IMRPhenomXHMRingdownAmpVersion;
     double frd = pWF->fRING;
     double fda = pWF->fDAMP;
-    double dfd = fda * pAmp->sigma;
-    double lc  = pAmp->lc;
-    double lambda = pAmp->lambda;
     double DampRD;
-    double numerator,denom,expon;
+    double numerator,denom;
 
     switch ( RDAmpFlag )
     {
         case 0:  /* Canonical, 3 fitted coefficients + fring, fdamp, lc that are fixed. sigma is also fixed except for the 21 mode. */
         {
+            double dfd = fda * pAmp->sigma;
+            double lc  = pAmp->lc;
+            double lambda = pAmp->lambda, expon;
             numerator = fabs(pAmp->alambda)*pow(ff,-1.-lc)*( dfd*lc*(frd*frd + dfd*dfd)
                                                            + ff*( frd*frd*lambda - 2.*dfd*frd*(1.+lc) + dfd*dfd*lambda)
                                                            + ff*ff*( -2.*lambda*frd + dfd*(2.+lc) )
@@ -406,6 +411,15 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct 
             denom = frd*frd + dfd*dfd - ff*2.*frd + ff*ff;
             expon = exp(-(ff-frd)*lambda/dfd);
             DampRD = -numerator*expon/(denom*denom);
+            break;
+        }
+        case 1:
+        {
+            double dfr = ff - frd;
+            numerator = -1. * pAmp->r1 * (dfr * dfr * pAmp->r2 + 2 * fda * dfr * pAmp->r3 + fda * fda * pAmp->r2 * pAmp->r3 * pAmp->r3);
+            denom = (dfr * dfr + fda * fda * pAmp->r3 * pAmp->r3);
+            denom = pAmp->r3 * denom * denom * exp(dfr * pAmp->r2 / (fda * pAmp->r3));
+            DampRD = - numerator * denom;
             break;
         }
         default:

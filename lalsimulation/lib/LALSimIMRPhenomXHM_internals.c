@@ -170,22 +170,27 @@ void IMRPhenomXHM_SetHMWaveformVariables(
   wf->IMRPhenomXHMRingdownAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpVersion(LALParams); //0  (0 collocation points)
 
   if(wf->IMRPhenomXHMInspiralAmpFitsVersion == 102021){
+      wf->IMRPhenomXHMRingdownAmpFitsVersion = 1;
       switch(wf->modeTag)
       {
           case 21:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             break;
           }
           case 33:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
+            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211004;
             break;
           }
           case 32:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
+            wf->IMRPhenomXHMRingdownAmpFitsVersion = 202109302;
             break;
           }
           case 44:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             break;
           }
       }
@@ -371,6 +376,29 @@ void IMRPhenomXHM_FillAmpFitsArray(IMRPhenomXHMAmpCoefficients *pAmp){
   pAmp->RingdownAmpFits[9]  = IMRPhenomXHM_RD_Amp_44_alambda;
   pAmp->RingdownAmpFits[10] = IMRPhenomXHM_RD_Amp_44_lambda;
   pAmp->RingdownAmpFits[11] = IMRPhenomXHM_RD_Amp_44_sigma; //currently constant
+
+
+  /****Ringdown Fits for Collocation Points*****/
+
+  //21
+  pAmp->RingdownAmpFits[12]  = IMRPhenomXHM_RD_Amp_21_rdcp1;
+  pAmp->RingdownAmpFits[13]  = IMRPhenomXHM_RD_Amp_21_rdcp2;
+  pAmp->RingdownAmpFits[14]  = IMRPhenomXHM_RD_Amp_21_rdcp3;
+
+  //33
+  pAmp->RingdownAmpFits[15]  = IMRPhenomXHM_RD_Amp_33_rdcp1;
+  pAmp->RingdownAmpFits[16]  = IMRPhenomXHM_RD_Amp_33_rdcp2;
+  pAmp->RingdownAmpFits[17]  = IMRPhenomXHM_RD_Amp_33_rdcp3;
+
+  //32
+  pAmp->RingdownAmpFits[18]  = IMRPhenomXHM_RD_Amp_32_rdcp1;
+  pAmp->RingdownAmpFits[19]  = IMRPhenomXHM_RD_Amp_32_rdcp2;
+  pAmp->RingdownAmpFits[20]  = IMRPhenomXHM_RD_Amp_32_rdcp3;
+
+  //44
+  pAmp->RingdownAmpFits[21]  = IMRPhenomXHM_RD_Amp_44_rdcp1;
+  pAmp->RingdownAmpFits[22]  = IMRPhenomXHM_RD_Amp_44_rdcp2;
+  pAmp->RingdownAmpFits[23]  = IMRPhenomXHM_RD_Amp_44_rdcp3;
 
 
 }

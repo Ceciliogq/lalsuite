@@ -162,6 +162,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
 
             /* Coefficients of the Ringdown ansatz */
             REAL8 alambda, lambda, sigma, lc;
+            REAL8 r1, r2, r3; //Introduced in version 102021
 
             // fits of coefficients/collocation points
             ParameterSpaceFit InspiralAmpFits[N_HIGHERMODES_IMPLEMENTED*N_MAX_COEFFICIENTS_AMPLITUDE_INS];
