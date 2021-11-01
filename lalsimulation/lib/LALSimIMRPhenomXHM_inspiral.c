@@ -722,6 +722,10 @@ static double IMRPhenomXHM_Inspiral_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_o
         }
         default:{XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_Inspiral_Amp_Ansatz: IMRPhenomXInspiralAmpVersion is not valid. Recommended version is 2018. \n");}
     }*/
+    if(rescalefactor>0){
+        InspAmp*= RescaleFactor(powers_of_Mf, pAmp, rescalefactor);
+    }
+
     return InspAmp;
 }
 
@@ -791,6 +795,19 @@ int WavyPoints(double p1, double p2, double p3){
     }
 }
 
+
+double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
+    double factor = 0.;
+    switch(rescalefactor){
+        case 1:{
+            factor = powers_of_Mf->m_seven_sixths;
+        }
+        case 2:{
+            factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
+        }
+    }
+    return factor;
+}
 
 
 /*************************************/

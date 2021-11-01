@@ -816,6 +816,33 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
 
+    pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
+    /*double v = cbrt(2*LAL_PI/pWFHM->emm); // v factor without f
+    switch(pWFHM->modeTag){
+        case 22:{
+            PNdominantlm = 1.;
+            break;
+        }
+        case 21:{
+            PNdominantlm = sqrt(2)/3 * pWF22->delta * v;
+            break;
+        }
+        case 33:{
+            PNdominantlm = 3/4.*sqrt(5/7.)*pWF22->delta * v;
+            break;
+        }
+        case 32:{
+            PNdominantlm = fabs(1/3.*sqrt(5/7.)*(-1+3*pWF22->eta)) * v*v;
+            break;
+        }
+        case 44:{
+            PNdominantlm = fabs(4/9.*sqrt(10/7.)*(-1+3*pWF22->eta)) * v*v;
+            break;
+        }
+    }*/
+
+    // Set rescaling factors of each region
+
     // Options for the extrapolation of the model outside the calibration region
     if(((pWFHM->modeTag==44) || (pWFHM->modeTag==33)) && pWF22->q>7. && pWF22->chi1L > 0.95){
       pAmp->useInspAnsatzRingdown = 1;

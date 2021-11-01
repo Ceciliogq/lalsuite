@@ -186,8 +186,8 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             // Order of the polynomial in the intermediate region. 5th->105, for the first EMR region is 1042
             INT4 InterAmpPolOrder;
 
-    				// Store the PN amplitude at the frequencies of the collocation points in the inspiral
-    				REAL8 PNAmplitudeInsp[N_MAX_COEFFICIENTS_AMPLITUDE_INS];
+    		// Store the PN amplitude at the frequencies of the collocation points in the inspiral
+    		REAL8 PNAmplitudeInsp[N_MAX_COEFFICIENTS_AMPLITUDE_INS];
 
             // For the pseudo part of Inspiral Amplitude ansatz. Used in LALSimIMRPhenomXHM_inspiral.c
             REAL8 fcutInsp_seven_thirds;
@@ -205,8 +205,10 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             // Variables to control if we have to check that the collocation points are wavy
             INT4 WavyInsp, WavyInt;
 
-            // Amp0 = wf22->ampNorm * wf22->amp0. Multiplying by this gives the amp factor of the 22 and transform to "physical" units
+            // Amp0 = wf22->ampNorm * wf22->amp0. Multiplying by this gives the amp factor of the 22 and transforms to "physical" units
             REAL8 Amp0;
+
+            INT4 InspRescaleFactor, InterRescaleFactor, RDRescaleFactor;
 
     } IMRPhenomXHMAmpCoefficients;
 

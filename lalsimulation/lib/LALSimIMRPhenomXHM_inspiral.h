@@ -82,6 +82,8 @@ void IMRPhenomXHM_Inspiral_Amplitude_Veto(
 );
 static int WavyPoints(double p1, double p2, double p3);
 
+double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor);
+
 
 /*********** PHASE ***************/
 
