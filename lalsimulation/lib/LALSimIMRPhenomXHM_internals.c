@@ -843,14 +843,17 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         }
     }*/
 
-    // Set rescaling factors of each region
-    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion == 122018){
-            pAmp->InspRescaleFactor = 1;
-    }
-    else{
-            pAmp->InspRescaleFactor = 2;
-    }
-    printf("pAmp->InspRescaleFactor = %i\n", pAmp->InspRescaleFactor);
+    pAmp->InterRescaleFactor = 0;
+
+    // // Set rescaling factors of each region
+    // if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion == 122018){
+    //         pAmp->InspRescaleFactor = 1;
+    // }
+    // else{
+    //         pAmp->InspRescaleFactor = 2;
+    // }
+
+    pAmp->InterRescaleFactor = 0;
     if(pWFHM->IMRPhenomXHMRingdownAmpFitsVersion == 122018){
             pAmp->RDRescaleFactor = 1;
     }
@@ -909,6 +912,14 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     /*****************/
     /*    INSPIRAL   */
     /*****************/
+    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){
+        pAmp->InspRescaleFactor = 2;
+    }
+    else{
+        pAmp->InspRescaleFactor = 1;
+
+
+    }
     #if DEBUG == 1
     printf("\n**** INSPIRAL ****\n\n");
     printf("IMRPhenomXHMInspiralAmpVersion = %i\r\n",pWFHM->IMRPhenomXHMInspiralAmpVersion);
@@ -1184,11 +1195,16 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     // Compute values at the boundaries (rescaled ansatz with the leading order of the 22).
     printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
-    int tmp = pAmp->InspRescaleFactor;
-    int tmp2 = pAmp->RDRescaleFactor;
-    if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
-         pAmp->InspRescaleFactor = 1;
-         pAmp->RDRescaleFactor = 1;
+    // int tmp = pAmp->InspRescaleFactor;
+    // int tmp2 = pAmp->RDRescaleFactor;
+    // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
+    //      pAmp->InspRescaleFactor = 1;
+    //      pAmp->RDRescaleFactor = 1;
+    // }
+    pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
+    pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
+    if(pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion == 122018){
+            pAmp->InterRescaleFactor = 1;
     }
     printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
     double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
@@ -1208,8 +1224,8 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
       d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
     }
     // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
-    pAmp->InspRescaleFactor = -tmp;
-    pAmp->RDRescaleFactor = -tmp2;
+
+    pAmp->InterRescaleFactor = 0;
     // printf("pAmp->InspRescaleFactorE = %i\n", pAmp->InspRescaleFactor);
     // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
     //      pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;

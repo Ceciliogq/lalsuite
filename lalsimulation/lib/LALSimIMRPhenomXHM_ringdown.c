@@ -641,6 +641,9 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
             XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Amp_Ansatz: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 0 or 1. \n");
         }
     }
+    if(pAmp->InterRescaleFactor>0){
+        ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
+    }
 
     return ampRD;
 }

@@ -82,7 +82,9 @@ void IMRPhenomXHM_Inspiral_Amplitude_Veto(
 );
 static int WavyPoints(double p1, double p2, double p3);
 
-
+void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22);
+static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints);
+static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomX_UsefulPowers* powers_of_Mf_inspcollpoints, IMRPhenomXHMWaveformStruct *pWFHM);
 
 /*********** PHASE ***************/
 
