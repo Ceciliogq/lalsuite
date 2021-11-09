@@ -613,6 +613,8 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
     double fda = pWF->fDAMP;
     double dfr = ff - frd;
     double ampRD;
+    IMRPhenomX_UsefulPowers powers_of_Mf;
+    IMRPhenomX_Initialize_Powers(&powers_of_Mf, ff);
 
     switch ( RDAmpFlag )
     {
@@ -621,13 +623,17 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
             double dfd = fda * pAmp->sigma;
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
+
+            ampRD *= (pWF->ampNorm * powers_of_Mf.m_seven_sixths);
+            ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;
         }
         case 1:
         {
             double dfd = fda * pAmp->r3;
-            double factor = pow(2./(pWF->emm),-7/6.);
-            ampRD = pWF->ampNorm * factor * pAmp->r1 * fda / ( exp(pAmp->r2 / dfd * dfr) * (dfr * dfr + dfd * dfd));
+            //double factor = pow(2./(pWF->emm),-7/6.);
+            ampRD = pAmp->r1 * fda / ( exp(pAmp->r2 / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
+            ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;
         }
         default:
@@ -673,7 +679,7 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct 
             numerator = pAmp->r1 * (dfr * dfr * pAmp->r2 + 2 * fda * dfr * pAmp->r3 + fda * fda * pAmp->r2 * pAmp->r3 * pAmp->r3);
             denom = (dfr * dfr + fda * fda * pAmp->r3 * pAmp->r3);
             denom = pAmp->r3 * denom * denom * exp(dfr * pAmp->r2 / (fda * pAmp->r3));
-            DampRD = - pWF->ampNorm * numerator * denom;
+            DampRD = - numerator * denom;
             break;
         }
         default:

@@ -164,14 +164,15 @@ void IMRPhenomXHM_SetHMWaveformVariables(
   wf->IMRPhenomXHMIntermediateAmpFitsVersion = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMInspiralAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFreqsVersion(LALParams); //122018
+  wf->IMRPhenomXHMIntermediateAmpFreqsVersion= 122018;//XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFreqsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFreqsVersion(LALParams); //122018
   /* Reconstruction version for the amplitude */
   wf->IMRPhenomXHMInspiralAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpVersion(LALParams); //3  (3 collocation points)
   wf->IMRPhenomXHMIntermediateAmpVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpVersion(LALParams); //2   (2 collocation points)
   wf->IMRPhenomXHMRingdownAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpVersion(LALParams); //0  (0 collocation points)
 
-
-  if(wf->IMRPhenomXHMInspiralAmpFitsVersion == 102021 && wf->IMRPhenomXHMRingdownAmpFitsVersion == 102021){
+   //FIXME
+  if(wf->IMRPhenomXHMInspiralAmpFitsVersion != 122018 && wf->IMRPhenomXHMRingdownAmpFitsVersion != 122018){
       wf->IMRPhenomXHMRingdownAmpVersion = 1;
       switch(wf->modeTag)
       {
@@ -653,7 +654,8 @@ void IMRPhenomXHM_GetPNAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, 
   double PI   = powers_of_lalpiHM.itself;
 
   const double prefactors[] = {sqrt(2)/3., 0.75*sqrt(5/7.), sqrt(5/7.)/3., 4*sqrt(2)/9*sqrt(5/7.)}; //Global factors of each PN hlm
-  pAmp->PNglobalfactor = pow(2./(pWFHM->emm),-7/6.)*prefactors[pWFHM->modeInt]; //This is to compensate that we rescale data with the leading order of the 22
+  //FIXMEpAmp->PNglobalfactor = pow(2./(pWFHM->emm),-7/6.)*prefactors[pWFHM->modeInt]; //This is to compensate that we rescale data with the leading order of the 22
+  pAmp->PNglobalfactor = prefactors[pWFHM->modeInt] * pWF22->ampNorm * pow(2./(pWFHM->emm),-7/6.);
 
   /*switch(inspversion){  FIXMEE
     case 122018: // default version
@@ -815,7 +817,7 @@ void Get21PNAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXW
 void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22) {
 
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
-
+    pAmp->ampNorm = pWF22->ampNorm;
     pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
     /*double v = cbrt(2*LAL_PI/pWFHM->emm); // v factor without f
     switch(pWFHM->modeTag){
@@ -842,6 +844,19 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     }*/
 
     // Set rescaling factors of each region
+    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion == 122018){
+            pAmp->InspRescaleFactor = 1;
+    }
+    else{
+            pAmp->InspRescaleFactor = 2;
+    }
+    printf("pAmp->InspRescaleFactor = %i\n", pAmp->InspRescaleFactor);
+    if(pWFHM->IMRPhenomXHMRingdownAmpFitsVersion == 122018){
+            pAmp->RDRescaleFactor = 1;
+    }
+    else{
+            pAmp->RDRescaleFactor = 2;
+    }
 
     // Options for the extrapolation of the model outside the calibration region
     if(((pWFHM->modeTag==44) || (pWFHM->modeTag==33)) && pWF22->q>7. && pWF22->chi1L > 0.95){
@@ -932,6 +947,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     // Compute the values of Post-Newtoninan ansatz (without the pseudo-PN terms) at the frequencies of the collocation points.
     double PNf1, PNf2, PNf3;
+    printf("pAmp->InspRescaleFactor2 = %d\n", pAmp->InspRescaleFactor);
     PNf1 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f1, pWFHM, pAmp);
     PNf2 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f2, pWFHM, pAmp);
     PNf3 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f3, pWFHM, pAmp);
@@ -943,9 +959,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     // FIXME
     if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
         // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
-        pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f3.m_seven_sixths/pWF22->ampNorm;
-        pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f2.m_seven_sixths/pWF22->ampNorm;
-        pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion))/powers_of_f1.m_seven_sixths/pWF22->ampNorm;
+        pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f3.m_seven_sixths/pWF22->ampNorm;
+        pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f2.m_seven_sixths/pWF22->ampNorm;
+        pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f1.m_seven_sixths/pWF22->ampNorm;
     }
     else{
         // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
@@ -1167,6 +1183,14 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     IMRPhenomX_Initialize_Powers(&powers_of_F4,F4);
 
     // Compute values at the boundaries (rescaled ansatz with the leading order of the 22).
+    printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
+    int tmp = pAmp->InspRescaleFactor;
+    int tmp2 = pAmp->RDRescaleFactor;
+    if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
+         pAmp->InspRescaleFactor = 1;
+         pAmp->RDRescaleFactor = 1;
+    }
+    printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
     double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
     double rdF4;
     if (pWFHM->MixingOn == 1){
@@ -1183,6 +1207,13 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     }else{
       d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
     }
+    // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
+    pAmp->InspRescaleFactor = -tmp;
+    pAmp->RDRescaleFactor = -tmp2;
+    // printf("pAmp->InspRescaleFactorE = %i\n", pAmp->InspRescaleFactor);
+    // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
+    //      pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
+    // }
 
     #if DEBUG == 1
     printf("d1 = %.16f\n",d1);
@@ -1459,6 +1490,30 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     printf("delta5 = %.16f\n", pAmp->delta5);
     printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
     #endif
+  }
+
+  double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
+      double factor = 0.;
+      switch(rescalefactor){
+          case -2:{
+              factor = 1.;
+              break;
+          }
+          case -1:{
+              factor = 1.; //pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
+              break;
+          }
+          case 1:{
+              factor = pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
+              break;
+          }
+          case 2:{
+              factor = 1.; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
+              break;
+          }
+          default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in RescaleFactor: version %i is not valid. Recommended version is 1.", rescalefactor);}
+      }
+      return factor;
   }
 
 
@@ -2132,26 +2187,26 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
 
   // WITHOUT mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))]
   double IMRPhenomXHM_Amplitude_noModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWF) {
-
+      //FIXME: Returns the whole strain
     // If it is an odd mode and equal black holes case this mode is zero.
     if(pWF->Ampzero==1){
       return 0.;
     }
 
-    double factor = powers_of_f->m_seven_sixths;
+    //double factor = powers_of_f->m_seven_sixths;
 
     // Use step function to only calculate IMR regions in approrpiate frequency regime
     // Inspiral range
     if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
     {
       double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      return AmpIns*factor;
+      return AmpIns;
     }
     // MRD range
     if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
       double AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f->itself, pWF, pAmp);
-      return AmpMRD*factor;
+      return AmpMRD; //*factor*pWF->ampNorm;
     }
     /* Intermediate range */
     // First intermediate region.
@@ -2161,11 +2216,11 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
       pAmp->InterAmpPolOrder = 1042;
       double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
       pAmp->InterAmpPolOrder = tmp;
-      return AmpInt1;
+      return AmpInt1*pWF->ampNorm;
     }
     //Second intermediate region
     double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
-    return AmpInt;
+    return AmpInt*pWF->ampNorm;
   }
 
   // WITH mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].

@@ -647,8 +647,12 @@ static double IMRPhenomXHM_Inspiral_PNAmp_Ansatz(IMRPhenomX_UsefulPowers *powers
         + powers_of_Mf->four_thirds  * pAmp->pnFourThirds
         + powers_of_Mf->five_thirds  * pAmp->pnFiveThirds
         + powers_of_Mf->two          * pAmp->pnSixThirds
-      );
+    );
       pnAmp = (pAmp->PNglobalfactor)*cabs(CpnAmp);
+      pnAmp *= powers_of_Mf->m_seven_sixths;
+      //if(pAmp->InspRescaleFactor>=0){
+      pnAmp/= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
+      //}
     /*  break;
     }
     default :
@@ -666,12 +670,12 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
   double complex CpnAmpTD; //This is not the real strain of the lm mode. It is the strain rescaled with the prefactor of the 22 mode: divided by sqrt(2*eta/3.)/pi^(1/6)
   double pnAmp, XdotT4, x_to_m_one_four, two_to_m_one_sixths = 0.8908987181403393, three_to_m_one_second = 0.5773502691896257;
   x_to_m_one_four = two_to_m_one_sixths * powers_of_lalpiHM.m_one_sixth * powers_of_Mf->m_one_sixth;
-  /*int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
+  int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion;
   switch(InsAmpFlag)
   {
     case 122018:
     case 102021://FIXME
-    {*/
+    {
       // Complex time-domain Post-Newtonina amplitude, power series
       CpnAmpTD = (
          powers_of_Mf->one_third    * pAmp->x05
@@ -694,11 +698,16 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
       + powers_of_Mf->eight_thirds * powers_of_Mf->eight_thirds * powers_of_Mf->one_third  * pAmp->xdot85;
 
       // Perform the SPA, multiply time-domain by the phasing factor
-      pnAmp = 2. * powers_of_lalpiHM.sqrt  * three_to_m_one_second  * cabs(CpnAmpTD) * x_to_m_one_four / sqrt(XdotT4) /powers_of_Mf->m_seven_sixths/pWFHM->ampNorm;
-     /* break;
+      pnAmp = 2. * powers_of_lalpiHM.sqrt * three_to_m_one_second  * cabs(CpnAmpTD) * x_to_m_one_four / sqrt(XdotT4);// /powers_of_Mf->m_seven_sixths/pWFHM->ampNorm;
+      //pnAmp *= powers_of_Mf->m_seven_sixths;
+      //if(pAmp->InspRescaleFactor>=0){
+      pnAmp/= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
+      //}
+
+     break;
     }
     default:{XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_Inspiral_PNAmp_Ansatz: IMRPhenomXInspiralAmpVersion is not valid. Recommended version is 122018.\n");}
-}*/
+  }
   return pnAmp;
 }
 
@@ -707,26 +716,22 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
 static double IMRPhenomXHM_Inspiral_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp)
 {
     double InspAmp; //This is the amplitude strain rescaled with the prefactor of the 22 mode: divided by [sqrt(2*eta/3.)/pi^(1/6) * f^(-7/6)]
-    /*int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
-    switch(InsAmpFlag)
-    {
-        case 122018:
-        case 102021://FIXME
-        {*/
-            InspAmp = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(powers_of_Mf, pWFHM, pAmp)
-            + powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
-            + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
-            + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3
-            ;/*
-            break;
+    // int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
+    // if(InsAmpFlag == 122018){
+        InspAmp = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(powers_of_Mf, pWFHM, pAmp);
+        double pseudoterms = powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
+                + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
+                + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3;
+        if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
+            pseudoterms /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_Inspiral_Amp_Ansatz: IMRPhenomXInspiralAmpVersion is not valid. Recommended version is 2018. \n");}
-    }*/
-    if(rescalefactor>0){
-        InspAmp*= RescaleFactor(powers_of_Mf, pAmp, rescalefactor);
-    }
+        if(pAmp->InspRescaleFactor<0){
+            pseudoterms*= RescaleFactor(powers_of_Mf, pAmp, -pAmp->InspRescaleFactor);
+        }
+        InspAmp+=pseudoterms;
+    //}
 
-    return InspAmp;
+    return InspAmp ;
 }
 
 /* Numerical derivative of the inspiral (4th order finite differences)
@@ -796,18 +801,7 @@ int WavyPoints(double p1, double p2, double p3){
 }
 
 
-double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
-    double factor = 0.;
-    switch(rescalefactor){
-        case 1:{
-            factor = powers_of_Mf->m_seven_sixths;
-        }
-        case 2:{
-            factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
-        }
-    }
-    return factor;
-}
+
 
 
 /*************************************/

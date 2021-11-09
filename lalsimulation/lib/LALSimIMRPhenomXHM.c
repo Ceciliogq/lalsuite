@@ -1728,7 +1728,7 @@ static int IMRPhenomXHM_MultiMode2(
     else{
       minus1l = 1;
     }
-    Amp0 = minus1l * pWF->ampNorm * pWF->amp0;
+    Amp0 = minus1l * pWF->amp0; //FIXME* pWF->ampNorm;
 
     for (INT4 emm = 1; emm < (INT4)ell + 1; emm++){
       /* Loop over only positive m is intentional. The single mode function returns the negative mode h_l-m, and the positive is added automatically in IMRPhenomXHMFDAddMode. */
@@ -2148,7 +2148,7 @@ int XLALSimIMRPhenomXHMAmplitude(
       }
       IMRPhenomXHM_GetAmplitudeCoefficients(pAmp, pPhase, pAmp22, pPhase22, pWFHM, pWF);
 
-      REAL8 Amp0 = pWFHM->Amp0, amp;
+      REAL8 Amp0 = pWF->amp0, amp; //pWFHM->Amp0, amp;
       IMRPhenomX_UsefulPowers powers_of_Mf;
       /* Loop over frequencies to generate waveform */
       /* Modes with mixing */
@@ -2198,7 +2198,7 @@ int XLALSimIMRPhenomXHMAmplitude(
         */
         size_t n = (*amplitude)->data->length;
         XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
-        
+
         // We want to have the length be a power of 2 + 1
         size_t n_full = NextPow2(pWF->fMax / pWF->deltaF) + 1;
 
@@ -2434,7 +2434,7 @@ int XLALSimIMRPhenomXHMAmplitude(
           */
           size_t n = (*phase)->data->length;
           XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
-          
+
           // We want to have the length be a power of 2 + 1
           size_t n_full = NextPow2(pWF->fMax / pWF->deltaF) + 1;
 

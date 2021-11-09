@@ -69,6 +69,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
         INT4  IMRPhenomXHMRingdownAmpFitsVersion;
 
         INT4  IMRPhenomXHMInspiralAmpFreqsVersion;
+        INT4  IMRPhenomXHMIntermediateAmpFreqsVersion;
         INT4  IMRPhenomXHMRingdownAmpFreqsVersion;
 
         INT4  IMRPhenomXHMInspiralAmpVersion;
@@ -149,7 +150,10 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             /* PN Amplitude Prefactors */
             COMPLEX16 pnInitial, pnOneThird, pnTwoThirds, pnThreeThirds, pnFourThirds, pnFiveThirds, pnSixThirds, pnSevenThirds, pnEightThirds,pnNineThirds;
 
-            /* PN Amplitude global prefactor */
+            /* PN Amplitude dominant factor = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6) */
+            REAL8 PNdominant, ampNorm;
+
+            /* PN Amplitude global prefactor = leading lm order after substracting PNdominant*/
             REAL8 PNglobalfactor;
 
             /* Coefficients of the pseudo-PN terms */

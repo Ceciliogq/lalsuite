@@ -211,7 +211,7 @@ const char * usage =
 "--phenomXPrecVersion int   Choose precessing version for the Euler angles.\n"
 "                           Options and default values can be found in https://lscsoft.docs.ligo.org/lalsuite/lalsimulation/group___l_a_l_sim_i_m_r_phenom_x__c.html.\n"
 "--phenomXPFinalSpinMod int Choose final spin prescription.\n"
-"                           Options and default values can be found in https://lscsoft.docs.ligo.org/lalsuite/lalsimulation/group___l_a_l_sim_i_m_r_phenom_x__c.html.\n"
+"                           Options and default value--approximant IMRPhenomXHM --spin1z 0. --spin2z 0. --m1 30. --m2 20. --f-min 20 --f-max 1024. --deltaF 0.125s can be found in https://lscsoft.docs.ligo.org/lalsuite/lalsimulation/group___l_a_l_sim_i_m_r_phenom_x__c.html.\n"
 ;
 
 /* Parse command line, sanity check arguments, and return a newly
@@ -559,6 +559,12 @@ int main (int argc , char **argv) {
 
     /* parse commandline */
     params = parse_args(argc, argv);
+
+    XLALSimInspiralWaveformParamsInsertPhenomXHMInspiralAmpFitsVersion(params->params, 102021);
+    XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFitsVersion(params->params, 102021);
+    XLALSimInspiralWaveformParamsInsertPhenomXHMInspiralAmpFreqsVersion(params->params, 102021);
+    XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFreqsVersion(params->params, 102021);
+
 
     /* generate waveform */
     start_time = time(NULL);
