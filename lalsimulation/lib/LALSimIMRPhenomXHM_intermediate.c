@@ -2075,6 +2075,89 @@ void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficien
     }
 }
 
+static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
+    /* Define frequencies */
+    switch(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion){
+        case 102021:{ // Equispaced. Get boundaries too
+            REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
+            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
+                pAmp->CollocationPointsFreqsAmplitudeInter[i] = pAmp->fAmpMatchIN + deltaf * i;
+            }
+            break;
+        }
+        case 1:{ // Chebyshev. Get boundaries too
+            REAL8 semisum = 0.5 * (pAmp->fAmpMatchIN + pAmp->fAmpMatchIM);
+            REAL8 semidif = 0.5 * (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN);
+            for (INT4 i = pWFHM->nCollocPtsInterAmp + 1; i >=0; i--){
+                pAmp->CollocationPointsFreqsAmplitudeInter[i] = semisum + semidif * cos( i * LAL_PI / pWFHM->nCollocPtsInterAmp );
+            }
+            break;
+        }
+        default: {XLAL_ERROR_VOID(XLAL_EDOM, "Error in IMRPhenomXHM_Intermediate_Amp_CollocationPoints: IMRPhenomXHMIntermediateAmpFreqsVersion = %i is not valid. Recommneded version is 102021.\n", pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion);}
+    }
+    /* Define values */
+    IMRPhenomX_UsefulPowers powers_of_finsp;
+    IMRPhenomX_Initialize_Powers(&powers_of_finsp, pAmp->fAmpMatchIN);
+    pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
+    for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp + 1; i++){
+        pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+    }
+    pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
+}
+
+void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM){
+
+    INT2 nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp + 2; // Add the two boundaries (inspiral, ringdown)
+
+    IMRPhenomXHM_Intermediate_Amp_CollocationPoints(pAmp, pWFHM, pWF22);
+
+    /* GSL objects for solving system of equations via LU decomposition */
+    gsl_vector *b, *x;
+    gsl_matrix *A;
+    gsl_permutation *p;
+    int signum; // No need to set, used internally by gsl_linalg_LU_decomp
+
+
+    p = gsl_permutation_alloc(nCollocPtsInterAmp);
+    b = gsl_vector_alloc(nCollocPtsInterAmp);
+    x = gsl_vector_alloc(nCollocPtsInterAmp);
+    A = gsl_matrix_alloc(nCollocPtsInterAmp, nCollocPtsInterAmp);
+
+    /* Define linear system of equations */
+
+    for(INT4 i = 0; i < nCollocPtsInterAmp; i++){
+      // b is the vector with the values of collocation points
+      gsl_vector_set(b, i, pAmp->CollocationPointsValuesAmplitudeInter[i]);
+      //FIXME: distinguish InterAmp ansatzaes versions
+      // Set system matrix: Polynomial/f^7/6 at the collocation points frequencies.
+      /* A = (1, f1, f1^2, f1^3, f1^4, ...) * f1^(-7/6)
+             (1, f2, f2^2, f2^3, f2^4, ...) * f2^(-7/6)
+             ....
+             Until number of collocation points
+      */
+      REAL8 fcollpoint = pAmp->CollocationPointsFreqsAmplitudeInter[i];
+      REAL8 fcollpoint_m_seven_sixths = pow(fcollpoint, -7/6.);
+      REAL8 fpower = 1.; // 1, f, f^2, f^3, f^4, ...
+      for(INT4 j = 0; j < nCollocPtsInterAmp; j++){
+          gsl_matrix_set(A, i, j, fpower * fcollpoint_m_seven_sixths);
+          fpower *= fcollpoint;
+      }
+    }
+
+    /* We now solve the system A x = b via an LU decomposition. x is the solution vector */
+    gsl_linalg_LU_decomp(A, p, &signum);
+    gsl_linalg_LU_solve(A, p, b, x);
+
+    for (INT4 i = 0; i < nCollocPtsInterAmp; i++){
+        pAmp->InterCoefficient[i] = gsl_vector_get(x, i);
+    }
+
+    gsl_vector_free(b);
+    gsl_vector_free(x);
+    gsl_matrix_free(A);
+    gsl_permutation_free(p);
+}
+
 
 /***********************************************/
 /*                                             */

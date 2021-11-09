@@ -105,6 +105,8 @@ static void Update_Intermediate_Amplitude_Coefficients(IMRPhenomXHMAmpCoefficien
 //Check if the polynomials cross zero and lower the order if needed in an iterative way
 static void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp);
 
+static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22);
+void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM);
 
 /************** PHASE ******************/
 

@@ -623,7 +623,6 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
             double dfd = fda * pAmp->sigma;
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
-
             ampRD *= (pWF->ampNorm * powers_of_Mf.m_seven_sixths);
             ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;

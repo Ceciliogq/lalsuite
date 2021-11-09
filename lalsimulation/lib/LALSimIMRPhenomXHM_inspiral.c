@@ -719,9 +719,18 @@ static double IMRPhenomXHM_Inspiral_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_o
     // int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
     // if(InsAmpFlag == 122018){
         InspAmp = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(powers_of_Mf, pWFHM, pAmp);
-        double pseudoterms = powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
-                + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
-                + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3;
+        double pseudoterms = 0.;
+        if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 122018){
+            pseudoterms = powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
+                    + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
+                    + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3;
+        }
+        else{
+            //for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
+            //pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two;
+            pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two;
+            //}
+        }
         // if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
         //     pseudoterms /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
         // } Change1
@@ -806,14 +815,26 @@ int WavyPoints(double p1, double p2, double p3){
 void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
 
     // Get CollocationPointsFreqsAmplitudeInsp and CollocationPointsValuesAmplitudeInsp
-    IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints = (IMRPhenomX_UsefulPowers *)XLALMalloc((pWFHM->nCollocPtsInspAmp + 1)* sizeof(IMRPhenomX_UsefulPowers));
-    IMRPhenomXHM_Inspiral_Amp_CollocationPoints(pAmp, pWFHM, pWF22, powers_of_Mf_inspcollpoints);
+    IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints = (IMRPhenomX_UsefulPowers *)XLALMalloc((pWFHM->nCollocPtsInspAmp + 1) * sizeof(IMRPhenomX_UsefulPowers));
+    IMRPhenomXHM_Inspiral_Amp_CollocationPoints(pAmp, pWFHM, pWF22);
 
+    for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
+        int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
+        if(status != XLAL_SUCCESS)
+            XLALPrintError("IMRPhenomXHM_Get_Inspiral_Amp_Coefficients failed for Mf, initial_status=%d",status);
+    }
+    int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp]),  pAmp->fAmpMatchIN);
+    if(status != XLAL_SUCCESS)
+        XLALPrintError("IMRPhenomXHM_Get_Inspiral_Amp_Coefficients failed for Mf, initial_status=%d",status);
+    pAmp->fcutInsp_seven_thirds = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].four_thirds;
+    pAmp->fcutInsp_eight_thirds = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].five_thirds;
+    pAmp->fcutInsp_three = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].two;
     // Do Vetos? set final pWFHM->IMRPhenomXHMInspiralAmpVersion
 
     // Get PN values at collocation points frequencies
-    for (INT4 i=0; i <= pWFHM->nCollocPtsInspAmp; i++){
+    for (INT4 i=0; i < pWFHM->nCollocPtsInspAmp; i++){
         pAmp->PNAmplitudeInsp[i] = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&(powers_of_Mf_inspcollpoints[i]), pWFHM, pAmp);
+        printf("pAmp->PNAmplitudeInsp[%i] = %.16e\n", i, pAmp->PNAmplitudeInsp[i]);
     }
 
     // Inspiral coefficients
@@ -821,14 +842,16 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     //     pAmp->InspiralCoefficient[i] = pAmp->InspiralCoefficientFunction[i](powers_of_Mf_inspcollpoints, pAmp);
     // }
     IMRPhenomXHM_Inspiral_Amp_Coefficients(pAmp, powers_of_Mf_inspcollpoints, pWFHM);
+    printf("Leaving IMRPhenomXHM_Get_Inspiral_Amp_Coefficients\n");
+    LALFree(powers_of_Mf_inspcollpoints);
 }
 
-static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints){
+static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
     switch(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion){
         case 102021:{
-            pAmp->CollocationPointsFreqsAmplitudeInsp[0] = 1.0  * pAmp->fAmpMatchIN;
+            pAmp->CollocationPointsFreqsAmplitudeInsp[0] = 0.5  * pAmp->fAmpMatchIN;
             pAmp->CollocationPointsFreqsAmplitudeInsp[1] = 0.75 * pAmp->fAmpMatchIN;
-            pAmp->CollocationPointsFreqsAmplitudeInsp[2] = 0.5  * pAmp->fAmpMatchIN;
+            pAmp->CollocationPointsFreqsAmplitudeInsp[2] = pAmp->fAmpMatchIN;
             break;
         }
         // FIXME: Add cases for equispaced, Chebyshev
@@ -836,9 +859,10 @@ static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficie
     }
     for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
         pAmp->CollocationPointsValuesAmplitudeInsp[i] = pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
-        IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
+        // int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
+        // if(status != XLAL_SUCCESS)
+        //     XLALPrintError("IMRPhenomXHM_Inspiral_Amp_CollocationPoints failed for Mf, initial_status=%d",status);
     }
-    IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp + 1]), pAmp->fAmpMatchIN);
 }
 
 static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints, IMRPhenomXHMWaveformStruct *pWFHM){
@@ -851,6 +875,7 @@ static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *
     IMRPhenomX_UsefulPowers *powers_of_f2 = &(powers_of_Mf_inspcollpoints[1]);
     IMRPhenomX_UsefulPowers *powers_of_f3 = &(powers_of_Mf_inspcollpoints[2]);
     IMRPhenomX_UsefulPowers *powers_of_finsp = &(powers_of_Mf_inspcollpoints[3]);
+
     REAL8 v1 = pAmp->CollocationPointsValuesAmplitudeInsp[0] - pAmp->PNAmplitudeInsp[0];
     REAL8 v2 = pAmp->CollocationPointsValuesAmplitudeInsp[1] - pAmp->PNAmplitudeInsp[1];
     REAL8 v3 = pAmp->CollocationPointsValuesAmplitudeInsp[2] - pAmp->PNAmplitudeInsp[2];
@@ -873,6 +898,39 @@ static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *
         }
     }
 }
+// static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints, IMRPhenomXHMWaveformStruct *pWFHM){
+//
+//     for (UINT2 i = 0; i < N_MAX_COEFFICIENTS_AMPLITUDE_INS; i++){
+//         pAmp->InspiralCoefficient[i] = 0;
+//     }
+//
+// 	IMRPhenomX_UsefulPowers *powers_of_f1 = &(powers_of_Mf_inspcollpoints[0]);
+//     IMRPhenomX_UsefulPowers *powers_of_f2 = &(powers_of_Mf_inspcollpoints[1]);
+//     IMRPhenomX_UsefulPowers *powers_of_f3 = &(powers_of_Mf_inspcollpoints[2]);
+//
+//     REAL8 v1 = pAmp->CollocationPointsValuesAmplitudeInsp[0] - pAmp->PNAmplitudeInsp[0];
+//     REAL8 v2 = pAmp->CollocationPointsValuesAmplitudeInsp[1] - pAmp->PNAmplitudeInsp[1];
+//     REAL8 v3 = pAmp->CollocationPointsValuesAmplitudeInsp[2] - pAmp->PNAmplitudeInsp[2];
+//
+//     switch(pWFHM->IMRPhenomXHMInspiralAmpVersion){
+//         case 1:{
+// 			pAmp->InspiralCoefficient[0] = v1/powers_of_f1->four_thirds;
+//             break;
+//         }
+//         case 2:{
+//             pAmp->InspiralCoefficient[0] = (-(powers_of_f2->five_thirds*v1) + powers_of_f1->five_thirds*v2)/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third));
+//             pAmp->InspiralCoefficient[1] = (powers_of_f1->m_four_thirds*v1 - powers_of_f2->m_four_thirds*v2)/(powers_of_f1->one_third - powers_of_f2->one_third);
+//             break;
+//         }
+//         case 3:{
+//             pAmp->InspiralCoefficient[0] = (-(powers_of_f1->two*powers_of_f3->five_thirds*v2) + powers_of_f1->five_thirds*powers_of_f3->two*v2 + powers_of_f2->two*(powers_of_f3->five_thirds*v1 - powers_of_f1->five_thirds*v3) + powers_of_f2->five_thirds*(-(powers_of_f3->two*v1) + powers_of_f1->two*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
+//             pAmp->InspiralCoefficient[1] = (powers_of_f1->two*powers_of_f3->four_thirds*v2 - powers_of_f1->four_thirds*powers_of_f3->two*v2 + powers_of_f2->two*(-(powers_of_f3->four_thirds*v1) + powers_of_f1->four_thirds*v3) + powers_of_f2->four_thirds*(powers_of_f3->two*v1 - powers_of_f1->two*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
+//             pAmp->InspiralCoefficient[2] = (powers_of_f1->four_thirds*powers_of_f3->four_thirds*(-powers_of_f1->one_third + powers_of_f3->one_third)*v2 + powers_of_f2->four_thirds*(-(powers_of_f3->five_thirds*v1) + powers_of_f1->five_thirds*v3) + powers_of_f2->five_thirds*(powers_of_f3->four_thirds*v1 - powers_of_f1->four_thirds*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
+//             break;
+//         }
+//     }
+//     printf("Leaving IMRPhenomXHM_Inspiral_Amp_Coefficients\n");
+// }
 
 /*************************************/
 /*                                   */

@@ -52,7 +52,7 @@
 int IMRPhenomX_Initialize_Powers(IMRPhenomX_UsefulPowers *p, REAL8 number)
 {
 	XLAL_CHECK(0 != p, XLAL_EFAULT, "p is NULL");
-	XLAL_CHECK(number >= 0, XLAL_EDOM, "number must be non-negative");
+	XLAL_CHECK(number >= 0, XLAL_EDOM, "number %.16e must be non-negative", number);
 
 	double sixth      = pow(number, 1.0 / 6.0);
 	double m_sixth    = 1.0 / sixth;
@@ -2415,16 +2415,16 @@ double IMRPhenomX_Amplitude_22(double ff, IMRPhenomX_UsefulPowers *powers_of_f, 
 INT4 check_input_mode_array(LALDict *lalParams)
 {
 	UINT4 flagTrue = 0;
-	
+
   if(lalParams == NULL) return XLAL_SUCCESS;
-  
+
   LALValue *ModeArray = XLALSimInspiralWaveformParamsLookupModeArray(lalParams);
-  
+
   if(ModeArray!=NULL)
   {
     INT4 larray[5] = {2, 2, 3, 3, 4};
     INT4 marray[5] = {2, 1, 3, 2, 4};
-    
+
     for(INT4 ell=2; ell<=LAL_SIM_L_MAX_MODE_ARRAY; ell++)
 		{
 			for(INT4 emm=0; emm<=ell; emm++)
@@ -2444,13 +2444,13 @@ INT4 check_input_mode_array(LALDict *lalParams)
 						XLALDestroyValue(ModeArray);
 						return XLAL_FAILURE;
 					}
-					flagTrue = 0;					
-				}				
+					flagTrue = 0;
+				}
 			}//End loop over emm
 		}//End loop over ell
   }//End of if block
-	
+
   XLALDestroyValue(ModeArray);
-	
+
   return XLAL_SUCCESS;
 }

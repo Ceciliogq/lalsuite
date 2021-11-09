@@ -909,224 +909,235 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     /*** Proceed region by region ***/
 
-    /*****************/
-    /*    INSPIRAL   */
-    /*****************/
+
+    IMRPhenomX_UsefulPowers powers_of_fcutInsp;
+    IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, pAmp->fAmpMatchIN);
     if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){
         pAmp->InspRescaleFactor = 2;
-    }
-    else{
-        pAmp->InspRescaleFactor = 1;
+        pAmp->InterRescaleFactor = 2;
+        pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
 
 
-    }
-    #if DEBUG == 1
-    printf("\n**** INSPIRAL ****\n\n");
-    printf("IMRPhenomXHMInspiralAmpVersion = %i\r\n",pWFHM->IMRPhenomXHMInspiralAmpVersion);
-    #endif
+        /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
+        IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
 
-    /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
-    IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
+        IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(pAmp, pWFHM, pWF22);
 
-    #if DEBUG == 1
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnInitial),cimag(pAmp->pnInitial));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnOneThird),cimag(pAmp->pnOneThird));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnTwoThirds),cimag(pAmp->pnTwoThirds));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnThreeThirds),cimag(pAmp->pnThreeThirds));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnFourThirds),cimag(pAmp->pnFourThirds));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnFiveThirds),cimag(pAmp->pnFiveThirds));
-    printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnSixThirds),cimag(pAmp->pnSixThirds));
-    #endif
-
-    // Initialize frequencies of colloc points   !!!! ASSUMING YOU HAVE 3 COLLOC POINTS
-    pAmp->CollocationPointsFreqsAmplitudeInsp[0] = 1.0  * pAmp->fAmpMatchIN;
-    pAmp->CollocationPointsFreqsAmplitudeInsp[1] = 0.75 * pAmp->fAmpMatchIN;
-    pAmp->CollocationPointsFreqsAmplitudeInsp[2] = 0.5  * pAmp->fAmpMatchIN;
-
-    double fcutInsp, f1, f2, f3;
-    fcutInsp = pAmp->fAmpMatchIN;                      // Matching frequency between inspiral and intermediate
-    f1 = pAmp->CollocationPointsFreqsAmplitudeInsp[0]; // Frequency of colloc point 1 = 1.*fcutInsp
-    f2 = pAmp->CollocationPointsFreqsAmplitudeInsp[1]; // Frequency of colloc point 2 = 0.75*fcutInsp
-    f3 = pAmp->CollocationPointsFreqsAmplitudeInsp[2]; // Frequency of colloc point 3 = 0.5*fcutInsp
-
-    // Compute the useful powers of fcutInsp, f1, f2, f3. Remembers: f3 < f2 < f1 = fcutInsp.
-    IMRPhenomX_UsefulPowers powers_of_fcutInsp, powers_of_f1, powers_of_f2, powers_of_f3;
-    IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, fcutInsp);  // fcutInsp and f1 are the same but we keep them separated if in the future we change the frequencies of the collocatio points.
-    IMRPhenomX_Initialize_Powers(&powers_of_f1, f1);
-    IMRPhenomX_Initialize_Powers(&powers_of_f2, f2);
-    IMRPhenomX_Initialize_Powers(&powers_of_f3, f3);
-
-    // Compute the values of Post-Newtoninan ansatz (without the pseudo-PN terms) at the frequencies of the collocation points.
-    double PNf1, PNf2, PNf3;
-    printf("pAmp->InspRescaleFactor2 = %d\n", pAmp->InspRescaleFactor);
-    PNf1 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f1, pWFHM, pAmp);
-    PNf2 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f2, pWFHM, pAmp);
-    PNf3 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f3, pWFHM, pAmp);
-
-    pAmp->PNAmplitudeInsp[0] = PNf1;
-    pAmp->PNAmplitudeInsp[1] = PNf2;
-    pAmp->PNAmplitudeInsp[2] = PNf3;
-
-    // FIXME
-    if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
-        // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
-        pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f3.m_seven_sixths/pWF22->ampNorm;
-        pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f2.m_seven_sixths/pWF22->ampNorm;
-        pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f1.m_seven_sixths/pWF22->ampNorm;
-    }
-    else{
-        // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
-        for(int i = 0; i<nCollocPtsInspAmp; i++)
-        {
-          pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
-        }
-    }
-
-
-    // Values of the collocation point minus the Post-Newtonian value. This gives a "collocation point" for the pseudo-PN part.
-    // This way is more convenient becuase the reconstuction does not depended on the PN ansatz used.
-    REAL8 iv1, iv2, iv3;
-    iv1 = pAmp->CollocationPointsValuesAmplitudeInsp[0] - PNf1;
-    iv2 = pAmp->CollocationPointsValuesAmplitudeInsp[1] - PNf2;
-    iv3 = pAmp->CollocationPointsValuesAmplitudeInsp[2] - PNf3;
-
-
-    #if DEBUG == 1
-    printf("\nAmplitude pseudo collocation points before veto\n");
-    printf("fAmpMatchIN = %.16f\n",pAmp->fAmpMatchIN);
-    printf("F1   = %.16f\n", f1);
-    printf("F2   = %.16f\n", f2);
-    printf("F3   = %.16f\n\n", f3);
-    printf("I1   = %.16f\n", pAmp->CollocationPointsValuesAmplitudeInsp[0]);
-    printf("I2   = %.16f\n", pAmp->CollocationPointsValuesAmplitudeInsp[1]);
-    printf("I3   = %.16f\n\n", pAmp->CollocationPointsValuesAmplitudeInsp[2]);
-    printf("PNf1 = %.16f\n", PNf1);
-    printf("PNf2 = %.16f\n", PNf2);
-    printf("PNf3 = %.16f\n\n", PNf3);
-    REAL8 piv1, piv2, piv3;
-    piv1 = pAmp->CollocationPointsValuesAmplitudeInsp[0]*pWF22->ampNorm*powers_of_f1.m_seven_sixths;
-    piv2 = pAmp->CollocationPointsValuesAmplitudeInsp[1]*pWF22->ampNorm*powers_of_f2.m_seven_sixths;
-    piv3 = pAmp->CollocationPointsValuesAmplitudeInsp[2]*pWF22->ampNorm*powers_of_f3.m_seven_sixths;
-    printf("p1   = %.16f\n", piv1);
-    printf("p2   = %.16f\n", piv2);
-    printf("p3   = %.16f\n\n", piv3);
-    printf("V1   = %.16f\n", iv1);
-    printf("V2   = %.16f\n", iv2);
-    printf("V3   = %.16f\n\n", iv3);
-    #endif
-
-    /*
-       VETO: Choose the collocations points to use.
-       Outside of the callibration region the collocation points can have a wavy behaviour so we remove some of them.
-    */
-    if(pWFHM->InspiralAmpVeto == 1){
-      IMRPhenomXHM_Inspiral_Amplitude_Veto(&iv1, &iv2, &iv3, &powers_of_f1, &powers_of_f2, &powers_of_f3, pAmp, pWFHM);
-    }
-    #if DEBUG == 1
-    printf("\nInspiral Veto: AmpVersion = %i",pWFHM->IMRPhenomXHMInspiralAmpVersion);
-    #endif
-    /* The 32 mode in this corner of the parameter space always uses the PN only */
-    if(pWFHM->modeTag==32 && pWF22->q>2.5 && pWF22->chi1L<-0.9 && pWF22->chi2L<-0.9) pWFHM->IMRPhenomXHMInspiralAmpVersion = 0;
-    /* The 32 mode in this corner of the parameter space removes the last collocation point */
-    if(pWFHM->modeTag==32 && pWF22->q>2.5 && pWF22->chi1L<-0.6 && pWF22->chi2L>0. && iv1!=0){
-      pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
-      iv1 = 0.;
-    }
-    /* The 33 mode in this corner of the parameter space removes the last collocation point */
-    if(pWFHM->modeTag==33 && (1.2>pWF22->q && pWF22->q>1. && pWF22->chi1L<-0.1 && pWF22->chi2L>0. && iv1!=0)){//November
-      pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
-      iv1 = 0.;
-    }
-    #if DEBUG == 1
-    printf("\nInspiral Veto: AmpVersion = %i", pWFHM->IMRPhenomXHMInspiralAmpVersion);
-    #endif
-    //********* Remember that f3 < f2 < f1 !!!!! *****************
-    /* Check for wavy collocation points. Only when we have 3 coll points. */
-    if(pWFHM->IMRPhenomXHMInspiralAmpVersion == 3 && pAmp->WavyInsp == 1){
-        if(WavyPoints(pAmp->CollocationPointsValuesAmplitudeInsp[0]*powers_of_f1.m_seven_sixths,pAmp->CollocationPointsValuesAmplitudeInsp[1]*powers_of_f2.m_seven_sixths,pAmp->CollocationPointsValuesAmplitudeInsp[2]*powers_of_f3.m_seven_sixths)==1){
-           iv2 = 0;
-           #if DEBUG == 1
-           printf("\nWavy Inspiral\n");
-           #endif
-           pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
-         }
-    }
-    #if DEBUG == 1
-    printf("\nInspiral Veto: AmpVersion = %i",pWFHM->IMRPhenomXHMInspiralAmpVersion);
-    printf("\niv1 iv2 iv3 %e %e %e\n", iv1, iv2, iv3);
-    #endif
-    // Rename collocation points and frequencies.
-    if(iv2==0){
-      #if DEBUG == 1
-          printf("\niv2 = 0\n");
-      #endif
-        iv2 = iv3;
-        iv3 = 0.;
-        powers_of_f2 = powers_of_f3;
-    }
-    if(iv1==0){
-      #if DEBUG == 1
-          printf("\niv1 = 0\n");
-      #endif
-        iv1 = iv2;
-        powers_of_f1 = powers_of_f2;
-        powers_of_fcutInsp = powers_of_f1;
-        iv2 = iv3;
-        iv3 = 0.;
-        powers_of_f2 = powers_of_f3;
-    }
-    if(pWFHM->IMRPhenomXHMInspiralAmpVersion == 0)  // when using PN we take fcutInsp = fMECO_lm
-    {
-      IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, (pWFHM->fMECOlm));
-    }
-
-    // Update the Inspiral cutting frequency to the last collocation point alive.
-    pAmp->fAmpMatchIN = powers_of_fcutInsp.itself;
-    // End of VETO
-
-
-    #if DEBUG == 1
-    printf("\nAmplitude pseudo collocation points after veto\n");
-    printf("fAmpMatchIN = %.16f\n", pAmp->fAmpMatchIN);
-    printf("F1   = %.16f\n", powers_of_f1.itself);
-    printf("F2   = %.16f\n", powers_of_f2.itself);
-    printf("F3   = %.16f\n", powers_of_f3.itself);
-    printf("V1   = %.16f\n", iv1);
-    printf("V2   = %.16f\n", iv2);
-    printf("V3   = %.16f\n", iv3);
-    #endif
-
-    /* Get the pseudo-PN coefficients. */
-    /* The whole inspiral ansatz is given by PNAnsatz(f) + pseudo-PN(f),  with pseudo-PN(f) = rho1 *(f/fcutInsp)^(7/3) + rho2(f/fcutInsp)^(8/3) + rho3(f/fcutInsp)^(9/3).
-    The coefficients are computed demanding that the pseudo-PN part at the three collocation points frequencies returns the actual collocation points: iv1, iv2, iv3.   */
-    pAmp->rho1 = IMRPhenomXHM_Inspiral_Amp_rho1(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
-    pAmp->rho2 = IMRPhenomXHM_Inspiral_Amp_rho2(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
-    pAmp->rho3 = IMRPhenomXHM_Inspiral_Amp_rho3(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
-
-    #if DEBUG == 1
-    printf("\nAmplitude pseudo PN coeffcients after veto\n");
-    printf("rho1 = %.16f\n",pAmp->rho1);
-    printf("rho2 = %.16f\n",pAmp->rho2);
-    printf("rho3 = %.16f\n",pAmp->rho3);
-    #endif
-
-    // To avoid passing an extra argument to IMRPhenomXHM_Inspiral_Amp_Ansatz we store this powers in pAmp.
-    pAmp->fcutInsp_seven_thirds = powers_of_fcutInsp.seven_thirds;
-    pAmp->fcutInsp_eight_thirds = powers_of_fcutInsp.eight_thirds;
-    pAmp->fcutInsp_three = powers_of_fcutInsp.three;
-
-
-    /*****************/
-    /*    RINGDOWN   */
-    /*****************/
-    #if DEBUG == 1
-    printf("\n\n**** RINGDOWN ****\n\n");
-    #endif
-
-    if(pWFHM->IMRPhenomXHMRingdownAmpVersion==1){
         IMRPhenomXHM_RD_Amp_Coefficients(pWF22, pWFHM, pAmp);
+
+        IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM);
+
     }
     else{
+        /*****************/
+        /*    INSPIRAL   */
+        /*****************/
+        pAmp->InspRescaleFactor = 1;
+        #if DEBUG == 1
+        printf("\n**** INSPIRAL ****\n\n");
+        printf("IMRPhenomXHMInspiralAmpVersion = %i\r\n",pWFHM->IMRPhenomXHMInspiralAmpVersion);
+        #endif
+
+        /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
+        IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
+
+        #if DEBUG == 1
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnInitial),cimag(pAmp->pnInitial));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnOneThird),cimag(pAmp->pnOneThird));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnTwoThirds),cimag(pAmp->pnTwoThirds));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnThreeThirds),cimag(pAmp->pnThreeThirds));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnFourThirds),cimag(pAmp->pnFourThirds));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnFiveThirds),cimag(pAmp->pnFiveThirds));
+        printf("PN coeff %.16f   %.16f\n", creal(pAmp->pnSixThirds),cimag(pAmp->pnSixThirds));
+        #endif
+
+        // Initialize frequencies of colloc points   !!!! ASSUMING YOU HAVE 3 COLLOC POINTS
+        pAmp->CollocationPointsFreqsAmplitudeInsp[0] = 1.0  * pAmp->fAmpMatchIN;
+        pAmp->CollocationPointsFreqsAmplitudeInsp[1] = 0.75 * pAmp->fAmpMatchIN;
+        pAmp->CollocationPointsFreqsAmplitudeInsp[2] = 0.5  * pAmp->fAmpMatchIN;
+
+        double fcutInsp, f1, f2, f3;
+        fcutInsp = pAmp->fAmpMatchIN;                      // Matching frequency between inspiral and intermediate
+        f1 = pAmp->CollocationPointsFreqsAmplitudeInsp[0]; // Frequency of colloc point 1 = 1.*fcutInsp
+        f2 = pAmp->CollocationPointsFreqsAmplitudeInsp[1]; // Frequency of colloc point 2 = 0.75*fcutInsp
+        f3 = pAmp->CollocationPointsFreqsAmplitudeInsp[2]; // Frequency of colloc point 3 = 0.5*fcutInsp
+
+        // Compute the useful powers of fcutInsp, f1, f2, f3. Remembers: f3 < f2 < f1 = fcutInsp.
+        IMRPhenomX_UsefulPowers powers_of_f1, powers_of_f2, powers_of_f3;
+        IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, fcutInsp);  // fcutInsp and f1 are the same but we keep them separated if in the future we change the frequencies of the collocatio points.
+        IMRPhenomX_Initialize_Powers(&powers_of_f1, f1);
+        IMRPhenomX_Initialize_Powers(&powers_of_f2, f2);
+        IMRPhenomX_Initialize_Powers(&powers_of_f3, f3);
+
+        // Compute the values of Post-Newtoninan ansatz (without the pseudo-PN terms) at the frequencies of the collocation points.
+        double PNf1, PNf2, PNf3;
+        printf("pAmp->InspRescaleFactor2 = %d\n", pAmp->InspRescaleFactor);
+        PNf1 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f1, pWFHM, pAmp);
+        PNf2 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f2, pWFHM, pAmp);
+        PNf3 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f3, pWFHM, pAmp);
+
+        pAmp->PNAmplitudeInsp[0] = PNf1;
+        pAmp->PNAmplitudeInsp[1] = PNf2;
+        pAmp->PNAmplitudeInsp[2] = PNf3;
+
+        // FIXME
+        if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
+            // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
+            pAmp->CollocationPointsValuesAmplitudeInsp[2] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f3.m_seven_sixths/pWF22->ampNorm;
+            pAmp->CollocationPointsValuesAmplitudeInsp[1] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f2.m_seven_sixths/pWF22->ampNorm;
+            pAmp->CollocationPointsValuesAmplitudeInsp[0] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));///powers_of_f1.m_seven_sixths/pWF22->ampNorm;
+        }
+        else{
+            // Initialize values of collocation points at the previous 3 frequencies. They are taken from the parameter space fits.
+            for(int i = 0; i<nCollocPtsInspAmp; i++)
+            {
+              pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[modeint*nCollocPtsInspAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
+            }
+        }
+
+
+        // Values of the collocation point minus the Post-Newtonian value. This gives a "collocation point" for the pseudo-PN part.
+        // This way is more convenient becuase the reconstuction does not depended on the PN ansatz used.
+        REAL8 iv1, iv2, iv3;
+        iv1 = pAmp->CollocationPointsValuesAmplitudeInsp[0] - PNf1;
+        iv2 = pAmp->CollocationPointsValuesAmplitudeInsp[1] - PNf2;
+        iv3 = pAmp->CollocationPointsValuesAmplitudeInsp[2] - PNf3;
+
+
+        #if DEBUG == 1
+        printf("\nAmplitude pseudo collocation points before veto\n");
+        printf("fAmpMatchIN = %.16f\n",pAmp->fAmpMatchIN);
+        printf("F1   = %.16f\n", f1);
+        printf("F2   = %.16f\n", f2);
+        printf("F3   = %.16f\n\n", f3);
+        printf("I1   = %.16f\n", pAmp->CollocationPointsValuesAmplitudeInsp[0]);
+        printf("I2   = %.16f\n", pAmp->CollocationPointsValuesAmplitudeInsp[1]);
+        printf("I3   = %.16f\n\n", pAmp->CollocationPointsValuesAmplitudeInsp[2]);
+        printf("PNf1 = %.16f\n", PNf1);
+        printf("PNf2 = %.16f\n", PNf2);
+        printf("PNf3 = %.16f\n\n", PNf3);
+        REAL8 piv1, piv2, piv3;
+        piv1 = pAmp->CollocationPointsValuesAmplitudeInsp[0]*pWF22->ampNorm*powers_of_f1.m_seven_sixths;
+        piv2 = pAmp->CollocationPointsValuesAmplitudeInsp[1]*pWF22->ampNorm*powers_of_f2.m_seven_sixths;
+        piv3 = pAmp->CollocationPointsValuesAmplitudeInsp[2]*pWF22->ampNorm*powers_of_f3.m_seven_sixths;
+        printf("p1   = %.16f\n", piv1);
+        printf("p2   = %.16f\n", piv2);
+        printf("p3   = %.16f\n\n", piv3);
+        printf("V1   = %.16f\n", iv1);
+        printf("V2   = %.16f\n", iv2);
+        printf("V3   = %.16f\n\n", iv3);
+        #endif
+
+        /*
+           VETO: Choose the collocations points to use.
+           Outside of the callibration region the collocation points can have a wavy behaviour so we remove some of them.
+        */
+        if(pWFHM->InspiralAmpVeto == 1){
+          IMRPhenomXHM_Inspiral_Amplitude_Veto(&iv1, &iv2, &iv3, &powers_of_f1, &powers_of_f2, &powers_of_f3, pAmp, pWFHM);
+        }
+        #if DEBUG == 1
+        printf("\nInspiral Veto: AmpVersion = %i",pWFHM->IMRPhenomXHMInspiralAmpVersion);
+        #endif
+        /* The 32 mode in this corner of the parameter space always uses the PN only */
+        if(pWFHM->modeTag==32 && pWF22->q>2.5 && pWF22->chi1L<-0.9 && pWF22->chi2L<-0.9) pWFHM->IMRPhenomXHMInspiralAmpVersion = 0;
+        /* The 32 mode in this corner of the parameter space removes the last collocation point */
+        if(pWFHM->modeTag==32 && pWF22->q>2.5 && pWF22->chi1L<-0.6 && pWF22->chi2L>0. && iv1!=0){
+          pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
+          iv1 = 0.;
+        }
+        /* The 33 mode in this corner of the parameter space removes the last collocation point */
+        if(pWFHM->modeTag==33 && (1.2>pWF22->q && pWF22->q>1. && pWF22->chi1L<-0.1 && pWF22->chi2L>0. && iv1!=0)){//November
+          pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
+          iv1 = 0.;
+        }
+        #if DEBUG == 1
+        printf("\nInspiral Veto: AmpVersion = %i", pWFHM->IMRPhenomXHMInspiralAmpVersion);
+        #endif
+        //********* Remember that f3 < f2 < f1 !!!!! *****************
+        /* Check for wavy collocation points. Only when we have 3 coll points. */
+        if(pWFHM->IMRPhenomXHMInspiralAmpVersion == 3 && pAmp->WavyInsp == 1){
+            if(WavyPoints(pAmp->CollocationPointsValuesAmplitudeInsp[0]*powers_of_f1.m_seven_sixths,pAmp->CollocationPointsValuesAmplitudeInsp[1]*powers_of_f2.m_seven_sixths,pAmp->CollocationPointsValuesAmplitudeInsp[2]*powers_of_f3.m_seven_sixths)==1){
+               iv2 = 0;
+               #if DEBUG == 1
+               printf("\nWavy Inspiral\n");
+               #endif
+               pWFHM->IMRPhenomXHMInspiralAmpVersion = pWFHM->IMRPhenomXHMInspiralAmpVersion - 1;
+             }
+        }
+        #if DEBUG == 1
+        printf("\nInspiral Veto: AmpVersion = %i",pWFHM->IMRPhenomXHMInspiralAmpVersion);
+        printf("\niv1 iv2 iv3 %e %e %e\n", iv1, iv2, iv3);
+        #endif
+        // Rename collocation points and frequencies.
+        if(iv2==0){
+          #if DEBUG == 1
+              printf("\niv2 = 0\n");
+          #endif
+            iv2 = iv3;
+            iv3 = 0.;
+            powers_of_f2 = powers_of_f3;
+        }
+        if(iv1==0){
+          #if DEBUG == 1
+              printf("\niv1 = 0\n");
+          #endif
+            iv1 = iv2;
+            powers_of_f1 = powers_of_f2;
+            powers_of_fcutInsp = powers_of_f1;
+            iv2 = iv3;
+            iv3 = 0.;
+            powers_of_f2 = powers_of_f3;
+        }
+        if(pWFHM->IMRPhenomXHMInspiralAmpVersion == 0)  // when using PN we take fcutInsp = fMECO_lm
+        {
+          IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, (pWFHM->fMECOlm));
+        }
+
+        // Update the Inspiral cutting frequency to the last collocation point alive.
+        pAmp->fAmpMatchIN = powers_of_fcutInsp.itself;
+        // End of VETO
+
+
+        #if DEBUG == 1
+        printf("\nAmplitude pseudo collocation points after veto\n");
+        printf("fAmpMatchIN = %.16f\n", pAmp->fAmpMatchIN);
+        printf("F1   = %.16f\n", powers_of_f1.itself);
+        printf("F2   = %.16f\n", powers_of_f2.itself);
+        printf("F3   = %.16f\n", powers_of_f3.itself);
+        printf("V1   = %.16f\n", iv1);
+        printf("V2   = %.16f\n", iv2);
+        printf("V3   = %.16f\n", iv3);
+        #endif
+
+        /* Get the pseudo-PN coefficients. */
+        /* The whole inspiral ansatz is given by PNAnsatz(f) + pseudo-PN(f),  with pseudo-PN(f) = rho1 *(f/fcutInsp)^(7/3) + rho2(f/fcutInsp)^(8/3) + rho3(f/fcutInsp)^(9/3).
+        The coefficients are computed demanding that the pseudo-PN part at the three collocation points frequencies returns the actual collocation points: iv1, iv2, iv3.   */
+        pAmp->rho1 = IMRPhenomXHM_Inspiral_Amp_rho1(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
+        pAmp->rho2 = IMRPhenomXHM_Inspiral_Amp_rho2(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
+        pAmp->rho3 = IMRPhenomXHM_Inspiral_Amp_rho3(iv1, iv2, iv3, &powers_of_fcutInsp, &powers_of_f1, &powers_of_f2, &powers_of_f3, pWFHM);
+
+        #if DEBUG == 1
+        printf("\nAmplitude pseudo PN coeffcients after veto\n");
+        printf("rho1 = %.16f\n",pAmp->rho1);
+        printf("rho2 = %.16f\n",pAmp->rho2);
+        printf("rho3 = %.16f\n",pAmp->rho3);
+        #endif
+
+        // To avoid passing an extra argument to IMRPhenomXHM_Inspiral_Amp_Ansatz we store this powers in pAmp.
+        pAmp->fcutInsp_seven_thirds = powers_of_fcutInsp.seven_thirds;
+        pAmp->fcutInsp_eight_thirds = powers_of_fcutInsp.eight_thirds;
+        pAmp->fcutInsp_three = powers_of_fcutInsp.three;
+
+
+
+
+        /*****************/
+        /*    RINGDOWN   */
+        /*****************/
+        #if DEBUG == 1
+        printf("\n\n**** RINGDOWN ****\n\n");
+        #endif
+
         // We have three "fitted" coefficients across parameter space: alambda, lambda and sigma. Sigma will be constat for all the modes except the 21.
         pAmp->alambda = fabs(pAmp->RingdownAmpFits[modeint*3](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
         pAmp->lambda  = pAmp->RingdownAmpFits[modeint*3+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
@@ -1151,7 +1162,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         printf("sigma   = %.16f\r\n",pAmp->sigma);
         printf("lc      = %.16f\r\n",pAmp->lc);
         #endif
-    }
+    }// END of 122018 version
 
 
 
