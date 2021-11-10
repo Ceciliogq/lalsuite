@@ -184,6 +184,11 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             REAL8 CollocationPointsValuesAmplitudeInter[N_MAX_COEFFICIENTS_AMPLITUDE_INTER];
             REAL8 InterCoefficient[N_MAX_COEFFICIENTS_AMPLITUDE_INTER];
 
+            /* Flag to set how many collocation points the intermediate region uses */
+            REAL8 CollocationPointsFreqsAmplitudeRD[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
+            REAL8 CollocationPointsValuesAmplitudeRD[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
+            REAL8 RDCoefficient[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
+
             // Frequencies, values and derivatives for the intermediate reconstruction
             // The frequencies are the same than in CollocationPointsFreqsAmplitudeInsp for the corresponding mode,
             // but in this way they are easier accesible.

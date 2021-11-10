@@ -592,9 +592,15 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
             double rdcp1 = pAmp->RingdownAmpFits[12 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
             double rdcp2 = pAmp->RingdownAmpFits[13 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
             double rdcp3 = pAmp->RingdownAmpFits[14 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
-            pAmp->r1 = rdcp1 * pWFHM->fDAMP / (sqrt(rdcp1 / rdcp3) - (rdcp1 / rdcp2));
-            pAmp->r3 = sqrt(pAmp->r1 / (rdcp2 * pWFHM->fDAMP));
-            pAmp->r2 = 0.5 * pAmp->r3 * log(rdcp1 / rdcp3);
+            pAmp->CollocationPointsValuesAmplitudeRD[0] = rdcp1;
+            pAmp->CollocationPointsValuesAmplitudeRD[1] = rdcp2;
+            pAmp->CollocationPointsValuesAmplitudeRD[2] = rdcp3;
+            pAmp->CollocationPointsFreqsAmplitudeRD[0] = pWFHM->fRING - pWFHM->fDAMP;
+            pAmp->CollocationPointsFreqsAmplitudeRD[1] = pWFHM->fRING;
+            pAmp->CollocationPointsFreqsAmplitudeRD[2] = pWFHM->fRING + pWFHM->fDAMP;
+            pAmp->RDCoefficient[0] = rdcp1 * pWFHM->fDAMP / (sqrt(rdcp1 / rdcp3) - (rdcp1 / rdcp2));
+            pAmp->RDCoefficient[2] = sqrt(pAmp->RDCoefficient[0] / (rdcp2 * pWFHM->fDAMP));
+            pAmp->RDCoefficient[1] = 0.5 * pAmp->RDCoefficient[2] * log(rdcp1 / rdcp3);
             break;
         }
         default:{
@@ -629,9 +635,9 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
         }
         case 1:
         {
-            double dfd = fda * pAmp->r3;
+            double dfd = fda * pAmp->RDCoefficient[2];
             //double factor = pow(2./(pWF->emm),-7/6.);
-            ampRD = pAmp->r1 * fda / ( exp(pAmp->r2 / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
+            ampRD = pAmp->RDCoefficient[0] * fda / ( exp(pAmp->RDCoefficient[1] / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
             ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;
         }

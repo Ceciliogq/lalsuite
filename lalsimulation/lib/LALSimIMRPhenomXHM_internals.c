@@ -97,7 +97,7 @@ void IMRPhenomXHM_SetHMWaveformVariables(
   wf->ampNorm = wf22->ampNorm;
   wf->fMECOlm = wf22->fMECO*emm*0.5;
   wf->Ampzero = 0;                       // Ampzero = 1 (true) for odd modes and equal black holes
-  wf->Amp0 = wf22->ampNorm * wf22->amp0;
+  wf->Amp0 = wf22->amp0;// * wf22->ampNorm;
   wf->useFAmpPN = 0;                     // Only true for the 21, this mode has a different inspiral ansatz
   if(wf22->eta < 0.013886133703630232 && wf22->chi1L<=0.9){ // For q>70 and chi1<0.9 use two intermediate regions.
     wf->AmpEMR = 1;                                         // These cases have a more pronounced drop off in the amplitude at the end of the inspiral and need two intermediate regions to model it.
@@ -864,79 +864,19 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         }
     }*/
 
-    pAmp->InterRescaleFactor = 0;
-
-    // // Set rescaling factors of each region
-    // if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion == 122018){
-    //         pAmp->InspRescaleFactor = 1;
-    // }
-    // else{
-    //         pAmp->InspRescaleFactor = 2;
-    // }
-
-    pAmp->InterRescaleFactor = 0;
-    if(pWFHM->IMRPhenomXHMRingdownAmpFitsVersion == 122018){
-            pAmp->RDRescaleFactor = 1;
-    }
-    else{
-            pAmp->RDRescaleFactor = 2;
-    }
-
-    // Options for the extrapolation of the model outside the calibration region
-    if(((pWFHM->modeTag==44) || (pWFHM->modeTag==33)) && pWF22->q>7. && pWF22->chi1L > 0.95){
-      pAmp->useInspAnsatzRingdown = 1;
-    }
-    else{
-      pAmp->useInspAnsatzRingdown = 0;
-    }
-    pAmp->WavyInsp = 0;
-    pAmp->WavyInt  = 0;
-    if(pWFHM->modeTag==21){
-      pAmp->WavyInsp = 1;
-      pAmp->WavyInt  = 1;
-    }
-    if(pWFHM->modeTag==32){
-      pAmp->WavyInsp = 1;
-    }
-
-    // Take the cutting frequencies at the inspiral and ringdown
-    pAmp->fAmpMatchIN  = IMRPhenomXHM_Amplitude_fcutInsp(pWFHM, pWF22);
-    pAmp->fAmpMatchIM  = IMRPhenomXHM_Amplitude_fcutRD(pWFHM, pWF22);
-
-    #if DEBUG == 1
-    printf("\n\n*** IMRPhenomXHM_GetAmplitudeCoefficients ***\n\n");
-    printf("fring_%i = %.16f\n", pWFHM->modeTag, pWFHM->fRING);
-    printf("fdamp_%i = %.16f\n", pWFHM->modeTag, pWFHM->fDAMP);
-    printf("fcutInsp_%i = %.16f \n", pWFHM->modeTag, pAmp->fAmpMatchIN);
-    printf("fcutRD_%i   = %.16f \n", pWFHM->modeTag, pAmp->fAmpMatchIM);
-    #endif
-
-    /* Compute the frequencies for Intermediate collocation points. */
-    /* It is done now because with the inspiral veto fAmpMatchIN will change, and we need the original here. */
-    double df = pAmp->fAmpMatchIM - pAmp->fAmpMatchIN;
-    pAmp->CollocationPointsFreqsAmplitudeInter[0] =  pAmp->fAmpMatchIN + df/3. ;
-    pAmp->CollocationPointsFreqsAmplitudeInter[1] =  pAmp->fAmpMatchIN + df*2./3.;
-
-    int nCollocPtsInspAmp  = pWFHM->nCollocPtsInspAmp;
-    int nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp;
-
-    int modeint = pWFHM->modeInt;
-
-    #if DEBUG == 1
-    printf("nCollocPtsInspAmp  = %i \n",nCollocPtsInspAmp);
-    printf("nCollocPtsInterAmp = %i \n",nCollocPtsInterAmp);
-    #endif
-
 
     /*** Proceed region by region ***/
-    IMRPhenomX_UsefulPowers powers_of_fcutInsp;
-    IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, pAmp->fAmpMatchIN);
     if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){ //FIXME
         pAmp->InspRescaleFactor = 2;
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
 
+        // Take the cutting frequencies at the inspiral and ringdown
+        pAmp->fAmpMatchIN  = IMRPhenomXHM_Amplitude_fcutInsp(pWFHM, pWF22);
+        pAmp->fAmpMatchIM  = IMRPhenomXHM_Amplitude_fcutRD(pWFHM, pWF22);
+
+        printf("fInsp, fRD = %.10f %.10f\n", pAmp->fAmpMatchIN, pAmp->fAmpMatchIM);
 
         /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
         IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
@@ -948,16 +888,90 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->InterRescaleFactor = 2;
         IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22);
 
+        // printf("Insp Coll points\n");
+        // for(UINT2 i = 0; i < 3; i++){
+        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
+        // }
+        // printf("Inter Coll points\n");
+        // for(UINT2 i = 0; i < 5; i++){
+        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
+        // }
+        // printf("RD Coll points\n");
+        // for(UINT2 i = 0; i < 3; i++){
+        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
+        // }
+        // printf("Insp Coefficients\n");
+        // for(UINT2 i = 0; i < 3; i++){
+        //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
+        // }
+        // printf("Inter Coefficients\n");
+        // for(UINT2 i = 0; i < 6; i++){
+        //     printf("%.16e\n", pAmp->InterCoefficient[i]);
+        // }
+        // printf("RD Coefficients\n");
+        // for(UINT2 i = 0; i < 3; i++){
+        //     printf("%.16e\n", pAmp->RDCoefficient[i]);
+        // }
+
         /* Set Rescale Factors to build Strain */
         pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
         pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
         pAmp->InterRescaleFactor = -pAmp->InterRescaleFactor;
     }
     else{
+        pAmp->InspRescaleFactor = 1;
+        pAmp->InterRescaleFactor = 0;
+        pAmp->RDRescaleFactor = 1;
+
+        // Options for the extrapolation of the model outside the calibration region
+        if(((pWFHM->modeTag==44) || (pWFHM->modeTag==33)) && pWF22->q>7. && pWF22->chi1L > 0.95){
+          pAmp->useInspAnsatzRingdown = 1;
+        }
+        else{
+          pAmp->useInspAnsatzRingdown = 0;
+        }
+        pAmp->WavyInsp = 0;
+        pAmp->WavyInt  = 0;
+        if(pWFHM->modeTag==21){
+          pAmp->WavyInsp = 1;
+          pAmp->WavyInt  = 1;
+        }
+        if(pWFHM->modeTag==32){
+          pAmp->WavyInsp = 1;
+        }
+
+        // Take the cutting frequencies at the inspiral and ringdown
+        pAmp->fAmpMatchIN  = IMRPhenomXHM_Amplitude_fcutInsp(pWFHM, pWF22);
+        pAmp->fAmpMatchIM  = IMRPhenomXHM_Amplitude_fcutRD(pWFHM, pWF22);
+
+        #if DEBUG == 1
+        printf("\n\n*** IMRPhenomXHM_GetAmplitudeCoefficients ***\n\n");
+        printf("fring_%i = %.16f\n", pWFHM->modeTag, pWFHM->fRING);
+        printf("fdamp_%i = %.16f\n", pWFHM->modeTag, pWFHM->fDAMP);
+        printf("fcutInsp_%i = %.16f \n", pWFHM->modeTag, pAmp->fAmpMatchIN);
+        printf("fcutRD_%i   = %.16f \n", pWFHM->modeTag, pAmp->fAmpMatchIM);
+        #endif
+
+        /* Compute the frequencies for Intermediate collocation points. */
+        /* It is done now because with the inspiral veto fAmpMatchIN will change, and we need the original here. */
+        double df = pAmp->fAmpMatchIM - pAmp->fAmpMatchIN;
+        pAmp->CollocationPointsFreqsAmplitudeInter[0] =  pAmp->fAmpMatchIN + df/3. ;
+        pAmp->CollocationPointsFreqsAmplitudeInter[1] =  pAmp->fAmpMatchIN + df*2./3.;
+
+        int nCollocPtsInspAmp  = pWFHM->nCollocPtsInspAmp;
+        int nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp;
+
+        int modeint = pWFHM->modeInt;
+
+        #if DEBUG == 1
+        printf("nCollocPtsInspAmp  = %i \n",nCollocPtsInspAmp);
+        printf("nCollocPtsInterAmp = %i \n",nCollocPtsInterAmp);
+        #endif
+
         /*****************/
         /*    INSPIRAL   */
         /*****************/
-        pAmp->InspRescaleFactor = 1;
+
         #if DEBUG == 1
         printf("\n**** INSPIRAL ****\n\n");
         printf("IMRPhenomXHMInspiralAmpVersion = %i\r\n",pWFHM->IMRPhenomXHMInspiralAmpVersion);
@@ -988,7 +1002,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         f3 = pAmp->CollocationPointsFreqsAmplitudeInsp[2]; // Frequency of colloc point 3 = 0.5*fcutInsp
 
         // Compute the useful powers of fcutInsp, f1, f2, f3. Remembers: f3 < f2 < f1 = fcutInsp.
-        IMRPhenomX_UsefulPowers powers_of_f1, powers_of_f2, powers_of_f3;
+        IMRPhenomX_UsefulPowers powers_of_fcutInsp, powers_of_f1, powers_of_f2, powers_of_f3;
         IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, fcutInsp);  // fcutInsp and f1 are the same but we keep them separated if in the future we change the frequencies of the collocatio points.
         IMRPhenomX_Initialize_Powers(&powers_of_f1, f1);
         IMRPhenomX_Initialize_Powers(&powers_of_f2, f2);
@@ -996,7 +1010,6 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
         // Compute the values of Post-Newtoninan ansatz (without the pseudo-PN terms) at the frequencies of the collocation points.
         double PNf1, PNf2, PNf3;
-        printf("pAmp->InspRescaleFactor2 = %d\n", pAmp->InspRescaleFactor);
         PNf1 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f1, pWFHM, pAmp);
         PNf2 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f2, pWFHM, pAmp);
         PNf3 = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&powers_of_f3, pWFHM, pAmp);
@@ -1192,6 +1205,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         /*******************/
         /*   INTERMEDIATE  */
         /*******************/
+
         #if DEBUG == 1
         printf("\n\n**** INTERMEDIATE ****\n\n");
         #endif
@@ -1228,17 +1242,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         IMRPhenomX_Initialize_Powers(&powers_of_F4,F4);
 
         // Compute values at the boundaries (rescaled ansatz with the leading order of the 22).
-        printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
-        // int tmp = pAmp->InspRescaleFactor;
-        // int tmp2 = pAmp->RDRescaleFactor;
-        // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
-        //      pAmp->InspRescaleFactor = 1;
-        //      pAmp->RDRescaleFactor = 1;
-        // }
         pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
         pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
         pAmp->InterRescaleFactor = 1;
-        printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
         double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
         double rdF4;
         if (pWFHM->MixingOn == 1){
@@ -1256,12 +1262,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
           d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
         }
         // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
-
         pAmp->InterRescaleFactor = 0;
-        // printf("pAmp->InspRescaleFactorE = %i\n", pAmp->InspRescaleFactor);
-        // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
-        //      pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
-        // }
 
         #if DEBUG == 1
         printf("d1 = %.16f\n",d1);

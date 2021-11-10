@@ -1888,7 +1888,7 @@ static double IMRPhenomXHM_Intermediate_Amp_Ansatz(IMRPhenomX_UsefulPowers *powe
 {
     if(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion != 122018){ //FIXME
         double result = 0., fpower = 1.;
-        for (INT4 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
+        for (INT4 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
             result += (pAmp->InterCoefficient[i] * fpower);
             fpower *= powers_of_f->itself;
         }
@@ -2441,7 +2441,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     /* Define values */
     IMRPhenomX_UsefulPowers powers_of_finsp;
     IMRPhenomX_Initialize_Powers(&powers_of_finsp, pAmp->fAmpMatchIN);
-    pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
+    pAmp->CollocationPointsValuesAmplitudeInter[0] = pAmp->CollocationPointsValuesAmplitudeInsp[2];//IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
     //pAmp->CollocationPointsValuesAmplitudeInter[0] = 0;
     UINT2 idx = 0;
     for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp + 1; i++){
@@ -2449,11 +2449,9 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
             idx = pWFHM->modeInt * 2 + i - 1;
         else
             idx = pWFHM->modeInt * 2 + i - 3 + 16; //FIXME
-        printf("idx = %i\n", idx);
         pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
-
     }
-    pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
+    pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = pAmp->CollocationPointsValuesAmplitudeRD[0];//IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
 }
 
 void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){

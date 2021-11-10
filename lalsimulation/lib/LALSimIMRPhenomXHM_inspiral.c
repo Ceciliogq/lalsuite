@@ -728,7 +728,7 @@ static double IMRPhenomXHM_Inspiral_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_o
         else{
             //for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
             //pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two;
-            pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two;
+            pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds / pAmp->fcutInsp_seven_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds / pAmp->fcutInsp_eight_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two / pAmp->fcutInsp_three;
             //}
         }
         // if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
@@ -829,6 +829,8 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     pAmp->fcutInsp_seven_thirds = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].four_thirds;
     pAmp->fcutInsp_eight_thirds = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].five_thirds;
     pAmp->fcutInsp_three = powers_of_Mf_inspcollpoints[pWFHM->nCollocPtsInspAmp].two;
+
+
     // Do Vetos? set final pWFHM->IMRPhenomXHMInspiralAmpVersion
 
     // Get PN values at collocation points frequencies
@@ -841,6 +843,7 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     //     pAmp->InspiralCoefficient[i] = pAmp->InspiralCoefficientFunction[i](powers_of_Mf_inspcollpoints, pAmp);
     // }
     IMRPhenomXHM_Inspiral_Amp_Coefficients(pAmp, powers_of_Mf_inspcollpoints, pWFHM);
+
     LALFree(powers_of_Mf_inspcollpoints);
 }
 
@@ -856,7 +859,7 @@ static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficie
         default: {XLAL_ERROR_VOID(XLAL_EDOM, "Error in IMRPhenomXHM_Inspiral_CollocationPoints: IMRPhenomXHMInspiralAmpFreqsVersion = %i is not valid. Recommneded version is 102021.\n", pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion);}
     }
     for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
-        pAmp->CollocationPointsValuesAmplitudeInsp[i] = pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
+        pAmp->CollocationPointsValuesAmplitudeInsp[i] = pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
         // int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
         // if(status != XLAL_SUCCESS)
         //     XLALPrintError("IMRPhenomXHM_Inspiral_Amp_CollocationPoints failed for Mf, initial_status=%d",status);

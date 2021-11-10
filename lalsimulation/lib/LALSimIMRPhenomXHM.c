@@ -581,7 +581,7 @@ int IMRPhenomXHMGenerateFDOneMode(
 
     IMRPhenomX_UsefulPowers powers_of_Mf;
     REAL8 Msec = pWF->M_sec;    // Variable to transform Hz to Mf
-    REAL8 Amp0 = pWFHM->Amp0;   // Transform amplitude from NR to physical units
+    REAL8 Amp0 = pWF->amp0;   // Transform amplitude from NR to physical units
     REAL8 amp, phi;
 
     /* Multiply by (-1)^l to get the true h_l-m(f) */
