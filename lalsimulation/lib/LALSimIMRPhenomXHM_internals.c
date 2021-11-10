@@ -840,7 +840,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
     pAmp->ampNorm = pWF22->ampNorm;
     pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
-
+    pAmp->fAmpRDfalloff = 0.;
 
     /*** Proceed region by region ***/
     if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){ //FIXME
@@ -852,6 +852,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // Take the cutting frequencies at the inspiral and ringdown
         pAmp->fAmpMatchIN  = IMRPhenomXHM_Amplitude_fcutInsp(pWFHM, pWF22);
         pAmp->fAmpMatchIM  = IMRPhenomXHM_Amplitude_fcutRD(pWFHM, pWF22);
+        pAmp->fAmpRDfalloff = pWFHM->fRING + 2 * pWFHM->fDAMP;
 
         /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
         IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
@@ -2231,7 +2232,14 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     // MRD range
     if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
-      double AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      double AmpMRD;
+      if (pAmp->fAmpRDfalloff > 0 && IMRPhenomX_StepFuncBool(f, pAmp->fAmpRDfalloff)){
+          AmpMRD = pAmp->RDCoefficient[3] * exp(- pAmp->RDCoefficient[4] * (f - pAmp->fAmpRDfalloff));
+      }
+      else{
+          AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
+     }
+
       return AmpMRD; //*factor*pWF->ampNorm;
     }
     /* Intermediate range */

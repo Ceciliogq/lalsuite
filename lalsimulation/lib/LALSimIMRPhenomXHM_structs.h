@@ -146,6 +146,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             REAL8 fAmpMatchIN;    // Inspiral -> Intermediate
             REAL8 fAmpMatchInt12; // Intermediate1 -> Intermediate2. Only for EMR cases
             REAL8 fAmpMatchIM;    // Intermediate -> Ringdown
+            REAL8 fAmpRDfalloff;     // Ringdown -> Falloff region
 
             /* PN Amplitude Prefactors */
             COMPLEX16 pnInitial, pnOneThird, pnTwoThirds, pnThreeThirds, pnFourThirds, pnFiveThirds, pnSixThirds, pnSevenThirds, pnEightThirds,pnNineThirds;

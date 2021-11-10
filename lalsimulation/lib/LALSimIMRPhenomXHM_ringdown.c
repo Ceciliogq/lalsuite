@@ -601,6 +601,14 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
             pAmp->RDCoefficient[0] = rdcp1 * pWFHM->fDAMP / (sqrt(rdcp1 / rdcp3) - (rdcp1 / rdcp2));
             pAmp->RDCoefficient[2] = sqrt(pAmp->RDCoefficient[0] / (rdcp2 * pWFHM->fDAMP));
             pAmp->RDCoefficient[1] = 0.5 * pAmp->RDCoefficient[2] * log(rdcp1 / rdcp3);
+            if(pAmp->fAmpRDfalloff > 0){
+                IMRPhenomX_UsefulPowers powers_of_RDfalloff;
+                IMRPhenomX_Initialize_Powers(&powers_of_RDfalloff, pAmp->fAmpRDfalloff);
+                pAmp->RDCoefficient[3] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_RDfalloff, pWFHM, pAmp);
+                pAmp->RDCoefficient[4] = -1. * IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_RDfalloff, pWFHM, pAmp) / pAmp->RDCoefficient[3];
+                printf("Exponential falloff = %.10e %.10e\n", pAmp->RDCoefficient[3], pAmp->RDCoefficient[4]);
+            }
+
             break;
         }
         default:{
@@ -624,12 +632,11 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
     switch ( RDAmpFlag )
     {
         case 0: /* Canonical, 3 fitted coefficients + fring, fdamp, lc that are fixed. sigma is also fixed except for the 21 mode. */
-        {
+        {   // Only for the 122018 release.
             double dfd = fda * pAmp->sigma;
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
-            // ampRD *= (pWF->ampNorm * powers_of_Mf.m_seven_sixths);
-            // ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            // The line below returns the strain amplitude
             if (pAmp->RDRescaleFactor < 0) ampRD *= (pWF->ampNorm * powers_of_Mf->m_seven_sixths);
             break;
         }
@@ -684,10 +691,10 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(IMRPhenomX_UsefulPowers *powers_of_Mf,
         case 1:
         {
             double dfr = ff - frd;
-            numerator = pAmp->r1 * (dfr * dfr * pAmp->r2 + 2 * fda * dfr * pAmp->r3 + fda * fda * pAmp->r2 * pAmp->r3 * pAmp->r3);
-            denom = (dfr * dfr + fda * fda * pAmp->r3 * pAmp->r3);
-            denom = pAmp->r3 * denom * denom * exp(dfr * pAmp->r2 / (fda * pAmp->r3));
-            DampRD = - numerator * denom;
+            numerator = pAmp->RDCoefficient[0] * (dfr * dfr * pAmp->RDCoefficient[1] + 2 * fda * dfr * pAmp->RDCoefficient[2] + fda * fda * pAmp->RDCoefficient[1] * pAmp->RDCoefficient[2] * pAmp->RDCoefficient[2]);
+            denom = (dfr * dfr + fda * fda * pAmp->RDCoefficient[2] * pAmp->RDCoefficient[2]);
+            denom = pAmp->RDCoefficient[2] * denom * denom * exp(dfr * pAmp->RDCoefficient[1] / (fda * pAmp->RDCoefficient[2]));
+            DampRD = - numerator / denom;
             break;
         }
         default:
