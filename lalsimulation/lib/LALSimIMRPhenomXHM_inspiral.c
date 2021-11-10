@@ -841,7 +841,6 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     //     pAmp->InspiralCoefficient[i] = pAmp->InspiralCoefficientFunction[i](powers_of_Mf_inspcollpoints, pAmp);
     // }
     IMRPhenomXHM_Inspiral_Amp_Coefficients(pAmp, powers_of_Mf_inspcollpoints, pWFHM);
-    printf("Leaving IMRPhenomXHM_Get_Inspiral_Amp_Coefficients\n");
     LALFree(powers_of_Mf_inspcollpoints);
 }
 
