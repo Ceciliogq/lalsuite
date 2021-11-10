@@ -180,21 +180,25 @@ void IMRPhenomXHM_SetHMWaveformVariables(
       {
           case 21:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
             wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             break;
           }
           case 33:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
+            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211004;
             wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211004;
             break;
           }
           case 32:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
+            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 202109302;
             wf->IMRPhenomXHMRingdownAmpFitsVersion = 202109302;
             break;
           }
           case 44:{
             wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
             wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             break;
           }
@@ -359,6 +363,21 @@ void IMRPhenomXHM_FillAmpFitsArray(IMRPhenomXHMAmpCoefficients *pAmp){
   pAmp->IntermediateAmpFits[14] = IMRPhenomXHM_Inter_Amp_44_int0; //fcutInsp + (fInt1 - fcutInsp)/3
   pAmp->IntermediateAmpFits[15] = IMRPhenomXHM_Inter_Amp_44_dint0;//fcutInsp + (fInt1 - fcutInsp)/3
 
+  //21
+  pAmp->IntermediateAmpFits[16] = IMRPhenomXHM_Inter_Amp_21_int3;
+  pAmp->IntermediateAmpFits[17] = IMRPhenomXHM_Inter_Amp_21_int4;
+
+  //33
+  pAmp->IntermediateAmpFits[18] = IMRPhenomXHM_Inter_Amp_33_int3;
+  pAmp->IntermediateAmpFits[19] = IMRPhenomXHM_Inter_Amp_33_int4;
+
+  //32
+  pAmp->IntermediateAmpFits[20] = IMRPhenomXHM_Inter_Amp_32_int3;
+  pAmp->IntermediateAmpFits[21] = IMRPhenomXHM_Inter_Amp_32_int4;
+
+  //44
+  pAmp->IntermediateAmpFits[22] = IMRPhenomXHM_Inter_Amp_44_int3;
+  pAmp->IntermediateAmpFits[23] = IMRPhenomXHM_Inter_Amp_44_int4;
 
   /****Ringdown Fits for coefficients*****/
 

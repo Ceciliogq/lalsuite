@@ -56,6 +56,14 @@ static double IMRPhenomXHM_Inter_Amp_32_int1(double eta, double chi1, double chi
 static double IMRPhenomXHM_Inter_Amp_32_int2(double eta, double chi1, double chi2, int InterAmpFlag);
 static double IMRPhenomXHM_Inter_Amp_44_int1(double eta, double chi1, double chi2, int InterAmpFlag);
 static double IMRPhenomXHM_Inter_Amp_44_int2(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_int3(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_21_int4(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_int3(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_33_int4(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_int3(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_32_int4(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_int3(double eta, double chi1, double chi2, int InterAmpFlag);
+static double IMRPhenomXHM_Inter_Amp_44_int4(double eta, double chi1, double chi2, int InterAmpFlag);
 
 /* End of Parameter Space Fits */
 
