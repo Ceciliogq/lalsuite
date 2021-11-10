@@ -37,9 +37,10 @@ extern "C" {
 #define UNUSED
 #endif
 
+
+#include "LALSimIMRPhenomX_internals.h"
 #include "LALSimIMRPhenomXUtilities.h"
 #include "LALSimIMRPhenomXHM_structs.h"
-#include "LALSimIMRPhenomX_internals.h"
 
 
 /********** AMPLITUDE ***************/

@@ -1552,8 +1552,18 @@ static double IMRPhenomXHM_Intermediate_Amp_delta5(double d1, double d4, double 
 /*********************************************/
 
 // Build the polynomial with the coefficients given and return the inverse of the polynomial (this is the ansatz)
-static double IMRPhenomXHM_Intermediate_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp)
+static double IMRPhenomXHM_Intermediate_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp)
 {
+    if(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion != 122018){ //FIXME
+        double result = 0., fpower = 1.;
+        for (INT4 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
+            result += (pAmp->InterCoefficient[i] * fpower);
+            fpower *= powers_of_f->itself;
+        }
+        result *= powers_of_f->m_seven_sixths;
+        return result;
+    }
+    else{
         double a0 = pAmp->delta0;
         double a1 = pAmp->delta1;
         double a2 = pAmp->delta2;
@@ -1624,7 +1634,8 @@ static double IMRPhenomXHM_Intermediate_Amp_Ansatz(IMRPhenomX_UsefulPowers *powe
             XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_Intermediate_Amp_Ansatz: InterAmpPolOrder is not valid.\n");
           }
         }
-        return 1. / polynomial;
+        return pAmp->ampNorm / polynomial;
+    }
 }
 
 
@@ -2099,13 +2110,14 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     IMRPhenomX_UsefulPowers powers_of_finsp;
     IMRPhenomX_Initialize_Powers(&powers_of_finsp, pAmp->fAmpMatchIN);
     pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
+    //pAmp->CollocationPointsValuesAmplitudeInter[0] = 0;
     for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp + 1; i++){
-        pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+        pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInterAmp + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
     }
     pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
 }
 
-void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM){
+void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
 
     INT2 nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp + 2; // Add the two boundaries (inspiral, ringdown)
 
@@ -2150,6 +2162,8 @@ void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
 
     for (INT4 i = 0; i < nCollocPtsInterAmp; i++){
         pAmp->InterCoefficient[i] = gsl_vector_get(x, i);
+        printf("%.6f\n", pAmp->InterCoefficient[i]);
+        printf("%.6f %.6f\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
     }
 
     gsl_vector_free(b);

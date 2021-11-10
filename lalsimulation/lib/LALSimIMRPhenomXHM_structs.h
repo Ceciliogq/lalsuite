@@ -39,9 +39,9 @@ extern "C" {
 #define N_MAX_COEFFICIENTS_PHASE_RING 4       //Maximun number of coefficients of the ringdown ansatz
 
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INS 3    //Maximun number of collocation points in the inspiral
-#define N_MAX_COEFFICIENTS_AMPLITUDE_INTER 4  //Maximun number of collocation points in the intermediate. The fourth is for the EMR
-#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 6   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2.
-
+#define N_MAX_COEFFICIENTS_AMPLITUDE_INTER 6  //Maximun number of collocation points in the intermediate. The fourth is for the EMR. FIXME
+#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 6   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2. FIXME
+                                              //6 to store fits of 3 coefficients or 3 collocation points. FIXME
 
 // Data structure to hold QNM frequencies
 typedef double (*fitQNM_fring) (double finalDimlessSpin);

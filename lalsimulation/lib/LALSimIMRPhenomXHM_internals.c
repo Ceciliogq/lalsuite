@@ -32,10 +32,12 @@
 #include "LALSimIMRPhenomX_internals.h"
 #include "LALSimIMRPhenomXUtilities.h"
 
+
+#include "LALSimIMRPhenomXHM_inspiral.c"//Change2
+
 #include "LALSimIMRPhenomXHM_ringdown.c"
 #include "LALSimIMRPhenomXHM_intermediate.c"
-#include "LALSimIMRPhenomXHM_inspiral.c"
-
+// Change 2#include "LALSimIMRPhenomXHM_inspiral.c"
 
 /*Equations referenced in this file come from arXiv:2001.10914 [gr-qc], see also dcc:LIGO-P2000011 */
 
@@ -908,13 +910,12 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
 
     /*** Proceed region by region ***/
-
-
     IMRPhenomX_UsefulPowers powers_of_fcutInsp;
     IMRPhenomX_Initialize_Powers(&powers_of_fcutInsp, pAmp->fAmpMatchIN);
-    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){
+    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){ //FIXME
         pAmp->InspRescaleFactor = 2;
-        pAmp->InterRescaleFactor = 2;
+        pAmp->RDRescaleFactor = 2;
+        pAmp->InterRescaleFactor = 0;
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
 
 
@@ -925,8 +926,13 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
         IMRPhenomXHM_RD_Amp_Coefficients(pWF22, pWFHM, pAmp);
 
-        IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM);
+        pAmp->InterRescaleFactor = 2;
+        IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22);
 
+        /* Set Rescale Factors to build Strain */
+        pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
+        pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
+        pAmp->InterRescaleFactor = -pAmp->InterRescaleFactor;
     }
     else{
         /*****************/
@@ -1162,361 +1168,359 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         printf("sigma   = %.16f\r\n",pAmp->sigma);
         printf("lc      = %.16f\r\n",pAmp->lc);
         #endif
-    }// END of 122018 version
 
 
-
-    /*******************/
-    /*   INTERMEDIATE  */
-    /*******************/
-    #if DEBUG == 1
-    printf("\n\n**** INTERMEDIATE ****\n\n");
-    #endif
-
-    // Initialize values of collocation points. They are taken from the parameter space fits.
-    for(int i = 0; i<nCollocPtsInterAmp; i++)
-    {
-      pAmp->CollocationPointsValuesAmplitudeInter[i] = fabs(pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion));
-    }
-
-    /* For reconstructing the intermediate region we need value and derivative at the beginning and at the end of the intermediate region, given by the inspiral and ringdown ansatzs.
-    And also the two values at the two intermediate collocation points. This gives 6 parameters, that will determine the 6 coefficients of the inverse of the 5th order polynomial
-    that we use for reconstruction.
-    This is the default behaviour, however the veto conditions can reduce the order of the polynomial.
-    */
-
-    double F1, F2, F3, F4;  //Frequencies of the collocation points in the intermediate region
-    F1     = powers_of_fcutInsp.itself;
-    F2     = pAmp->CollocationPointsFreqsAmplitudeInter[0];
-    F3     = pAmp->CollocationPointsFreqsAmplitudeInter[1];
-    F4     = pAmp->fAmpMatchIM;
-
-    #if DEBUG == 1
-    printf("F1 = %.16f\n",F1);
-    printf("F2 = %.16f\n",F2);
-    printf("F3 = %.16f\n",F3);
-    printf("F4 = %.16f\n\n",F4);
-    #endif
-
-    // Initialize useful powers.
-    IMRPhenomX_UsefulPowers powers_of_F1;
-    IMRPhenomX_Initialize_Powers(&powers_of_F1,F1);
-    IMRPhenomX_UsefulPowers powers_of_F4;
-    IMRPhenomX_Initialize_Powers(&powers_of_F4,F4);
-
-    // Compute values at the boundaries (rescaled ansatz with the leading order of the 22).
-    printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
-    // int tmp = pAmp->InspRescaleFactor;
-    // int tmp2 = pAmp->RDRescaleFactor;
-    // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
-    //      pAmp->InspRescaleFactor = 1;
-    //      pAmp->RDRescaleFactor = 1;
-    // }
-    pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
-    pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
-    if(pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion == 122018){
-            pAmp->InterRescaleFactor = 1;
-    }
-    printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
-    double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
-    double rdF4;
-    if (pWFHM->MixingOn == 1){
-      rdF4 = cabs(SpheroidalToSpherical(F4, &powers_of_F4, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
-    }else{
-      rdF4 = IMRPhenomXHM_RD_Amp_Ansatz(F4, pWFHM, pAmp);
-    };
-
-    // Compute derivatives at the boundaries (rescaled ansatz with the leading order of the 22).
-    double d1, d4;
-    d1     = IMRPhenomXHM_Inspiral_Amp_NDAnsatz(&powers_of_F1,pWFHM,pAmp);
-    if(pWFHM->MixingOn==1){
-      d4 = IMRPhenomXHM_RD_Amp_NDAnsatz(F4, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
-    }else{
-      d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
-    }
-    // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
-
-    pAmp->InterRescaleFactor = 0;
-    // printf("pAmp->InspRescaleFactorE = %i\n", pAmp->InspRescaleFactor);
-    // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
-    //      pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
-    // }
-
-    #if DEBUG == 1
-    printf("d1 = %.16f\n",d1);
-    printf("d4 = %.16f\n",d4);
-    #endif
-
-    // Derivatives at the boundaries of the whole ansatz.
-    d1     = ((7.0/6.0) * pow(F1,1.0/6.0) / inspF1) - ( pow(F1,7.0/6.0) * d1 / (inspF1*inspF1) );
-    d4     = ((7.0/6.0) * pow(F4,1.0/6.0) / rdF4)   - ( pow(F4,7.0/6.0) * d4 / (rdF4*rdF4) );
-
-    #if DEBUG == 1
-    printf("d1 = %.16f\n",d1);
-    printf("d4 = %.16f\n\n",d4);
-    #endif
-
-    // These values will feed the reconstruction function of the intermediate for getting the coefficients of the polynomial
-    double V1, V2, V3, V4;
-
-    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 105; // by default use 5th order polynomial
-
-    V1 = powers_of_F1.m_seven_sixths * inspF1;
-    V2 = pAmp->CollocationPointsValuesAmplitudeInter[0];
-    V3 = pAmp->CollocationPointsValuesAmplitudeInter[1];
-    V4 = powers_of_F4.m_seven_sixths * rdF4;
-
-    #if DEBUG == 1
-    printf("Before intermediate veto \n");
-    printf("V1 = %.16f\n",V1);
-    printf("V2 = %.16f\n",V2);
-    printf("V3 = %.16f\n",V3);
-    printf("V4 = %.16f\n",V4);
-    printf("rdF4 = %.16f\n",rdF4);
-    printf("F4.m_seven_sixths = %.16f\n\n",powers_of_F4.m_seven_sixths);
-    #endif
-
-    // VETO: outside of the calibration region some collocation points are bad behaved. We veto them and change the type of reconstruction now.
-
-    if(pAmp->useInspAnsatzRingdown==1){
-      //For these extreme cases we do not use intermediate collocation points -> third order polynomial.
-      V2 = 1.;
-      V3 = 1.;
-      pWFHM->IMRPhenomXHMIntermediateAmpVersion = 101; /*Linear reconstruction*/
-      #if DEBUG == 1
-      printf("VETO: useInspAnsatzRingdown\n");
-      printf("V2 = %.16f\n",V2);
-      printf("V3 = %.16f\n",V3);
-      #endif
-    }
-
-    // The reconstruction function is the inverse of a polynomial. That we demand pass through the points V1, V2, V3, V4 and has the derivatives d1, d4 at the boundaries.
-    // For simplicity we coded the reconstruction of the polynomial (Update_Intermediate_Amplitude_Coefficients), so we have to feed it with inverse values.
-    V1  = 1.0 / V1;
-    V2  = 1.0 / V2;
-    V3  = 1.0 / V3;
-    V4  = 1.0 / V4;
-
-    #if DEBUG == 1
-    printf("\nAfter Veto and inverse \n");
-    printf("V1 = %.16f\n",V1);
-    printf("V2 = %.16f\n",V2);
-    printf("V3 = %.16f\n",V3);
-    printf("V4 = %.16f\n",V4);
-    printf("IMRPhenomXHMIntermediateAmpVersion = %i \n\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-    #endif
-
-
-    /* If the case does not have extreme mass ratio it skips the next block */
-
-
-    /****** JUST EMR cases, 2 INTERMEDIATE REGIONS ******/
-
-    /* For EMR cases the amplitude shows a more pronounced drop off at the end of the inspiral.
-    To model this we split the intermediate region in two.
-    We add an extra collocation point between the end of the inspiral and the first intermediate collocation point, F0.
-    From fcutInsp to FO we use a 4th order polynomial, and from F0 to fcutRD we use the usual 5th that is computed after this block. */
-
-    if(pWFHM->AmpEMR==1){
-      #if DEBUG == 1
-      printf("*** TWO INTERMEDIATE REGIONS ***\n\n");
-      #endif
-
-      // Here we compute the first intermediate region with the inverse of a 4th polynomial.
-      // For this we use point and derivative at fcutInsp and F0 (4 coefficients) and the value at the first collocation point (F2), with the total of 5 coefficients.
-
-      double F0, V0, d0, F0_seven_sixths;  //Frequency, value, derivative and useful power at the extra collocation point for EMR
-
-      F0 = F1 + (F2-F1)/3.;
-      pAmp->fAmpMatchInt12 = F0;
-
-      // Take the value and derivative from the parameter space fits.
-      V0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+8](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
-      d0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+9](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
-
-      #if DEBUG == 1
-      printf("F0 = %.16f\n",F0);
-      printf("V0 = %.16f\n",V0);
-      printf("d0 = %.16f\n",d0);
-      #endif
-
-      F0_seven_sixths = pow(F0,7.0/6.0);
-
-      d0 = ((7.0/6.0) / (V0*F0))   - ( d0 / (V0*V0*F0_seven_sixths) );
-      V0 = 1. / V0;
-
-      #if DEBUG == 1
-      printf("1/V0 = %.16f\n",V0);
-      printf("1/d0 = %.16f\n",d0);
-      #endif
-
-      // Get the coefficients of the polynomial for the first intermediate region
-      pAmp->alpha0 = IMRPhenomXHM_Intermediate_Amp_delta0(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104); //V3 and F3 will not be used when calling with 104
-      pAmp->alpha1 = IMRPhenomXHM_Intermediate_Amp_delta1(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
-      pAmp->alpha2 = IMRPhenomXHM_Intermediate_Amp_delta2(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
-      pAmp->alpha3 = IMRPhenomXHM_Intermediate_Amp_delta3(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
-      pAmp->alpha4 = IMRPhenomXHM_Intermediate_Amp_delta4(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
-
-      #if DEBUG == 1
-      printf("Intermediate 1: feed values \n");
-      printf("d1 = %.16f\n", d1);
-      printf("d0 = %.16f\n", d0);
-      printf("d4 = %.16f\n", d4);
-      printf("V1 = %.16f\n", V1);
-      printf("V0 = %.16f\n", V0);
-      printf("V2 = %.16f\n", V2);
-      printf("V3 = %.16f\n", V3);
-      printf("V4 = %.16f\n", V4);
-      printf("F1 = %.16f\n", F1);
-      printf("F0 = %.16f\n", F0);
-      printf("F2 = %.16f\n", F2);
-      printf("F3 = %.16f\n", F3);
-      printf("F4 = %.16f\n", F4);
-      #endif
-
-      #if DEBUG == 1
-      printf("\nIntermediate 1: polynomial coeffcients \r\n");
-      printf("alpha0 = %.16f\n", pAmp->alpha0);
-      printf("alpha1 = %.16f\n", pAmp->alpha1);
-      printf("alpha2 = %.16f\n", pAmp->alpha2);
-      printf("alpha3 = %.16f\n", pAmp->alpha3);
-      printf("alpha4 = %.16f\n", pAmp->alpha4);
-      #endif
-
-      //Update left collocation point for the 2nd intermediate region
-      F1 = F0;
-      V1 = V0;
-      d1 = d0;
-
-      /**** END of first Intermediate region ****/
-    }
-    else{  /** This part is used both when we have a single intermediate region and for the second intermediate region **/
-      pAmp->fAmpMatchInt12 = 0;
-      pAmp->alpha0 = 1;
-      pAmp->alpha1 = 1;
-      pAmp->alpha2 = 1;
-      pAmp->alpha3 = 1;
-      pAmp->alpha4 = 1;
-
-      /** More vetos ***/
-      if(pWFHM->IntermediateAmpVeto == 1 && pWFHM->IMRPhenomXHMIntermediateAmpVersion==105){  // only 21 mode
-        IMRPhenomXHM_Intermediate_Amplitude_Veto(&V2, &V3, pWFHM, pWF22); // this changes the order of the polynomial to 4 or 3
+        /*******************/
+        /*   INTERMEDIATE  */
+        /*******************/
         #if DEBUG == 1
-        printf("VETO: Intermediate Amp Veto\n");
+        printf("\n\n**** INTERMEDIATE ****\n\n");
+        #endif
+
+        // Initialize values of collocation points. They are taken from the parameter space fits.
+        for(int i = 0; i<nCollocPtsInterAmp; i++)
+        {
+          pAmp->CollocationPointsValuesAmplitudeInter[i] = fabs(pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion));
+        }
+
+        /* For reconstructing the intermediate region we need value and derivative at the beginning and at the end of the intermediate region, given by the inspiral and ringdown ansatzs.
+        And also the two values at the two intermediate collocation points. This gives 6 parameters, that will determine the 6 coefficients of the inverse of the 5th order polynomial
+        that we use for reconstruction.
+        This is the default behaviour, however the veto conditions can reduce the order of the polynomial.
+        */
+
+        double F1, F2, F3, F4;  //Frequencies of the collocation points in the intermediate region
+        F1     = powers_of_fcutInsp.itself;
+        F2     = pAmp->CollocationPointsFreqsAmplitudeInter[0];
+        F3     = pAmp->CollocationPointsFreqsAmplitudeInter[1];
+        F4     = pAmp->fAmpMatchIM;
+
+        #if DEBUG == 1
+        printf("F1 = %.16f\n",F1);
+        printf("F2 = %.16f\n",F2);
+        printf("F3 = %.16f\n",F3);
+        printf("F4 = %.16f\n\n",F4);
+        #endif
+
+        // Initialize useful powers.
+        IMRPhenomX_UsefulPowers powers_of_F1;
+        IMRPhenomX_Initialize_Powers(&powers_of_F1,F1);
+        IMRPhenomX_UsefulPowers powers_of_F4;
+        IMRPhenomX_Initialize_Powers(&powers_of_F4,F4);
+
+        // Compute values at the boundaries (rescaled ansatz with the leading order of the 22).
+        printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
+        // int tmp = pAmp->InspRescaleFactor;
+        // int tmp2 = pAmp->RDRescaleFactor;
+        // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
+        //      pAmp->InspRescaleFactor = 1;
+        //      pAmp->RDRescaleFactor = 1;
+        // }
+        pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
+        pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
+        pAmp->InterRescaleFactor = 1;
+        printf("pAmp->InspRescaleFactor3 = %d\n", pAmp->InspRescaleFactor);
+        double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
+        double rdF4;
+        if (pWFHM->MixingOn == 1){
+          rdF4 = cabs(SpheroidalToSpherical(F4, &powers_of_F4, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+        }else{
+          rdF4 = IMRPhenomXHM_RD_Amp_Ansatz(F4, pWFHM, pAmp);
+        };
+
+        // Compute derivatives at the boundaries (rescaled ansatz with the leading order of the 22).
+        double d1, d4;
+        d1     = IMRPhenomXHM_Inspiral_Amp_NDAnsatz(&powers_of_F1,pWFHM,pAmp);
+        if(pWFHM->MixingOn==1){
+          d4 = IMRPhenomXHM_RD_Amp_NDAnsatz(F4, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
+        }else{
+          d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
+        }
+        // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
+
+        pAmp->InterRescaleFactor = 0;
+        // printf("pAmp->InspRescaleFactorE = %i\n", pAmp->InspRescaleFactor);
+        // if (pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion == 122018){
+        //      pAmp->RDRescaleFactor = -pAmp->RDRescaleFactor;
+        // }
+
+        #if DEBUG == 1
+        printf("d1 = %.16f\n",d1);
+        printf("d4 = %.16f\n",d4);
+        #endif
+
+        // Derivatives at the boundaries of the whole ansatz.
+        d1     = ((7.0/6.0) * pow(F1,1.0/6.0) / inspF1) - ( pow(F1,7.0/6.0) * d1 / (inspF1*inspF1) );
+        d4     = ((7.0/6.0) * pow(F4,1.0/6.0) / rdF4)   - ( pow(F4,7.0/6.0) * d4 / (rdF4*rdF4) );
+
+        #if DEBUG == 1
+        printf("d1 = %.16f\n",d1);
+        printf("d4 = %.16f\n\n",d4);
+        #endif
+
+        // These values will feed the reconstruction function of the intermediate for getting the coefficients of the polynomial
+        double V1, V2, V3, V4;
+
+        pWFHM->IMRPhenomXHMIntermediateAmpVersion = 105; // by default use 5th order polynomial
+
+        V1 = powers_of_F1.m_seven_sixths * inspF1;
+        V2 = pAmp->CollocationPointsValuesAmplitudeInter[0];
+        V3 = pAmp->CollocationPointsValuesAmplitudeInter[1];
+        V4 = powers_of_F4.m_seven_sixths * rdF4;
+
+        #if DEBUG == 1
+        printf("Before intermediate veto \n");
+        printf("V1 = %.16f\n",V1);
         printf("V2 = %.16f\n",V2);
         printf("V3 = %.16f\n",V3);
+        printf("V4 = %.16f\n",V4);
+        printf("rdF4 = %.16f\n",rdF4);
+        printf("F4.m_seven_sixths = %.16f\n\n",powers_of_F4.m_seven_sixths);
         #endif
-      }
 
-      if(pWFHM->RingdownAmpVeto == 1){    // only 21, 32 mode
-        IMRPhenomXHM_Ringdown_Amplitude_Veto(&V2, &V3, V4, pWFHM, pWF22); // If satisfied, remove the 2 inter collocation points
-        #if DEBUG == 1
-        printf("VETO: Ringdown Amp Veto\n");
-        printf("V2 = %.16f\n",V2);
-        printf("V3 = %.16f\n",V3);
-        #endif
-      }
+        // VETO: outside of the calibration region some collocation points are bad behaved. We veto them and change the type of reconstruction now.
 
-      if(pWFHM->IMRPhenomXHMIntermediateAmpVersion==105 && pAmp->WavyInt==1){
-        if(WavyPoints(V2,V3,V4)==1){
-          V3 = V2;
-          F3 = F2;
+        if(pAmp->useInspAnsatzRingdown==1){
+          //For these extreme cases we do not use intermediate collocation points -> third order polynomial.
           V2 = 1.;
-          pWFHM->IMRPhenomXHMIntermediateAmpVersion=1042;
+          V3 = 1.;
+          pWFHM->IMRPhenomXHMIntermediateAmpVersion = 101; /*Linear reconstruction*/
           #if DEBUG == 1
-          printf("VETO: Wavy Inter colloc points\n");
+          printf("VETO: useInspAnsatzRingdown\n");
           printf("V2 = %.16f\n",V2);
           printf("V3 = %.16f\n",V3);
           #endif
         }
-      }
 
-      if((pWF22->q>40. && pWF22->chi1L>0.9 && V2!=1 && V3!=1) ||
-      (pWFHM->modeTag==32 && (pWFHM->IMRPhenomXHMIntermediateAmpVersion != 101) && ((pWF22->q>2.5 && pWF22->chi1L<-0.6 && pWF22->chi2L>0) || (pWF22->chi1L<-0.9&&pWF22->chi2L<-0.9))) ||
-      (pWFHM->modeTag==21 && pWF22->eta<0.23 && pWF22->chi1L>0.7 && pWF22->chi2L<-0.5)){
-        V2 = 1.;
-        V3 = 1.;
-        pWFHM->IMRPhenomXHMIntermediateAmpVersion = 1032;
+        // The reconstruction function is the inverse of a polynomial. That we demand pass through the points V1, V2, V3, V4 and has the derivatives d1, d4 at the boundaries.
+        // For simplicity we coded the reconstruction of the polynomial (Update_Intermediate_Amplitude_Coefficients), so we have to feed it with inverse values.
+        V1  = 1.0 / V1;
+        V2  = 1.0 / V2;
+        V3  = 1.0 / V3;
+        V4  = 1.0 / V4;
+
         #if DEBUG == 1
-        printf("VETO: veto regions\n");
+        printf("\nAfter Veto and inverse \n");
+        printf("V1 = %.16f\n",V1);
         printf("V2 = %.16f\n",V2);
         printf("V3 = %.16f\n",V3);
+        printf("V4 = %.16f\n",V4);
+        printf("IMRPhenomXHMIntermediateAmpVersion = %i \n\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
         #endif
-      }
-      /*** End of vetos **/
-    }
-
-    // The reconstruction function (Update_Intermediate_Amplitude_Coefficients) assumes that F3 is the point with value.
-    // If F3 was removed in the veto the we replace it with F2
-    if(V3 == 1.){
-      V3 = V2;
-      F3 = F2;
-      V2 = 1.;
-    }
-
-    /*
-    Reconstruct the phenomenological coefficients for the intermediate ansatz
-    */
-
-    // Store the values for the reconstruction.
-    pAmp->v1 = V1;
-    pAmp->v2 = V2;
-    pAmp->v3 = V3;
-    pAmp->v4 = V4;
-    pAmp->f1 = F1;
-    pAmp->f2 = F2;
-    pAmp->f3 = F3;
-    pAmp->f4 = F4;
-    pAmp->d1 = d1;
-    pAmp->d4 = d4;
-
-    #if DEBUG == 1
-    printf("\nIntermediate Amplitude Input \r\n");
-    printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-    printf("V1 = %.16f\n", V1);
-    printf("V2 = %.16f\n", V2);
-    printf("V3 = %.16f\n", V3);
-    printf("V4 = %.16f\n", V4);
-    printf("F1 = %.16f\n", F1);
-    printf("F2 = %.16f\n", F2);
-    printf("F3 = %.16f\n", F3);
-    printf("F4 = %.16f\n", F4);
-    printf("d1 = %.16f\n", d1);
-    printf("d4 = %.16f\n", d4);
-    printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
-    #endif
-
-    // Compute the coefficients of the polynomial
-    Update_Intermediate_Amplitude_Coefficients(pAmp, pWFHM->IMRPhenomXHMIntermediateAmpVersion);
 
 
-    #if DEBUG == 1
-    printf("\nIntermediate polynomial coeffcients Before ChoosePolOrder \r\n");
-    printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-    printf("delta0 = %.16f\n", pAmp->delta0);
-    printf("delta1 = %.16f\n", pAmp->delta1);
-    printf("delta2 = %.16f\n", pAmp->delta2);
-    printf("delta3 = %.16f\n", pAmp->delta3);
-    printf("delta4 = %.16f\n", pAmp->delta4);
-    printf("delta5 = %.16f\n", pAmp->delta5);
-    printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
-    #endif
+        /* If the case does not have extreme mass ratio it skips the next block */
 
-    // Check that the polynomial does not cross zero, because the actual reconstructing function is the inverse of this polynomial
-    // If it crosses zero, then remove one collocation and lower the order of the polynomial.
-    ChoosePolOrder(pWFHM, pAmp);
 
-    #if DEBUG == 1
-    printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-    printf("\nIntermediate polynomial coeffcients After ChoosePolOrder\r\n");
-    printf("delta0 = %.16f\n", pAmp->delta0);
-    printf("delta1 = %.16f\n", pAmp->delta1);
-    printf("delta2 = %.16f\n", pAmp->delta2);
-    printf("delta3 = %.16f\n", pAmp->delta3);
-    printf("delta4 = %.16f\n", pAmp->delta4);
-    printf("delta5 = %.16f\n", pAmp->delta5);
-    printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
-    #endif
+        /****** JUST EMR cases, 2 INTERMEDIATE REGIONS ******/
+
+        /* For EMR cases the amplitude shows a more pronounced drop off at the end of the inspiral.
+        To model this we split the intermediate region in two.
+        We add an extra collocation point between the end of the inspiral and the first intermediate collocation point, F0.
+        From fcutInsp to FO we use a 4th order polynomial, and from F0 to fcutRD we use the usual 5th that is computed after this block. */
+
+        if(pWFHM->AmpEMR==1){
+          #if DEBUG == 1
+          printf("*** TWO INTERMEDIATE REGIONS ***\n\n");
+          #endif
+
+          // Here we compute the first intermediate region with the inverse of a 4th polynomial.
+          // For this we use point and derivative at fcutInsp and F0 (4 coefficients) and the value at the first collocation point (F2), with the total of 5 coefficients.
+
+          double F0, V0, d0, F0_seven_sixths;  //Frequency, value, derivative and useful power at the extra collocation point for EMR
+
+          F0 = F1 + (F2-F1)/3.;
+          pAmp->fAmpMatchInt12 = F0;
+
+          // Take the value and derivative from the parameter space fits.
+          V0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+8](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+          d0 = pAmp->IntermediateAmpFits[modeint*nCollocPtsInterAmp+9](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+
+          #if DEBUG == 1
+          printf("F0 = %.16f\n",F0);
+          printf("V0 = %.16f\n",V0);
+          printf("d0 = %.16f\n",d0);
+          #endif
+
+          F0_seven_sixths = pow(F0,7.0/6.0);
+
+          d0 = ((7.0/6.0) / (V0*F0))   - ( d0 / (V0*V0*F0_seven_sixths) );
+          V0 = 1. / V0;
+
+          #if DEBUG == 1
+          printf("1/V0 = %.16f\n",V0);
+          printf("1/d0 = %.16f\n",d0);
+          #endif
+
+          // Get the coefficients of the polynomial for the first intermediate region
+          pAmp->alpha0 = IMRPhenomXHM_Intermediate_Amp_delta0(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104); //V3 and F3 will not be used when calling with 104
+          pAmp->alpha1 = IMRPhenomXHM_Intermediate_Amp_delta1(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
+          pAmp->alpha2 = IMRPhenomXHM_Intermediate_Amp_delta2(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
+          pAmp->alpha3 = IMRPhenomXHM_Intermediate_Amp_delta3(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
+          pAmp->alpha4 = IMRPhenomXHM_Intermediate_Amp_delta4(d1,d0,V1,V2,V3,V0,F1,F2,F3,F0,104);
+
+          #if DEBUG == 1
+          printf("Intermediate 1: feed values \n");
+          printf("d1 = %.16f\n", d1);
+          printf("d0 = %.16f\n", d0);
+          printf("d4 = %.16f\n", d4);
+          printf("V1 = %.16f\n", V1);
+          printf("V0 = %.16f\n", V0);
+          printf("V2 = %.16f\n", V2);
+          printf("V3 = %.16f\n", V3);
+          printf("V4 = %.16f\n", V4);
+          printf("F1 = %.16f\n", F1);
+          printf("F0 = %.16f\n", F0);
+          printf("F2 = %.16f\n", F2);
+          printf("F3 = %.16f\n", F3);
+          printf("F4 = %.16f\n", F4);
+          #endif
+
+          #if DEBUG == 1
+          printf("\nIntermediate 1: polynomial coeffcients \r\n");
+          printf("alpha0 = %.16f\n", pAmp->alpha0);
+          printf("alpha1 = %.16f\n", pAmp->alpha1);
+          printf("alpha2 = %.16f\n", pAmp->alpha2);
+          printf("alpha3 = %.16f\n", pAmp->alpha3);
+          printf("alpha4 = %.16f\n", pAmp->alpha4);
+          #endif
+
+          //Update left collocation point for the 2nd intermediate region
+          F1 = F0;
+          V1 = V0;
+          d1 = d0;
+
+          /**** END of first Intermediate region ****/
+        }
+        else{  /** This part is used both when we have a single intermediate region and for the second intermediate region **/
+          pAmp->fAmpMatchInt12 = 0;
+          pAmp->alpha0 = 1;
+          pAmp->alpha1 = 1;
+          pAmp->alpha2 = 1;
+          pAmp->alpha3 = 1;
+          pAmp->alpha4 = 1;
+
+          /** More vetos ***/
+          if(pWFHM->IntermediateAmpVeto == 1 && pWFHM->IMRPhenomXHMIntermediateAmpVersion==105){  // only 21 mode
+            IMRPhenomXHM_Intermediate_Amplitude_Veto(&V2, &V3, pWFHM, pWF22); // this changes the order of the polynomial to 4 or 3
+            #if DEBUG == 1
+            printf("VETO: Intermediate Amp Veto\n");
+            printf("V2 = %.16f\n",V2);
+            printf("V3 = %.16f\n",V3);
+            #endif
+          }
+
+          if(pWFHM->RingdownAmpVeto == 1){    // only 21, 32 mode
+            IMRPhenomXHM_Ringdown_Amplitude_Veto(&V2, &V3, V4, pWFHM, pWF22); // If satisfied, remove the 2 inter collocation points
+            #if DEBUG == 1
+            printf("VETO: Ringdown Amp Veto\n");
+            printf("V2 = %.16f\n",V2);
+            printf("V3 = %.16f\n",V3);
+            #endif
+          }
+
+          if(pWFHM->IMRPhenomXHMIntermediateAmpVersion==105 && pAmp->WavyInt==1){
+            if(WavyPoints(V2,V3,V4)==1){
+              V3 = V2;
+              F3 = F2;
+              V2 = 1.;
+              pWFHM->IMRPhenomXHMIntermediateAmpVersion=1042;
+              #if DEBUG == 1
+              printf("VETO: Wavy Inter colloc points\n");
+              printf("V2 = %.16f\n",V2);
+              printf("V3 = %.16f\n",V3);
+              #endif
+            }
+          }
+
+          if((pWF22->q>40. && pWF22->chi1L>0.9 && V2!=1 && V3!=1) ||
+          (pWFHM->modeTag==32 && (pWFHM->IMRPhenomXHMIntermediateAmpVersion != 101) && ((pWF22->q>2.5 && pWF22->chi1L<-0.6 && pWF22->chi2L>0) || (pWF22->chi1L<-0.9&&pWF22->chi2L<-0.9))) ||
+          (pWFHM->modeTag==21 && pWF22->eta<0.23 && pWF22->chi1L>0.7 && pWF22->chi2L<-0.5)){
+            V2 = 1.;
+            V3 = 1.;
+            pWFHM->IMRPhenomXHMIntermediateAmpVersion = 1032;
+            #if DEBUG == 1
+            printf("VETO: veto regions\n");
+            printf("V2 = %.16f\n",V2);
+            printf("V3 = %.16f\n",V3);
+            #endif
+          }
+          /*** End of vetos **/
+        }
+
+        // The reconstruction function (Update_Intermediate_Amplitude_Coefficients) assumes that F3 is the point with value.
+        // If F3 was removed in the veto the we replace it with F2
+        if(V3 == 1.){
+          V3 = V2;
+          F3 = F2;
+          V2 = 1.;
+        }
+
+        /*
+        Reconstruct the phenomenological coefficients for the intermediate ansatz
+        */
+
+        // Store the values for the reconstruction.
+        pAmp->v1 = V1;
+        pAmp->v2 = V2;
+        pAmp->v3 = V3;
+        pAmp->v4 = V4;
+        pAmp->f1 = F1;
+        pAmp->f2 = F2;
+        pAmp->f3 = F3;
+        pAmp->f4 = F4;
+        pAmp->d1 = d1;
+        pAmp->d4 = d4;
+
+        #if DEBUG == 1
+        printf("\nIntermediate Amplitude Input \r\n");
+        printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
+        printf("V1 = %.16f\n", V1);
+        printf("V2 = %.16f\n", V2);
+        printf("V3 = %.16f\n", V3);
+        printf("V4 = %.16f\n", V4);
+        printf("F1 = %.16f\n", F1);
+        printf("F2 = %.16f\n", F2);
+        printf("F3 = %.16f\n", F3);
+        printf("F4 = %.16f\n", F4);
+        printf("d1 = %.16f\n", d1);
+        printf("d4 = %.16f\n", d4);
+        printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
+        #endif
+
+        // Compute the coefficients of the polynomial
+        Update_Intermediate_Amplitude_Coefficients(pAmp, pWFHM->IMRPhenomXHMIntermediateAmpVersion);
+
+
+        #if DEBUG == 1
+        printf("\nIntermediate polynomial coeffcients Before ChoosePolOrder \r\n");
+        printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
+        printf("delta0 = %.16f\n", pAmp->delta0);
+        printf("delta1 = %.16f\n", pAmp->delta1);
+        printf("delta2 = %.16f\n", pAmp->delta2);
+        printf("delta3 = %.16f\n", pAmp->delta3);
+        printf("delta4 = %.16f\n", pAmp->delta4);
+        printf("delta5 = %.16f\n", pAmp->delta5);
+        printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
+        #endif
+
+        // Check that the polynomial does not cross zero, because the actual reconstructing function is the inverse of this polynomial
+        // If it crosses zero, then remove one collocation and lower the order of the polynomial.
+        ChoosePolOrder(pWFHM, pAmp);
+
+        #if DEBUG == 1
+        printf("\nIMRPhenomXHMIntermediateAmpVersion = %i \r\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
+        printf("\nIntermediate polynomial coeffcients After ChoosePolOrder\r\n");
+        printf("delta0 = %.16f\n", pAmp->delta0);
+        printf("delta1 = %.16f\n", pAmp->delta1);
+        printf("delta2 = %.16f\n", pAmp->delta2);
+        printf("delta3 = %.16f\n", pAmp->delta3);
+        printf("delta4 = %.16f\n", pAmp->delta4);
+        printf("delta5 = %.16f\n", pAmp->delta5);
+        printf("fAmpMatchIn = %.16f\n", pAmp->fAmpMatchIN);
+        #endif
+    }// END of 122018 version
+
   }
 
   double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
@@ -2241,13 +2245,13 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     {
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
+      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
-      return AmpInt1*pWF->ampNorm;
+      return AmpInt1;//*pWF->ampNorm;
     }
     //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
-    return AmpInt*pWF->ampNorm;
+    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+    return AmpInt;//*pWF->ampNorm;
   }
 
   // WITH mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
@@ -2272,12 +2276,12 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     {
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
+      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
       return AmpInt1;
     }
     //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
+    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
     return AmpInt;
   }
 
@@ -2300,16 +2304,16 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     }
     /* Intermediate range */
     // First intermediate region
-    if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
+    if ((pWF->AmpEMR==1) )//&& !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
     {
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
+      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
       return AmpInt1;
     }
     //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pAmp);
+    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
     return AmpInt;
   }
 

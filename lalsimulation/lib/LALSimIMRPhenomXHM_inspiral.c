@@ -834,7 +834,6 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     // Get PN values at collocation points frequencies
     for (INT4 i=0; i < pWFHM->nCollocPtsInspAmp; i++){
         pAmp->PNAmplitudeInsp[i] = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&(powers_of_Mf_inspcollpoints[i]), pWFHM, pAmp);
-        printf("pAmp->PNAmplitudeInsp[%i] = %.16e\n", i, pAmp->PNAmplitudeInsp[i]);
     }
 
     // Inspiral coefficients
