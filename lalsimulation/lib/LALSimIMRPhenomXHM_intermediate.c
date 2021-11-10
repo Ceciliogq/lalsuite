@@ -2499,8 +2499,6 @@ void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
 
     for (INT4 i = 0; i < nCollocPtsInterAmp; i++){
         pAmp->InterCoefficient[i] = gsl_vector_get(x, i);
-        printf("%.6f\n", pAmp->InterCoefficient[i]);
-        printf("%.6f %.6f\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
     }
 
     gsl_vector_free(b);

@@ -612,15 +612,14 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
 /************** Amplitude Ringdown Ansatz *************/
 
 // For the modes with mixing this is the ansatz of the spheroidal part.
-static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp){
+static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp){
 
+    double ff  = powers_of_Mf->itself;
     int RDAmpFlag = pWF->IMRPhenomXHMRingdownAmpVersion;
     double frd = pWF->fRING;
     double fda = pWF->fDAMP;
     double dfr = ff - frd;
     double ampRD;
-    IMRPhenomX_UsefulPowers powers_of_Mf;
-    IMRPhenomX_Initialize_Powers(&powers_of_Mf, ff);
 
     switch ( RDAmpFlag )
     {
@@ -629,16 +628,16 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
             double dfd = fda * pAmp->sigma;
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
-            ampRD *= (pWF->ampNorm * powers_of_Mf.m_seven_sixths);
-            ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            // ampRD *= (pWF->ampNorm * powers_of_Mf.m_seven_sixths);
+            // ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            if (pAmp->RDRescaleFactor < 0) ampRD *= (pWF->ampNorm * powers_of_Mf->m_seven_sixths);
             break;
         }
         case 1:
         {
             double dfd = fda * pAmp->RDCoefficient[2];
-            //double factor = pow(2./(pWF->emm),-7/6.);
             ampRD = pAmp->RDCoefficient[0] * fda / ( exp(pAmp->RDCoefficient[1] / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
-            ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;
         }
         default:
@@ -647,7 +646,7 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
         }
     }
     if(pAmp->InterRescaleFactor>0){
-        ampRD /= RescaleFactor(&powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
+        ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
     }
 
     return ampRD;
@@ -656,8 +655,9 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(double ff, IMRPhenomXHMWaveformStruct *
 
 /*** Derivative of the RD Ansatz for modes without mixing ***/
 
-static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp){
+static double IMRPhenomXHM_RD_Amp_DAnsatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp){
 
+    double ff = powers_of_Mf->itself;
     int RDAmpFlag = pWF->IMRPhenomXHMRingdownAmpVersion;
     double frd = pWF->fRING;
     double fda = pWF->fDAMP;
@@ -701,8 +701,9 @@ static double IMRPhenomXHM_RD_Amp_DAnsatz(double ff, IMRPhenomXHMWaveformStruct 
 
 /*** Derivative of the RD Ansatz for modes with mixing ***/
 // It can not be obtained analytically, so we use finite difference of 4th order
-static double IMRPhenomXHM_RD_Amp_NDAnsatz(double ff, IMRPhenomXHMAmpCoefficients *pAmp,  IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXAmpCoefficients *pAmp22,  IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22){
+static double IMRPhenomXHM_RD_Amp_NDAnsatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp,  IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXAmpCoefficients *pAmp22,  IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22){
 
+    double ff = powers_of_Mf->itself;
     double df = 10e-10;
     double Nder;
     double fun2R = ff + 2*df;

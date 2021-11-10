@@ -840,29 +840,6 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
     pAmp->ampNorm = pWF22->ampNorm;
     pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
-    /*double v = cbrt(2*LAL_PI/pWFHM->emm); // v factor without f
-    switch(pWFHM->modeTag){
-        case 22:{
-            PNdominantlm = 1.;
-            break;
-        }
-        case 21:{
-            PNdominantlm = sqrt(2)/3 * pWF22->delta * v;
-            break;
-        }
-        case 33:{
-            PNdominantlm = 3/4.*sqrt(5/7.)*pWF22->delta * v;
-            break;
-        }
-        case 32:{
-            PNdominantlm = fabs(1/3.*sqrt(5/7.)*(-1+3*pWF22->eta)) * v*v;
-            break;
-        }
-        case 44:{
-            PNdominantlm = fabs(4/9.*sqrt(10/7.)*(-1+3*pWF22->eta)) * v*v;
-            break;
-        }
-    }*/
 
 
     /*** Proceed region by region ***/
@@ -875,8 +852,6 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // Take the cutting frequencies at the inspiral and ringdown
         pAmp->fAmpMatchIN  = IMRPhenomXHM_Amplitude_fcutInsp(pWFHM, pWF22);
         pAmp->fAmpMatchIM  = IMRPhenomXHM_Amplitude_fcutRD(pWFHM, pWF22);
-
-        printf("fInsp, fRD = %.10f %.10f\n", pAmp->fAmpMatchIN, pAmp->fAmpMatchIM);
 
         /* Take Frequency Domain Post-Newtonian Amplitude Coefficients */
         IMRPhenomXHM_GetPNAmplitudeCoefficients(pAmp, pWFHM, pWF22);
@@ -1167,8 +1142,6 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->fcutInsp_three = powers_of_fcutInsp.three;
 
 
-
-
         /*****************/
         /*    RINGDOWN   */
         /*****************/
@@ -1191,7 +1164,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // The coefficients of the ringdown do not work well here and we take an approximation of the inspiral.
         if(pAmp->useInspAnsatzRingdown==1){
           // The Ringdown amp at fAmpMatchIM is set to be 0.9 the amplitude in the last inspiral collocation point
-          pAmp->alambda = 0.9*fabs(IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_fcutInsp, pWFHM, pAmp)/(IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp)/pAmp->alambda));
+          IMRPhenomX_UsefulPowers powers_of_fRD;
+          IMRPhenomX_Initialize_Powers(&powers_of_fRD, pAmp->fAmpMatchIM);
+          pAmp->alambda = 0.9*fabs(IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_fcutInsp, pWFHM, pAmp)/(IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp)/pAmp->alambda));
         }
 
         #if DEBUG == 1
@@ -1250,16 +1225,16 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         if (pWFHM->MixingOn == 1){
           rdF4 = cabs(SpheroidalToSpherical(F4, &powers_of_F4, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
         }else{
-          rdF4 = IMRPhenomXHM_RD_Amp_Ansatz(F4, pWFHM, pAmp);
+          rdF4 = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_F4, pWFHM, pAmp);
         };
 
         // Compute derivatives at the boundaries (rescaled ansatz with the leading order of the 22).
         double d1, d4;
-        d1     = IMRPhenomXHM_Inspiral_Amp_NDAnsatz(&powers_of_F1,pWFHM,pAmp);
+        d1 = IMRPhenomXHM_Inspiral_Amp_NDAnsatz(&powers_of_F1, pWFHM, pAmp);
         if(pWFHM->MixingOn==1){
-          d4 = IMRPhenomXHM_RD_Amp_NDAnsatz(F4, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
+          d4 = IMRPhenomXHM_RD_Amp_NDAnsatz(&powers_of_F4, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
         }else{
-          d4 = IMRPhenomXHM_RD_Amp_DAnsatz(F4, pWFHM, pAmp);
+          d4 = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_F4, pWFHM, pAmp);
         }
         // Next use of Inspiral Ansatz will be for return the full strain, set correct rescalefactor
         pAmp->InterRescaleFactor = 0;
@@ -1270,8 +1245,8 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         #endif
 
         // Derivatives at the boundaries of the whole ansatz.
-        d1     = ((7.0/6.0) * pow(F1,1.0/6.0) / inspF1) - ( pow(F1,7.0/6.0) * d1 / (inspF1*inspF1) );
-        d4     = ((7.0/6.0) * pow(F4,1.0/6.0) / rdF4)   - ( pow(F4,7.0/6.0) * d4 / (rdF4*rdF4) );
+        d1 = ((7.0/6.0) * pow(F1,1.0/6.0) / inspF1) - ( pow(F1,7.0/6.0) * d1 / (inspF1*inspF1) );
+        d4 = ((7.0/6.0) * pow(F4,1.0/6.0) / rdF4)   - ( pow(F4,7.0/6.0) * d4 / (rdF4*rdF4) );
 
         #if DEBUG == 1
         printf("d1 = %.16f\n",d1);
@@ -2197,7 +2172,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     double phi22=1./pWF22->eta*IMRPhenomX_Phase_22(ff, powers_of_f, pPhase22,pWF22) + pWFlm->timeshift*ff + pWFlm->phaseshift + pWFlm->phiref22;
     complex double wf22R = amp22*cexp(I * phi22);
     // Compute 32 mode in spheroidal.
-    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(ff, pWFlm, pAmplm);
+    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
     double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
     // Do the rotation.
     double complex sphericalWF_32=conj(pWFlm->mixingCoeffs[2]) * wf22R + conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
@@ -2211,7 +2186,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     // The input 22 in the whole 22, and for the rotation we have to rescaled with the leading order. This is because the 32 is also rescaled.
     complex double wf22R = wf22/(powers_of_f->m_seven_sixths * pWFlm->Amp0);
     // Compute 32 mode in spheroidal.
-    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(ff, pWFlm, pAmplm);
+    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
     double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
     // Do the rotation
     double complex sphericalWF_32 = conj(pWFlm->mixingCoeffs[2])*wf22R  +  conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
@@ -2256,7 +2231,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     // MRD range
     if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
-      double AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f->itself, pWF, pAmp);
+      double AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
       return AmpMRD; //*factor*pWF->ampNorm;
     }
     /* Intermediate range */

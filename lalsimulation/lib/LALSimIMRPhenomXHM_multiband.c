@@ -2413,7 +2413,7 @@ static int IMRPhenomXHM_AmplitudeMixing(
       }
       else
       {
-        amp = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_Mf.itself, pWFHM, pAmp);
+        amp = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_Mf, pWFHM, pAmp);
         /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
         ((*amplm)->data->data)[idx+offset] =  amp;
       }
