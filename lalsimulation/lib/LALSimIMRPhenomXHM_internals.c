@@ -2189,7 +2189,12 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
   double complex SpheroidalToSphericalRecycle(double ff, IMRPhenomX_UsefulPowers *powers_of_f, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm)
   {
     // The input 22 in the whole 22, and for the rotation we have to rescaled with the leading order. This is because the 32 is also rescaled.
-    complex double wf22R = wf22/(powers_of_f->m_seven_sixths * pWFlm->Amp0);
+    //complex double wf22R = wf22/(powers_of_f->m_seven_sixths * pWF22->amp0);
+    complex double wf22R = wf22 / pWFlm->Amp0;
+    wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->RDRescaleFactor);
+    if(pAmplm->InterRescaleFactor>0){
+        wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->InterRescaleFactor);
+    }
     // Compute 32 mode in spheroidal.
     double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
     double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
@@ -2295,19 +2300,19 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
   // WITH mode mixing and recycling the previously computed 22 mode. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
   double IMRPhenomXHM_Amplitude_ModeMixingRecycle(double f, IMRPhenomX_UsefulPowers *powers_of_f, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF) {
     //  double f_seven_sixths = powers_of_f->seven_sixths;
-    double factor = powers_of_f->m_seven_sixths;
+    //double factor = powers_of_f->m_seven_sixths;
     // Use step function to only calculate IMR regions in approrpiate frequency regime
     // Inspiral range
     if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
     {
       double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      return AmpIns*factor;
+      return AmpIns;//*factor;
     }
     // MRD range
     if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
       double AmpMRD = cabs(SpheroidalToSphericalRecycle(f, powers_of_f, wf22, pAmp, pPhase, pWF));
-      return AmpMRD*factor;
+      return AmpMRD;//*factor;
     }
     /* Intermediate range */
     // First intermediate region
