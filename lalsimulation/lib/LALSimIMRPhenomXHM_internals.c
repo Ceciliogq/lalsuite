@@ -862,32 +862,32 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         IMRPhenomXHM_RD_Amp_Coefficients(pWF22, pWFHM, pAmp);
 
         pAmp->InterRescaleFactor = 2;
-        IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22);
+        IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22, pPhase, pAmp22, pPhase22);
 
-        // printf("Insp Coll points\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
-        // }
-        // printf("Inter Coll points\n");
-        // for(UINT2 i = 0; i < 5; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
-        // }
-        // printf("RD Coll points\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
-        // }
-        // printf("Insp Coefficients\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
-        // }
-        // printf("Inter Coefficients\n");
-        // for(UINT2 i = 0; i < 6; i++){
-        //     printf("%.16e\n", pAmp->InterCoefficient[i]);
-        // }
-        // printf("RD Coefficients\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16e\n", pAmp->RDCoefficient[i]);
-        // }
+        printf("Insp Coll points\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
+        }
+        printf("Inter Coll points\n");
+        for(UINT2 i = 0; i < 5; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
+        }
+        printf("RD Coll points\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
+        }
+        printf("Insp Coefficients\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16e\n", pAmp->InspiralCoefficient[i]);
+        }
+        printf("Inter Coefficients\n");
+        for(UINT2 i = 0; i < 6; i++){
+            printf("%.16e\n", pAmp->InterCoefficient[i]);
+        }
+        printf("RD Coefficients\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16e\n", pAmp->RDCoefficient[i]);
+        }
 
         /* Set Rescale Factors to build Strain */
         pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
@@ -2171,7 +2171,11 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     // Compute the 22 mode using PhenomX functions. This gives the 22 mode rescaled with the leading order.  This is because the 32 is also rescaled.
     double amp22=XLALSimIMRPhenomXRingdownAmplitude22AnsatzAnalytical(ff, pWF22->fRING, pWF22->fDAMP, pAmp22->gamma1, pAmp22->gamma2, pAmp22->gamma3);
     double phi22=1./pWF22->eta*IMRPhenomX_Phase_22(ff, powers_of_f, pPhase22,pWF22) + pWFlm->timeshift*ff + pWFlm->phaseshift + pWFlm->phiref22;
-    complex double wf22R = amp22*cexp(I * phi22);
+    complex double wf22R = pWF22->ampNorm * powers_of_f->m_seven_sixths * amp22*cexp(I * phi22);
+    wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->RDRescaleFactor);
+    if(pAmplm->InterRescaleFactor>0){
+        wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->InterRescaleFactor);
+    }
     // Compute 32 mode in spheroidal.
     double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
     double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
@@ -2259,19 +2263,19 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
 
   // WITH mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
   double IMRPhenomXHM_Amplitude_ModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22) {
-    double factor = powers_of_f->m_seven_sixths;
+    //double factor = powers_of_f->m_seven_sixths;
     // Use step function to only calculate IMR regions in approrpiate frequency regime
     // Inspiral range
     if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
     {
       double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      return AmpIns*factor;
+      return AmpIns;//*factor;
     }
     // MRD range
     if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
       double AmpMRD = cabs(SpheroidalToSpherical(f, powers_of_f, pAmp22, pPhase22, pAmp, pPhase, pWF, pWF22));
-      return AmpMRD*factor;
+      return AmpMRD;//*factor;
     }
     /* Intermediate range */
     // First intermediate region

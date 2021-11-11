@@ -2418,7 +2418,7 @@ void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficien
     }
 }
 
-static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
+static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22){
     /* Define frequencies */
     switch(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion){
         case 102021:{ // Equispaced. Get boundaries too
@@ -2451,14 +2451,22 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
             idx = pWFHM->modeInt * 2 + i - 3 + 16; //FIXME
         pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
     }
-    pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = pAmp->CollocationPointsValuesAmplitudeRD[0];//IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
+    if (pWFHM->MixingOn == 1){
+      REAL8 fRD = pAmp->CollocationPointsFreqsAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1];
+      IMRPhenomX_UsefulPowers powers_of_fRD;
+      IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
+      pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    }else{
+      pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = pAmp->CollocationPointsValuesAmplitudeRD[0];//IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
+    };
+
 }
 
-void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22){
+void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22){
 
     INT2 nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp + 2; // Add the two boundaries (inspiral, ringdown)
 
-    IMRPhenomXHM_Intermediate_Amp_CollocationPoints(pAmp, pWFHM, pWF22);
+    IMRPhenomXHM_Intermediate_Amp_CollocationPoints(pAmp, pWFHM, pWF22, pPhase, pAmp22, pPhase22);
 
     /* GSL objects for solving system of equations via LU decomposition */
     gsl_vector *b, *x;
