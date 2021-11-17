@@ -737,7 +737,7 @@ static void IMRPhenomXHM_RDAux_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22,
           fpower = 1.;
           gsl_matrix_set(A, i, 0, 0.);
           for(INT4 j = 1; j < pAmp->nCoefficientsRDAux; j++){
-              gsl_matrix_set(A, i, j, fpower * j);
+              gsl_matrix_set(A, i, j, j * fpower);
               fpower *= fcollpoint;
           }
       }

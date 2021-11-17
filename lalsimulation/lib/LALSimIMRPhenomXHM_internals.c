@@ -847,6 +847,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     pAmp->ampNorm = pWF22->ampNorm;
     pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
     pAmp->fAmpRDfalloff = 0.;
+    pAmp->nCoefficientsInter = 0;
 
     /*** Proceed region by region ***/
     if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){ //FIXME
@@ -854,6 +855,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
+        pAmp->nCoefficientsInter = 6;
 
         pAmp->nCoefficientsRDAux = 0;
         if (pWFHM->MixingOn){
@@ -885,10 +887,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
         // }
-        // printf("Inter Coll points\n");
-        // for(UINT2 i = 0; i < 6; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
-        // }
+        printf("Inter Coll points\n");
+        for(UINT2 i = 0; i < 6; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
+        }
         // printf("RD Coll points\n");
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
@@ -897,10 +899,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
         // }
-        // printf("Inter Coefficients\n");
-        // for(UINT2 i = 0; i < 6; i++){
-        //     printf("%.16e\n", pAmp->InterCoefficient[i]);
-        // }
+        printf("Inter Coefficients\n");
+        for(UINT2 i = 0; i < 6; i++){
+            printf("%.16e\n", pAmp->InterCoefficient[i]);
+        }
         // printf("RD Coefficients\n");
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16e\n", pAmp->RDCoefficient[i]);

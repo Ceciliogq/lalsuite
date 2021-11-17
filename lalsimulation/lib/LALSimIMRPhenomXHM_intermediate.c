@@ -2420,11 +2420,24 @@ void ChoosePolOrder(IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficien
 
 static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22){
     /* Define frequencies */
+    INT2 vector[6] = {2,0,1,1,0,2};
+
     switch(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion){
         case 102021:{ // Equispaced. Get boundaries too
             REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
+            UINT2 idx = 0;
             for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){ //FIXME: Assume I use the 2 boundaries
-                pAmp->CollocationPointsFreqsAmplitudeInter[i] = pAmp->fAmpMatchIN + deltaf * i;
+                if(vector[i] == 1){
+                    // Add point
+                    pAmp->CollocationPointsFreqsAmplitudeInter[idx] = pAmp->fAmpMatchIN + deltaf * i;
+
+                }
+                else if (vector[i] == 2){
+                    // Add point + derivative
+                    pAmp->CollocationPointsFreqsAmplitudeInter[idx] = pAmp->fAmpMatchIN + deltaf * i;
+                    pAmp->CollocationPointsFreqsAmplitudeInter[idx + 1] = pAmp->CollocationPointsFreqsAmplitudeInter[idx];
+                }
+                idx += vector[i];
             }
             break;
         }
@@ -2439,17 +2452,35 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
         default: {XLAL_ERROR_VOID(XLAL_EDOM, "Error in IMRPhenomXHM_Intermediate_Amp_CollocationPoints: IMRPhenomXHMIntermediateAmpFreqsVersion = %i is not valid. Recommneded version is 102021.\n", pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion);}
     }
     /* Define values */
+
     IMRPhenomX_UsefulPowers powers_of_finsp;
     IMRPhenomX_Initialize_Powers(&powers_of_finsp, pAmp->fAmpMatchIN);
-    pAmp->CollocationPointsValuesAmplitudeInter[0] = pAmp->CollocationPointsValuesAmplitudeInsp[2];//IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
-    //pAmp->CollocationPointsValuesAmplitudeInter[0] = 0;
+    // Be careful with TGR thing. Inspiral affecting intermediate region.
+    UINT2 tmpnCollocPts = 0;
+    if (vector[0] == 1){
+        pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeInsp[2];
+        tmpnCollocPts += 1;
+    }
+    else if (vector[0] == 2){
+        pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);
+        pAmp->CollocationPointsValuesAmplitudeInter[1] = IMRPhenomXHM_Inspiral_Amp_NDAnsatz(&powers_of_finsp, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeInsp[2];
+        tmpnCollocPts += 2;
+    }
+    //XLAL_CHECK(tmpnCollocPts > pWFHM->nCollocPtsInterAmp, XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_CollocationPoints failed. %i collocation points are few .", pWFHM->nCollocPtsInterAmp);
+
+
+    /* Call parameter space fits */
     UINT2 idx = 0;
     for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp + 1; i++){
         if(i <= 2)
             idx = pWFHM->modeInt * 2 + i - 1;
         else
             idx = pWFHM->modeInt * 2 + i - 3 + 16; //FIXME
-        pAmp->CollocationPointsValuesAmplitudeInter[i] = pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+        if(vector[i] == 1){
+            pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+            tmpnCollocPts++;
+        }
+        // FIXME: throw error here if vector[i] == 2, cannot use derivatives if you don't have the parameter space fit
     }
     if (pWFHM->MixingOn == 1){
       REAL8 fRD = pAmp->CollocationPointsFreqsAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1];
@@ -2457,17 +2488,44 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
       //pAmp->CollocationPointsFreqsAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = fRD;
       IMRPhenomX_UsefulPowers powers_of_fRD;
       IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
-      pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+      pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
       //pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = 0.4338503029637698; //FIXMEE
-      printf("Spherical RDAux1 = %.16e\n", pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1]);
-    }else{
-      pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = pAmp->CollocationPointsValuesAmplitudeRD[0];//IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
+      printf("Spherical RDAux1 = %.16e\n", pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts]);
     }
+    else{ // No mode mixing
+        IMRPhenomX_UsefulPowers powers_of_fRD;
+        IMRPhenomX_Initialize_Powers(&powers_of_fRD, pAmp->fAmpMatchIM);
+        switch(vector[pAmp->nCoefficientsInter - 1]){
+            case 1:{ // Add point
+                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                tmpnCollocPts++;
+                break;
+            }
+            case 2:{ // Add point + derivative
+                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                tmpnCollocPts += 2;
+                break;
+            }
+            default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_Amp_Coefficients: version %i is not valid. Version recommended is 111111.", vector[pAmp->nCoefficientsInter - 1]);}
+        }
+    }
+    /* tmpnCollocPts must be the same tahn pWFHM->nCollocPtsInterAmp + 2 (=number of free coefficients in intermediate ansatz) */
+    if(tmpnCollocPts != pAmp->nCoefficientsInter)
+        XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_CollocationPoints failed. Inconsistent number of free parameters %i, %i.", tmpnCollocPts, pAmp->nCoefficientsInter);
 }
 
 void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22){
 
-    INT2 nCollocPtsInterAmp = pWFHM->nCollocPtsInterAmp + 2; // Add the two boundaries (inspiral, ringdown)
+    INT2 vector[6] = {2, 0, 1, 1, 0, 2}; // 2 means use point and derivative at a particular frequency
+    UINT2 nCollocPtsInterAmp = 0;
+    for (UINT2 i = 0; i < pAmp->nCoefficientsInter; i++) nCollocPtsInterAmp += vector[i];
+    /* nCollocPtsInterAmp needs to be the same than the number of free coefficients in the ansatz */
+    if (nCollocPtsInterAmp != pAmp->nCoefficientsInter )
+        XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_Coefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", nCollocPtsInterAmp, pAmp->nCoefficientsInter);
+
+    printf("Length of snum = %i\n", snprintf(NULL, 0, "%i", 123));
+    printf("nCollocPtsInterAmp = %i\n", nCollocPtsInterAmp);
 
     IMRPhenomXHM_Intermediate_Amp_CollocationPoints(pAmp, pWFHM, pWF22, pPhase, pAmp22, pPhase22);
 
@@ -2477,45 +2535,84 @@ void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     gsl_permutation *p;
     int signum; // No need to set, used internally by gsl_linalg_LU_decomp
 
-
+    /* Initialize gsl objects */
     p = gsl_permutation_alloc(nCollocPtsInterAmp);
     b = gsl_vector_alloc(nCollocPtsInterAmp);
     x = gsl_vector_alloc(nCollocPtsInterAmp);
     A = gsl_matrix_alloc(nCollocPtsInterAmp, nCollocPtsInterAmp);
 
-    /* Define linear system of equations */
+    /* Define linear system of equations: A x = b */
+    /* x is the solution vector: the coefficients of the intermediate ansatz */
+    /* b is the vector of collocation points for a set of frequencies */
+    /* A is the matrix of multiplicative factors to each coefficient of the ansatz.
+       Each row gives the ansatz evaluated at a collocation point frequency. */
+    UINT2 tmpnCollocPts = 0;
+    for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
+        /* Skip the 0 cases, means that collocation point is not used */
+        if(vector[i] > 0){
+            // Set b vector
+            gsl_vector_set(b, tmpnCollocPts, pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts]);
+            //FIXME: distinguish InterAmp ansatzaes versions
+            // Set system matrix: Polynomial/f^7/6 at the collocation points frequencies.
+            /* A = (1, f1, f1^2, f1^3, f1^4, ...) * f1^(-7/6)
+                   (1, f2, f2^2, f2^3, f2^4, ...) * f2^(-7/6)
+                   ....
+                   Until number of collocation points
+              If one of the conditions is a derivative we substitute by
+                   (0, 1, 2*fi, 3*fi^2, 4*fi^3, ...)
+            */
+            REAL8 fcollpoint = pAmp->CollocationPointsFreqsAmplitudeInter[tmpnCollocPts];
+            REAL8 seven_sixths = 7/6.;
+            REAL8 fcollpoint_m_seven_sixths = pow(fcollpoint, -seven_sixths);
+            REAL8 fpower = 1.; // 1, f, f^2, f^3, f^4, ...
 
-    for(INT4 i = 0; i < nCollocPtsInterAmp; i++){
-      // b is the vector with the values of collocation points
-      gsl_vector_set(b, i, pAmp->CollocationPointsValuesAmplitudeInter[i]);
-      //FIXME: distinguish InterAmp ansatzaes versions
-      // Set system matrix: Polynomial/f^7/6 at the collocation points frequencies.
-      /* A = (1, f1, f1^2, f1^3, f1^4, ...) * f1^(-7/6)
-             (1, f2, f2^2, f2^3, f2^4, ...) * f2^(-7/6)
-             ....
-             Until number of collocation points
-      */
-      REAL8 fcollpoint = pAmp->CollocationPointsFreqsAmplitudeInter[i];
-      REAL8 fcollpoint_m_seven_sixths = pow(fcollpoint, -7/6.);
-      REAL8 fpower = 1.; // 1, f, f^2, f^3, f^4, ...
-      for(INT4 j = 0; j < nCollocPtsInterAmp; j++){
-          gsl_matrix_set(A, i, j, fpower * fcollpoint_m_seven_sixths);
-          fpower *= fcollpoint;
-      }
+            // Add equation for Point. Assuming I will always use point, not the derivative alone
+            for(INT4 j = 0; j < nCollocPtsInterAmp; j++){
+              gsl_matrix_set(A, tmpnCollocPts, j, fpower * fcollpoint_m_seven_sixths);
+              fpower *= fcollpoint;
+            }
+            tmpnCollocPts++;
+            // Add equation for Derivative
+            if (vector[i] == 2 ){
+              gsl_vector_set(b, tmpnCollocPts, pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts]);
+              fpower = 1./fcollpoint;
+              for(INT4 j = 0; j < nCollocPtsInterAmp; j++){
+                  REAL8 derivative = (j - seven_sixths) * fpower * fcollpoint_m_seven_sixths;
+                  gsl_matrix_set(A, tmpnCollocPts, j, derivative);
+                  fpower *= fcollpoint;
+              }
+              tmpnCollocPts++;
+            }
+        } /* End non-zero if statement */
+    } /* End of loop over number of free coefficients. System of equations setup. */
+
+
+    /* tmpnCollocPts must be the same than the number of free coefficients and to nCollocPtsInterAmp */
+    if (tmpnCollocPts != nCollocPtsInterAmp ){
+        /* Free gsl variables */
+        gsl_vector_free(b);
+        gsl_vector_free(x);
+        gsl_matrix_free(A);
+        gsl_permutation_free(p);
+        XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_Coefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", tmpnCollocPts, nCollocPtsInterAmp);
     }
 
     /* We now solve the system A x = b via an LU decomposition. x is the solution vector */
     gsl_linalg_LU_decomp(A, p, &signum);
     gsl_linalg_LU_solve(A, p, b, x);
 
+    /* The solution corresponds to the coefficients of the ansatz */
+    printf("nCollocPtsInterAmp = %i\n", nCollocPtsInterAmp);
     for (INT4 i = 0; i < nCollocPtsInterAmp; i++){
         pAmp->InterCoefficient[i] = gsl_vector_get(x, i);
     }
 
+    /* Free gsl variables */
     gsl_vector_free(b);
     gsl_vector_free(x);
     gsl_matrix_free(A);
     gsl_permutation_free(p);
+
 }
 
 
