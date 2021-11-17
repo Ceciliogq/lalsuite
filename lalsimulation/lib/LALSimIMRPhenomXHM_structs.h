@@ -40,8 +40,8 @@ extern "C" {
 
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INS 3    //Maximun number of collocation points in the inspiral
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INTER 6  //Maximun number of collocation points in the intermediate. The fourth is for the EMR. FIXME
-#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 6   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2. FIXME
-                                              //6 to store fits of 3 coefficients or 3 collocation points. FIXME
+#define N_MAX_COEFFICIENTS_AMPLITUDE_RING 6   //Maximun number of coefficients in the ringdown. Only 21 has 3, the rest 2. FIXME //6 to store fits of 3 coefficients or 3 collocation points. FIXME
+#define N_MAX_COEFFICIENTS_AMPLITUDE_RDAUX 4  //Maximun number of coefficients in the ringdown auxiliar region for mode-mixing. Default 2 collocation points + point & derivative right boundary
 
 // Data structure to hold QNM frequencies
 typedef double (*fitQNM_fring) (double finalDimlessSpin);
@@ -147,6 +147,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             REAL8 fAmpMatchInt12; // Intermediate1 -> Intermediate2. Only for EMR cases
             REAL8 fAmpMatchIM;    // Intermediate -> Ringdown
             REAL8 fAmpRDfalloff;     // Ringdown -> Falloff region
+            REAL8 fRDAux;  // Auxiliar Ringdown region for mode-mixing
 
             /* PN Amplitude Prefactors */
             COMPLEX16 pnInitial, pnOneThird, pnTwoThirds, pnThreeThirds, pnFourThirds, pnFiveThirds, pnSixThirds, pnSevenThirds, pnEightThirds,pnNineThirds;
@@ -173,7 +174,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             // fits of coefficients/collocation points
             ParameterSpaceFit InspiralAmpFits[N_HIGHERMODES_IMPLEMENTED*N_MAX_COEFFICIENTS_AMPLITUDE_INS];
             ParameterSpaceFit IntermediateAmpFits[N_HIGHERMODES_IMPLEMENTED*N_MAX_COEFFICIENTS_AMPLITUDE_INTER];
-            ParameterSpaceFit RingdownAmpFits[N_HIGHERMODES_IMPLEMENTED*N_MAX_COEFFICIENTS_AMPLITUDE_RING];
+            ParameterSpaceFit RingdownAmpFits[N_HIGHERMODES_IMPLEMENTED*N_MAX_COEFFICIENTS_AMPLITUDE_RING + N_MAX_COEFFICIENTS_AMPLITUDE_RDAUX];
 
             /* Flag to set how many collocation points the inspiral region uses  */
             REAL8 CollocationPointsValuesAmplitudeInsp[N_MAX_COEFFICIENTS_AMPLITUDE_INS];
@@ -189,6 +190,10 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             REAL8 CollocationPointsFreqsAmplitudeRD[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
             REAL8 CollocationPointsValuesAmplitudeRD[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
             REAL8 RDCoefficient[N_MAX_COEFFICIENTS_AMPLITUDE_RING];
+            REAL8 CollocationPointsFreqsAmplitudeRDAux[N_MAX_COEFFICIENTS_AMPLITUDE_RDAUX];
+            REAL8 CollocationPointsValuesAmplitudeRDAux[N_MAX_COEFFICIENTS_AMPLITUDE_RDAUX];
+            REAL8 RDAuxCoefficient[N_MAX_COEFFICIENTS_AMPLITUDE_RDAUX];
+            UINT2 nCollocPtsRDAux, nCoefficientsRDAux;
 
             // Frequencies, values and derivatives for the intermediate reconstruction
             // The frequencies are the same than in CollocationPointsFreqsAmplitudeInsp for the corresponding mode,

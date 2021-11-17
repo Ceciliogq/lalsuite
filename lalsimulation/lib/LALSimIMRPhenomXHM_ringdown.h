@@ -65,11 +65,14 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2,
 static double IMRPhenomXHM_RD_Amp_44_rdcp1(double eta, double chi1, double chi2, int RDAmpFlag);
 static double IMRPhenomXHM_RD_Amp_44_rdcp2(double eta, double chi1, double chi2, int RDAmpFlag);
 static double IMRPhenomXHM_RD_Amp_44_rdcp3(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_rdaux1(double eta, double chi1, double chi2, int RDAmpFlag);
+static double IMRPhenomXHM_RD_Amp_32_rdaux2(double eta, double chi1, double chi2, int RDAmpFlag);
 
 /* End of Parameter Space Fits */
 
 // Ringdown coefficients from collocation points
 static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp);
+static void IMRPhenomXHM_RDAux_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp);
 
 //ansatz, and its derivative: analytical for no mixing and numerical for mixing
 static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXHMAmpCoefficients *pAmp);

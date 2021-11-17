@@ -2423,7 +2423,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     switch(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion){
         case 102021:{ // Equispaced. Get boundaries too
             REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
-            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
+            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){ //FIXME: Assume I use the 2 boundaries
                 pAmp->CollocationPointsFreqsAmplitudeInter[i] = pAmp->fAmpMatchIN + deltaf * i;
             }
             break;
@@ -2453,13 +2453,16 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     }
     if (pWFHM->MixingOn == 1){
       REAL8 fRD = pAmp->CollocationPointsFreqsAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1];
+      //pAmp->fAmpMatchIM = fRD;
+      //pAmp->CollocationPointsFreqsAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = fRD;
       IMRPhenomX_UsefulPowers powers_of_fRD;
       IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
       pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+      //pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = 0.4338503029637698; //FIXMEE
+      printf("Spherical RDAux1 = %.16e\n", pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1]);
     }else{
       pAmp->CollocationPointsValuesAmplitudeInter[pWFHM->nCollocPtsInterAmp + 1] = pAmp->CollocationPointsValuesAmplitudeRD[0];//IMRPhenomXHM_RD_Amp_Ansatz(pAmp->fAmpMatchIM, pWFHM, pAmp);
-    };
-
+    }
 }
 
 void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22){

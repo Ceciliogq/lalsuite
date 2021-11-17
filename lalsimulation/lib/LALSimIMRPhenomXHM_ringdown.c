@@ -581,6 +581,62 @@ static double IMRPhenomXHM_RD_Amp_44_rdcp3(double eta, double chi1, double chi2,
   return total;
 }
 
+static double IMRPhenomXHM_RD_Amp_32_rdaux1(double eta, double chi1, double chi2, int RDAmpFlag){
+	double total=0;
+	switch (RDAmpFlag){
+        case 202109302:{
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double S4 = S * S3;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = 0.2783873165821764 + 3.652393673687489*eta1 - 261.0162506101187*eta2 + 4656.703615652947*eta3 + chidiff1*(19.54109863660863*eta1 - 371.0282661670557*eta2 + 2174.2353069067017*eta3 - 4008.503026782427*eta4) - 36472.82351655576*eta4 + chidiff2*(-13.368638942143532*eta1 + 212.61001435565476*eta2 - 1076.601616881712*eta3 + 1777.4742472828732*eta4) + 129522.47727536858*eta5 - 169546.85338957966*eta6 + 0.0037930129337354133*(-1010.1040446456974*eta1 + 2530.4630516602615*eta2 + 49441.510244218756*eta3 - 181272.87932676548*eta4)*S1 + chidiff1*(-15.240239669443447*eta1 + 262.71457835137227*eta2 - 1427.7251992662223*eta3 + 2494.842010666985*eta4)*S1 + chidiff2*(87.0270216368149*eta1 - 1349.9508521769994*eta2 + 6717.145823185167*eta3 - 10842.04817972617*eta4)*S2 + 0.01115535749678476*(-973.4873814340503*eta1 + 17036.12800917856*eta2 - 89611.16620811584*eta3 + 147387.7558838333*eta4)*S2 - 0.0012517354331563185*(2632.745081157317*eta1 - 53348.294873378305*eta2 + 315217.23112188344*eta3 - 577673.4018830252*eta4)*S3 + chidiff3*(31.757198193332766*eta1 - 998.8868060258987*eta2 + 8014.343811421408*eta3 - 18751.4758438168*eta4)*S3 - 0.023902267955219568*(-4.493240627753124*eta1 + 258.46282436993675*eta2 - 724.5325731051831*eta3 - 1153.9665623138912*eta4)*S4;
+            break;
+        }
+    default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_32_rdaux1: version is not valid. Recommended version is 202109302.");}
+  }
+  return total;
+}
+
+static double IMRPhenomXHM_RD_Amp_32_rdaux2(double eta, double chi1, double chi2, int RDAmpFlag){
+	double total=0;
+	switch (RDAmpFlag){
+        case 202109302:{
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double S4 = S * S3;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -5.072342758846551 + 228.9146665593112*eta1 - 4063.3257679872577*eta2 + 37578.394837325526*eta3 - 190192.81563875917*eta4 + chidiff1*(-57.636073394827456*eta1 + 1468.3990693500923*eta2 - 13633.914196217638*eta3 + 54240.86479550858*eta4 - 78038.45196262475*eta5) + 496407.58110565646*eta5 + chidiff2*(45.98894463535864*eta1 - 1061.1097079000988*eta2 + 8762.880861572887*eta3 - 30862.21281696972*eta4 + 39459.77367817098*eta5) + chidiff3*(45.10188659892899*eta1 - 1079.8868634962898*eta2 + 9345.839177508953*eta3 - 34664.876296339*eta4 + 46696.16319785507*eta5) - 520199.1781702057*eta6 - 0.010013895381547334*(-1511.9943500701688*eta1 + 42129.00385580998*eta2 - 376847.8036312572*eta3 + 1.3628049108208485e6*eta4 - 1.7125431386277918e6*eta5)*S1 + chidiff1*(-20.799402899185985*eta1 + 437.9449035140799*eta2 - 3246.2743948613584*eta3 + 9986.418004154457*eta4 - 10709.946754695258*eta5)*S1 + 0.043303488328785666*(-12.623968469483795*eta1 - 290.7836647563115*eta2 + 5955.446310745487*eta3 - 27573.32731044381*eta4 + 36300.351871964245*eta5)*S2 - 0.007224662452434095*(-205.14492266045667*eta1 + 1302.66806151529*eta2 + 5252.374839355036*eta3 - 43639.08076775458*eta4 + 56016.408724754525*eta5)*S3 - 0.03826948517545464*(-358.03267489459506*eta1 + 7325.425181804928*eta2 - 55018.050741618754*eta3 + 184179.63565019946*eta4 - 234633.13099987642*eta5)*S4;
+            break;
+        }
+    default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Amp_32_rdaux2: version is not valid. Recommended version is 202109302.");}
+  }
+  return total;
+}
+
 /* End of Parameter Space Fits */
 
 
@@ -588,10 +644,21 @@ static double IMRPhenomXHM_RD_Amp_44_rdcp3(double eta, double chi1, double chi2,
 
 static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp){
     switch (pWFHM->IMRPhenomXHMRingdownAmpVersion){
+        case 0:{
+            // We have three "fitted" coefficients across parameter space: alambda, lambda and sigma. Sigma will be constat for all the modes except the 21.
+            pAmp->alambda = fabs(pAmp->RingdownAmpFits[pWFHM->modeInt*3](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion));
+            pAmp->lambda  = pAmp->RingdownAmpFits[pWFHM->modeInt*3+1](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            pAmp->sigma   = pAmp->RingdownAmpFits[pWFHM->modeInt*3+2](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            pAmp->lc      = 1./12.;
+            break;
+        }
         case 1:{
             double rdcp1 = pAmp->RingdownAmpFits[12 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
             double rdcp2 = pAmp->RingdownAmpFits[13 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
             double rdcp3 = pAmp->RingdownAmpFits[14 + pWFHM->modeInt * 3](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+            printf("rdcp1 = %.16e\n", rdcp1);
+            printf("rdcp2 = %.16e\n", rdcp2);
+            printf("rdcp3 = %.16e\n", rdcp3);
             pAmp->CollocationPointsValuesAmplitudeRD[0] = rdcp1;
             pAmp->CollocationPointsValuesAmplitudeRD[1] = rdcp2;
             pAmp->CollocationPointsValuesAmplitudeRD[2] = rdcp3;
@@ -608,7 +675,8 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
                 pAmp->RDCoefficient[4] = -1. * IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_RDfalloff, pWFHM, pAmp) / pAmp->RDCoefficient[3];
                 printf("Exponential falloff = %.10e %.10e\n", pAmp->RDCoefficient[3], pAmp->RDCoefficient[4]);
             }
-
+            if(pAmp->nCoefficientsRDAux > 0)
+                IMRPhenomXHM_RDAux_Amp_Coefficients(pWF22, pWFHM, pAmp);
             break;
         }
         default:{
@@ -617,17 +685,89 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
     }
 }
 
+static void IMRPhenomXHM_RDAux_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp){
+
+    for(UINT2 i = 0; i < pAmp->nCollocPtsRDAux; i++)
+        pAmp->CollocationPointsValuesAmplitudeRDAux[i] = pAmp->RingdownAmpFits[24 + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMRingdownAmpFitsVersion);
+    pAmp->CollocationPointsValuesAmplitudeRDAux[pAmp->nCollocPtsRDAux] = pAmp->CollocationPointsValuesAmplitudeRD[0];
+    IMRPhenomX_UsefulPowers powers_of_fRDAux;
+    IMRPhenomX_Initialize_Powers(&powers_of_fRDAux, pAmp->fRDAux);
+    pAmp->CollocationPointsValuesAmplitudeRDAux[pAmp->nCollocPtsRDAux + 1] = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_fRDAux, pWFHM, pAmp);
+    pAmp->CollocationPointsFreqsAmplitudeRDAux[0] = pAmp->fAmpMatchIM;
+    pAmp->CollocationPointsFreqsAmplitudeRDAux[1] = 0.5 * (pAmp->fAmpMatchIM + pAmp->fRDAux); // First Chebyshev node
+    pAmp->CollocationPointsFreqsAmplitudeRDAux[2] = pAmp->fRDAux;
+    pAmp->CollocationPointsFreqsAmplitudeRDAux[3] = pAmp->fRDAux;
+
+
+    /* GSL objects for solving system of equations via LU decomposition */
+    gsl_vector *b, *x;
+    gsl_matrix *A;
+    gsl_permutation *p;
+    int signum; // No need to set, used internally by gsl_linalg_LU_decomp
+
+    p = gsl_permutation_alloc(pAmp->nCoefficientsRDAux);
+    b = gsl_vector_alloc(pAmp->nCoefficientsRDAux);
+    x = gsl_vector_alloc(pAmp->nCoefficientsRDAux);
+    A = gsl_matrix_alloc(pAmp->nCoefficientsRDAux, pAmp->nCoefficientsRDAux);
+
+    /* Define linear system of equations */
+
+    //FIXME: be careful with the indexing, where are the RDaux CollocPoints in CollocationPointsValuesAmplitudeRD?
+    // Should be at the end, although this region goes before than the the "normal RD region".
+    for(INT4 i = 0; i < pAmp->nCoefficientsRDAux; i++){
+      // b is the vector with the values of collocation points
+      gsl_vector_set(b, i, pAmp->CollocationPointsValuesAmplitudeRDAux[i]);
+      //FIXME: distinguish InterAmp ansatzaes versions
+      // Set system matrix: Polynomial at the collocation points frequencies + derivative at the right boundary
+      /* A = (1, f1, f1^2, f1^3, f1^4)
+             (1, f2, f2^2, f2^3, f2^4)
+             (1, f3, f3^2, f3^3, f3^4)
+             (0,  1,   f3, f3^2, f3^3)
+             Until number of collocation points
+      */
+      REAL8 fcollpoint = pAmp->CollocationPointsFreqsAmplitudeRDAux[i];
+      REAL8 fpower = 1.; // 1, f, f^2, f^3, f^4, ...
+      if (i < pAmp->nCoefficientsRDAux - 1){
+          for(INT4 j = 0; j < pAmp->nCoefficientsRDAux; j++){
+              gsl_matrix_set(A, i, j, fpower);
+              fpower *= fcollpoint;
+          }
+      }
+      else{ // Last row of the matrix for the derivative
+          fpower = 1.;
+          gsl_matrix_set(A, i, 0, 0.);
+          for(INT4 j = 1; j < pAmp->nCoefficientsRDAux; j++){
+              gsl_matrix_set(A, i, j, fpower * j);
+              fpower *= fcollpoint;
+          }
+      }
+    }
+
+    /* We now solve the system A x = b via an LU decomposition. x is the solution vector */
+    gsl_linalg_LU_decomp(A, p, &signum);
+    gsl_linalg_LU_solve(A, p, b, x);
+
+    for (INT4 i = 0; i < pAmp->nCoefficientsRDAux; i++){
+        pAmp->RDAuxCoefficient[i] = gsl_vector_get(x, i);
+    }
+
+    gsl_vector_free(b);
+    gsl_vector_free(x);
+    gsl_matrix_free(A);
+    gsl_permutation_free(p);
+}
+
 /************** Amplitude Ringdown Ansatz *************/
 
 // For the modes with mixing this is the ansatz of the spheroidal part.
 static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXHMAmpCoefficients *pAmp){
 
-    double ff  = powers_of_Mf->itself;
+    double ff = powers_of_Mf->itself;
     int RDAmpFlag = pWF->IMRPhenomXHMRingdownAmpVersion;
     double frd = pWF->fRING;
     double fda = pWF->fDAMP;
     double dfr = ff - frd;
-    double ampRD;
+    double ampRD = 0.;
 
     switch ( RDAmpFlag )
     {
@@ -637,13 +777,26 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
             // The line below returns the strain amplitude
-            if (pAmp->RDRescaleFactor < 0) ampRD *= (pWF->ampNorm * powers_of_Mf->m_seven_sixths);
+            if (pAmp->RDRescaleFactor < 0){
+                 ampRD *= (pWF->ampNorm * powers_of_Mf->m_seven_sixths);
+                 //printf("%.10f %.16e\n", ff, ampRD);
+             }
             break;
         }
         case 1:
         {
-            double dfd = fda * pAmp->RDCoefficient[2];
-            ampRD = pAmp->RDCoefficient[0] * fda / ( exp(pAmp->RDCoefficient[1] / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
+            if(pAmp->nCoefficientsRDAux > 0 && !IMRPhenomX_StepFuncBool(ff, pAmp->fRDAux)){
+                 /* Polynomial */
+                double fpower = 1.;
+                for (UINT2 i = 0; i < pAmp->nCoefficientsRDAux; i++){
+                    ampRD += fpower * pAmp->RDAuxCoefficient[i];
+                    fpower *= ff;
+                }
+            }
+            else{ /* Lorentzian with exponential falloff */
+                double dfd = fda * pAmp->RDCoefficient[2];
+                ampRD = pAmp->RDCoefficient[0] * fda / ( exp(pAmp->RDCoefficient[1] / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
+            }
             ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
             break;
         }
@@ -655,7 +808,6 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
     if(pAmp->InterRescaleFactor>0){
         ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
     }
-
     return ampRD;
 }
 
