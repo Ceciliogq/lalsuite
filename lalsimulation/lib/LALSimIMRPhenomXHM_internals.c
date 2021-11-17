@@ -176,7 +176,7 @@ void IMRPhenomXHM_SetHMWaveformVariables(
    //FIXME
   if(wf->IMRPhenomXHMInspiralAmpFitsVersion != 122018 && wf->IMRPhenomXHMRingdownAmpFitsVersion != 122018){
       wf->IMRPhenomXHMRingdownAmpVersion = 1;
-      wf->IMRPhenomXHMIntermediateAmpVersion = 4;
+      //wf->IMRPhenomXHMIntermediateAmpVersion = 4;
       switch(wf->modeTag)
       {
           case 21:{
@@ -856,6 +856,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->InterRescaleFactor = 0;
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
         pAmp->nCoefficientsInter = 6;
+        pWFHM->nCollocPtsInterAmp = 4;
+
+        printf("pWFHM->IMRPhenomXHMIntermediateAmpVersion = %i\n", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
+        printf("Length of version = %i\n", snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion));
 
         pAmp->nCoefficientsRDAux = 0;
         if (pWFHM->MixingOn){

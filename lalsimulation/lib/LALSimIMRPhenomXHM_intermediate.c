@@ -1888,7 +1888,7 @@ static double IMRPhenomXHM_Intermediate_Amp_Ansatz(IMRPhenomX_UsefulPowers *powe
 {
     if(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion != 122018){ //FIXME
         double result = 0., fpower = 1.;
-        for (INT4 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
+        for (INT4 i = 0; i < pAmp->nCoefficientsInter; i++){
             result += (pAmp->InterCoefficient[i] * fpower);
             fpower *= powers_of_f->itself;
         }
@@ -2426,11 +2426,10 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
         case 102021:{ // Equispaced. Get boundaries too
             REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
             UINT2 idx = 0;
-            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){ //FIXME: Assume I use the 2 boundaries
+            for (UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
                 if(vector[i] == 1){
                     // Add point
                     pAmp->CollocationPointsFreqsAmplitudeInter[idx] = pAmp->fAmpMatchIN + deltaf * i;
-
                 }
                 else if (vector[i] == 2){
                     // Add point + derivative
@@ -2471,7 +2470,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
 
     /* Call parameter space fits */
     UINT2 idx = 0;
-    for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp + 1; i++){
+    for(UINT2 i = 1; i < pAmp->nCoefficientsInter; i++){
         if(i <= 2)
             idx = pWFHM->modeInt * 2 + i - 1;
         else
