@@ -2476,7 +2476,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
         else
             idx = pWFHM->modeInt * 2 + i - 3 + 16; //FIXME
         if(pAmp->VersionCollocPtsInter[i] == 1){
-            pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion);
+            pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = fabs(pAmp->IntermediateAmpFits[idx](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMIntermediateAmpFitsVersion)); //FIXME: negative fits?
             tmpnCollocPts++;
         }
         // FIXME: throw error here if pAmp->VersionCollocPtsInter[i] == 2, cannot use derivatives if you don't have the parameter space fit
