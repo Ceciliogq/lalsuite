@@ -2486,7 +2486,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
       IMRPhenomX_UsefulPowers powers_of_fRD;
       IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
       pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
-      printf("Spherical RDAux1 = %.16e\n", pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts]);
+      tmpnCollocPts++;
     }
     else{ // No mode mixing
         IMRPhenomX_UsefulPowers powers_of_fRD;
