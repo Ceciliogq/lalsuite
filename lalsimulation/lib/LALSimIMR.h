@@ -659,6 +659,21 @@ int XLALSimIMRPhenomXHMPhase(
     LALDict *lalParams                   /**< Extra params */
   );
 
+int XLALSimIMRPhenomXHM_SpheroidalPhase(
+  REAL8FrequencySeries **htildelm, /**< [out] FD waveform */
+  REAL8Sequence *freqs_In,                /**< frequency array to evaluate model (positives) */
+  REAL8 m1_SI,                         /**< Mass of companion 1 (kg) */
+  REAL8 m2_SI,                         /**< Mass of companion 2 (kg) */
+  REAL8 chi1L,                         /**< Dimensionless aligned spin of companion 1 */
+  REAL8 chi2L,                         /**< Dimensionless aligned spin of companion 2 */
+  UINT4 ell,                           /**< l index of the mode */
+  INT4 emm,                            /**< m index of the mode */
+  REAL8 distance,                      /**< Luminosity distance (m) */
+  REAL8 phiRef,                        /**< Orbital phase at fRef (rad) */
+  REAL8 fRef_In,                       /**< Reference frequency (Hz) */
+  LALDict *lalParams                   /**< UNDOCUMENTED */
+);
+
 int XLALSimIMRPhenomXPHM(
   COMPLEX16FrequencySeries **hptilde,         /**< [out] Frequency-domain waveform h+ */
   COMPLEX16FrequencySeries **hctilde,         /**< [out] Frequency-domain waveform hx */
