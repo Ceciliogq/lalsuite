@@ -855,29 +855,25 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
-        pAmp->nCoefficientsInter = 6;
         pWFHM->nCollocPtsInterAmp = 4;
 
-
-        UINT4 InputnCoefficientsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-        if (InputnCoefficientsInter != pAmp->nCoefficientsInter)
-            XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_GetAmplitudeCoefficients failed. Inconsistent number of input collocation points (%i) and free parameters (%i).", InputnCoefficientsInter, pAmp->nCoefficientsInter);
+        UINT4 InputnCollPointsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
 
         /* Transform IMRPhenomXHMIntermediateAmpVersion number to int array defining what to do for each collocation point */
         /* 0: don't use coll point, 1: use point, 2: use point and derivative (this only applies for boundaries) */
         // e.g. pAmp->VersionCollocPtsInter = {1, 1, 1, 1, 0, 2} -> use the two boundaries, add derivative to the right one
         UINT4 num = pWFHM->IMRPhenomXHMIntermediateAmpVersion;
-        for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
-            pAmp->VersionCollocPtsInter[pAmp->nCoefficientsInter - i - 1] = num % 10;
+        for(UINT2 i = 0; i < InputnCollPointsInter; i++){
+            pAmp->VersionCollocPtsInter[InputnCollPointsInter - i - 1] = num % 10;
             num/=10;
         }
 
         UINT2 nCollocPtsInterAmp = 0;
-        for (UINT2 i = 0; i < pAmp->nCoefficientsInter; i++) nCollocPtsInterAmp += pAmp->VersionCollocPtsInter[i];
+        for (UINT2 i = 0; i < InputnCollPointsInter; i++) nCollocPtsInterAmp += pAmp->VersionCollocPtsInter[i];
         /* nCollocPtsInterAmp needs to be the same than the number of free coefficients in the ansatz */
-        if (nCollocPtsInterAmp != pAmp->nCoefficientsInter )
-            XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_Coefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", nCollocPtsInterAmp, pAmp->nCoefficientsInter);
-
+        if (nCollocPtsInterAmp > pWFHM->nCollocPtsInterAmp + 4 )
+            XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_GetAmplitudeCoefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", nCollocPtsInterAmp, pWFHM->nCollocPtsInterAmp + 4);
+        pAmp->nCoefficientsInter = nCollocPtsInterAmp;
 
         pAmp->nCoefficientsRDAux = 0;
         if (pWFHM->MixingOn){
@@ -910,7 +906,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
         // }
         printf("Inter Coll points\n");
-        for(UINT2 i = 0; i < 6; i++){
+        for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
         }
         // printf("RD Coll points\n");
@@ -921,8 +917,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
         // }
-        printf("Inter Coefficients\n");
-        for(UINT2 i = 0; i < 6; i++){
+
+        printf("Inter Coefficients %i\n", pAmp->nCoefficientsInter);
+        for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16e\n", pAmp->InterCoefficient[i]);
         }
         // printf("RD Coefficients\n");

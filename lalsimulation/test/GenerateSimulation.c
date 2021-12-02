@@ -564,7 +564,7 @@ int main (int argc , char **argv) {
     XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFitsVersion(params->params, 102021);
     XLALSimInspiralWaveformParamsInsertPhenomXHMInspiralAmpFreqsVersion(params->params, 102021);
     XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFreqsVersion(params->params, 102021);
-    XLALSimInspiralWaveformParamsInsertPhenomXHMIntermediateAmpVersion(params->params, 111111);
+    XLALSimInspiralWaveformParamsInsertPhenomXHMIntermediateAmpVersion(params->params, 211112);
 
     /* generate waveform */
     start_time = time(NULL);
