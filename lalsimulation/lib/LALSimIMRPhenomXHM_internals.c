@@ -846,6 +846,42 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
     pAmp->ampNorm = pWF22->ampNorm;
     pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
+    switch(pWFHM->modeTag){
+        case 21:{
+            if(pWF22->q == 1){
+                pAmp->PNdominantlmpower = 2;
+                pAmp->PNdominantlm = sqrt(2.) / 3. * 1.5 * pWF22->dchi * 0.5 * pow(2 * LAL_PI / pWFHM->emm, 2/3.);
+            }
+            else{
+                pAmp->PNdominantlmpower = 1;
+                pAmp->PNdominantlm = sqrt(2.) / 3. * pWF22->delta * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
+            }
+            break;
+        }
+        case 33:{
+            if(pWF22->q == 1){
+                pAmp->PNdominantlmpower = 2;
+                pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->dchi * 0.5 * pWF22->chiEff * (-81/16. + 81/4) * pow(2 * LAL_PI / pWFHM->emm, 2/3.);
+            }
+            else{
+                pAmp->PNdominantlmpower = 1;
+                pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->delta * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
+            }
+            break;
+        }
+        case 32:{
+            pAmp->PNdominantlmpower = 2;
+            pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
+            break;
+        }
+        case 44:{
+            pAmp->PNdominantlmpower = 2;
+            pAmp->PNdominantlm = 4/9. * sqrt(10/7.) * (1 - 3 * pWF22->eta) * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
+            break;
+        }
+        default:
+          {XLALPrintError("Error in IMRPhenomXHM_GetAmplitudeCoefficients: mode selected is not currently available. Modes available are ((2,|2|),(2,|1|),(3,|2|),(3,|3|),(4,|4|)).\n");}
+    }
     pAmp->fAmpRDfalloff = 0.;
     pAmp->nCoefficientsInter = 0;
 
@@ -909,10 +945,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
         }
-        // printf("RD Coll points\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
-        // }
+        printf("RD Coll points\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
+        }
         // printf("Insp Coefficients\n");
         // for(UINT2 i = 0; i < 3; i++){
         //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
@@ -922,10 +958,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16e\n", pAmp->InterCoefficient[i]);
         }
-        // printf("RD Coefficients\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16e\n", pAmp->RDCoefficient[i]);
-        // }
+        printf("RD Coefficients\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16e\n", pAmp->RDCoefficient[i]);
+        }
         // printf("RDAux Coll points\n");
         // for(UINT2 i = 0; i < 4; i++){
         //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRDAux[i], pAmp->CollocationPointsValuesAmplitudeRDAux[i]);
