@@ -2458,7 +2458,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     // Be careful with TGR thing. Inspiral affecting intermediate region.
     UINT2 tmpnCollocPts = 0;
     if (pAmp->VersionCollocPtsInter[0] == 1){
-        pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeInsp[2];
+        pAmp->CollocationPointsValuesAmplitudeInter[0] = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_finsp, pWFHM, pAmp);//FIXME: Rescale with InterFactor
         tmpnCollocPts += 1;
     }
     else if (pAmp->VersionCollocPtsInter[0] == 2){
