@@ -153,7 +153,9 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             COMPLEX16 pnInitial, pnOneThird, pnTwoThirds, pnThreeThirds, pnFourThirds, pnFiveThirds, pnSixThirds, pnSevenThirds, pnEightThirds,pnNineThirds;
 
             /* PN Amplitude dominant factor = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6) */
-            REAL8 PNdominant, ampNorm;
+            REAL8 PNdominant, PNdominantlm, ampNorm;
+
+            UINT2 PNdominantlmpower;
 
             /* PN Amplitude global prefactor = leading lm order after substracting PNdominant*/
             REAL8 PNglobalfactor;

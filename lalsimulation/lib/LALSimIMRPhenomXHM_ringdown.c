@@ -659,12 +659,39 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
             printf("rdcp1 = %.16e\n", rdcp1);
             printf("rdcp2 = %.16e\n", rdcp2);
             printf("rdcp3 = %.16e\n", rdcp3);
-            pAmp->CollocationPointsValuesAmplitudeRD[0] = rdcp1;
-            pAmp->CollocationPointsValuesAmplitudeRD[1] = rdcp2;
-            pAmp->CollocationPointsValuesAmplitudeRD[2] = rdcp3;
+
             pAmp->CollocationPointsFreqsAmplitudeRD[0] = pWFHM->fRING - pWFHM->fDAMP;
             pAmp->CollocationPointsFreqsAmplitudeRD[1] = pWFHM->fRING;
             pAmp->CollocationPointsFreqsAmplitudeRD[2] = pWFHM->fRING + pWFHM->fDAMP;
+            /* Apply vetos to RDCP. Assuming they are strain */
+            float rdveto = 0.01; // Applied over the strain / RescaleFactor_lm
+            IMRPhenomX_UsefulPowers powers_of_RDCP1, powers_of_RDCP2, powers_of_RDCP3; // PN power v^{1/3} = (2pif/m)
+            IMRPhenomX_Initialize_Powers(&powers_of_RDCP1, pAmp->CollocationPointsFreqsAmplitudeRD[0]);
+            IMRPhenomX_Initialize_Powers(&powers_of_RDCP2, pAmp->CollocationPointsFreqsAmplitudeRD[1]);
+            IMRPhenomX_Initialize_Powers(&powers_of_RDCP3, pAmp->CollocationPointsFreqsAmplitudeRD[2]);
+            double rescale_factor_lm;
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP1, pAmp, 3);
+            if ( rdcp1 / rescale_factor_lm < rdveto ){
+                rdcp1 = 0.9 * rdcp2; printf("Update rdcp1\n");
+            }
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP2, pAmp, 3);
+            if ( rdcp2 / rescale_factor_lm < rdveto ){
+                rdcp2 = 0.9 * rdcp1; printf("Update rdcp2\n");
+            }
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP3, pAmp, 3);
+            if ( rdcp3 / rescale_factor_lm < rdveto ){
+                rdcp3 = 0.9 * rdcp2; printf("Update rdcp3\n");
+            }
+            if ( rdcp3 >= rdcp2 * rdcp2 / rdcp1 ){
+                rdcp3 = 0.5 * rdcp2 * rdcp2 / rdcp1; printf("Update rdcp3 v2\n");
+            }
+            if ( rdcp3 > rdcp2 ){
+                rdcp3 = 0.5 * rdcp2; printf("Update rdcp3 v3\n");
+            }
+            /* End of vetos */
+            pAmp->CollocationPointsValuesAmplitudeRD[0] = rdcp1;
+            pAmp->CollocationPointsValuesAmplitudeRD[1] = rdcp2;
+            pAmp->CollocationPointsValuesAmplitudeRD[2] = rdcp3;
             pAmp->RDCoefficient[0] = rdcp1 * pWFHM->fDAMP / (sqrt(rdcp1 / rdcp3) - (rdcp1 / rdcp2));
             pAmp->RDCoefficient[2] = sqrt(pAmp->RDCoefficient[0] / (rdcp2 * pWFHM->fDAMP));
             pAmp->RDCoefficient[1] = 0.5 * pAmp->RDCoefficient[2] * log(rdcp1 / rdcp3);

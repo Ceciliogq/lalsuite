@@ -1620,6 +1620,11 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
               factor = 1.; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
               break;
           }
+          case 3:{
+              if (pAmp->PNdominantlmpower == 1) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->one_third;
+              if (pAmp->PNdominantlmpower == 2) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->two_thirds;
+              break;
+          }
           default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in RescaleFactor: version %i is not valid. Recommended version is 1.", rescalefactor);}
       }
       return factor;
