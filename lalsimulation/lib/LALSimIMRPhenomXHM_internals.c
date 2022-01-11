@@ -2348,6 +2348,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
     {
       double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      if (AmpIns < 0 ) AmpIns = FALSE_ZERO;
       return AmpIns;
     }
     // MRD range
@@ -2360,8 +2361,8 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
       else{
           AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
      }
-
-      return AmpMRD; //*factor*pWF->ampNorm;
+     if (AmpMRD < 0 ) AmpMRD = FALSE_ZERO;
+     return AmpMRD; //*factor*pWF->ampNorm;
     }
     /* Intermediate range */
     // First intermediate region.
@@ -2375,6 +2376,7 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     }
     //Second intermediate region
     double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+    if (AmpInt < 0 ) AmpInt = FALSE_ZERO;
     return AmpInt;//*pWF->ampNorm;
   }
 

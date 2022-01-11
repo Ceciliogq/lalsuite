@@ -56,6 +56,8 @@ extern "C" {
 
   #define NMAX_INSPIRAL_COEFFICIENTS 13
 
+  #define FALSE_ZERO 1.0e-15
+
   //  You should not declare static functions here, since this file is included in other files apart form the source one.
 
   /*********** Useful Powers of pi **************/
