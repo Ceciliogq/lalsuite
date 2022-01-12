@@ -2364,49 +2364,42 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
 
   // WITHOUT mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))]
   double IMRPhenomXHM_Amplitude_noModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWF) {
-      //FIXME: Returns the whole strain
     // If it is an odd mode and equal black holes case this mode is zero.
     if(pWF->Ampzero==1){
       return 0.;
     }
 
-    //double factor = powers_of_f->m_seven_sixths;
-
     // Use step function to only calculate IMR regions in approrpiate frequency regime
+    double Amp;
     // Inspiral range
     if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
     {
-      double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      if (AmpIns < 0 ) AmpIns = FALSE_ZERO;
-      return AmpIns;
+      Amp = IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
     }
     // MRD range
-    if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
+    else if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
     {
-      double AmpMRD;
       if (pAmp->fAmpRDfalloff > 0 && IMRPhenomX_StepFuncBool(f, pAmp->fAmpRDfalloff)){
-          AmpMRD = pAmp->RDCoefficient[3] * exp(- pAmp->RDCoefficient[4] * (f - pAmp->fAmpRDfalloff));
+          Amp = pAmp->RDCoefficient[3] * exp(- pAmp->RDCoefficient[4] * (f - pAmp->fAmpRDfalloff));
       }
       else{
-          AmpMRD = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
+          Amp = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
      }
-     if (AmpMRD < 0 ) AmpMRD = FALSE_ZERO;
-     return AmpMRD; //*factor*pWF->ampNorm;
     }
     /* Intermediate range */
     // First intermediate region.
-    if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
+    else if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
     {
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
-      return AmpInt1;//*pWF->ampNorm;
     }
-    //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
-    if (AmpInt < 0 ) AmpInt = FALSE_ZERO;
-    return AmpInt;//*pWF->ampNorm;
+    else{  //Second intermediate region
+        Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+    }
+    if (Amp < 0 ) Amp = FALSE_ZERO;
+    return Amp;
   }
 
   // WITH mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
