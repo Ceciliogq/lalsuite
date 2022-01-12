@@ -845,7 +845,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
     /* Take all the phenom coefficients accross the three regions (inspiral, intermeidate and ringdown) and all the needed parameters to reconstruct the amplitude (including mode-mixing). */
     pAmp->ampNorm = pWF22->ampNorm;
-    pAmp->PNdominant = pWF22->ampNorm * pow(2/pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
+    pAmp->PNdominant = pWF22->ampNorm * pow(2./pWFHM->emm, -7/6.); // = Pi * Sqrt(2 eta/3) (2Pi /m)^(-7/6). Miss the f^(-7/6). The pi power included in ampNorm
     switch(pWFHM->modeTag){
         case 21:{
             if(pWF22->q == 1){
@@ -860,10 +860,12 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         }
         case 33:{
             if(pWF22->q == 1){
-                pAmp->PNdominantlmpower = 2;
-                pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->dchi * 0.5 * pWF22->chiEff * (-81/16. + 81/4) * pow(2 * LAL_PI / pWFHM->emm, 2/3.);
+                pAmp->PNdominantlmpower = 4;
+                pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->dchi * 0.5 * (65/24. - 28/3. * pWF22->eta) * pow(2 * LAL_PI / pWFHM->emm, 4/3.);
+                printf("EQUAL MASS\n");
             }
             else{
+                printf("UNequal MASS\n");
                 pAmp->PNdominantlmpower = 1;
                 pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->delta * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
             }
@@ -882,6 +884,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         default:
           {XLALPrintError("Error in IMRPhenomXHM_GetAmplitudeCoefficients: mode selected is not currently available. Modes available are ((2,|2|),(2,|1|),(3,|2|),(3,|3|),(4,|4|)).\n");}
     }
+    pAmp->PNdominantlm = fabs(pAmp->PNdominantlm);
     pAmp->fAmpRDfalloff = 0.;
     pAmp->nCoefficientsInter = 0;
 
@@ -937,10 +940,10 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->InterRescaleFactor = 2;
         IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22, pPhase, pAmp22, pPhase22);
 
-        // printf("Insp Coll points\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
-        // }
+        printf("Insp Coll points\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
+        }
         printf("Inter Coll points\n");
         for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
@@ -1623,6 +1626,9 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
           case 3:{
               if (pAmp->PNdominantlmpower == 1) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->one_third;
               if (pAmp->PNdominantlmpower == 2) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->two_thirds;
+              if (pAmp->PNdominantlmpower == 3) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->itself;
+              if (pAmp->PNdominantlmpower == 4) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->four_thirds;
+              printf("PNdominant, PNdominantlm, factor = %.6f %.6f %.6f\n", pAmp->PNdominant, pAmp->PNdominantlm, factor);
               break;
           }
           default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in RescaleFactor: version %i is not valid. Recommended version is 1.", rescalefactor);}

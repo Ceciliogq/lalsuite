@@ -859,7 +859,7 @@ static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficie
         default: {XLAL_ERROR_VOID(XLAL_EDOM, "Error in IMRPhenomXHM_Inspiral_CollocationPoints: IMRPhenomXHMInspiralAmpFreqsVersion = %i is not valid. Recommneded version is 102021.\n", pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion);}
     }
     for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
-        pAmp->CollocationPointsValuesAmplitudeInsp[i] = pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion);
+        pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
         // int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
         // if(status != XLAL_SUCCESS)
         //     XLALPrintError("IMRPhenomXHM_Inspiral_Amp_CollocationPoints failed for Mf, initial_status=%d",status);
