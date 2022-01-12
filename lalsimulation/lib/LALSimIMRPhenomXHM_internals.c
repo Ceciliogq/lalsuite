@@ -896,6 +896,29 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
         pWFHM->nCollocPtsInterAmp = 4;
 
+        if ( pWFHM->IMRPhenomXHMIntermediateAmpVersion == 2 ){ // The default value (from the 122018 version)
+            switch(pWFHM->modeTag){
+                case 21:{
+                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111112;
+                    break;
+                }
+                case 33:{
+                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 211112;
+                    break;
+                }
+                case 32:{
+                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111111;
+                    break;
+                }
+                case 44:{
+                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111111;
+                    break;
+                }
+                default:
+                  {XLALPrintError("Error in IMRPhenomXHM_GetAmplitudeCoefficients: mode selected is not currently available. Modes available are ((2,|2|),(2,|1|),(3,|2|),(3,|3|),(4,|4|)).\n");}
+            }
+        }
+
         UINT4 InputnCollPointsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
 
         /* Transform IMRPhenomXHMIntermediateAmpVersion number to int array defining what to do for each collocation point */
