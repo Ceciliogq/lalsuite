@@ -2127,7 +2127,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
   fprintf(file,"\n*** Phase Intermediate ***\n f_i\t dphi(f_i)\n");
 
   for(int i = 0; i<N_MAX_COEFFICIENTS_PHASE_INTER; i++)
-      fprintf(file, "%.16f \t %.16f \n", pPhase->CollocationPointsFreqsPhaseInter[i], pPhase->IntermediatePhaseFits[pWFHM->modeInt*N_MAX_COEFFICIENTS_PHASE_INTER+i](pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediatePhaseVersion));
+      fprintf(file, "%.16f \t %.16f \n", pPhase->CollocationPointsFreqsPhaseInter[i], pPhase->IntermediatePhaseFits[pWFHM->modeInt*N_MAX_COEFFICIENTS_PHASE_INTER+i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMIntermediatePhaseVersion));
 
 
   if(pWFHM->modeTag==32){
@@ -2140,7 +2140,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
       fprintf(file, "\n*** Ringdown Phase Spheroidal ***\n f_i \t dphi(f_i)\n");
       for(int i=0; i<pWFHM->nCollocPtsRDPhase; i++)
           fprintf(file, "%.16f \t %.16f \n", pPhase->CollocationPointsFreqsPhaseRD[i],pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
-      fprintf(file,"Deltadphi=%.16f\n Deltaphi=%.16f \n", IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion),IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->STotR,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
+      fprintf(file,"Deltadphi=%.16f\n Deltaphi=%.16f \n", IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion),IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion));
 
   }
 

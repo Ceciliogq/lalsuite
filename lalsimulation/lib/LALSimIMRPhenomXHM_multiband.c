@@ -662,7 +662,14 @@ int IMRPhenomXHMMultiBandOneMode(
     printf("alphaL = %.16e", pPhase->alphaL);
     #endif
     dfmerger = deltaF_mergerBin(pWFHM->fDAMP, pPhase->alphaL, resTest);
-    dfringdown = deltaF_ringdownBin(pWFHM->fDAMP, pPhase->alphaL, pAmp->lambda/(pAmp->sigma*pWFHM->fDAMP), resTest);
+    double amplitude_falloff;
+    if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 122018){
+        amplitude_falloff = pAmp->lambda/(pAmp->sigma*pWFHM->fDAMP);
+    }
+    else{
+        amplitude_falloff = pAmp->RDCoefficient[1]/(pAmp->RDCoefficient[2]*pWFHM->fDAMP);
+    }
+    dfringdown = deltaF_ringdownBin(pWFHM->fDAMP, pPhase->alphaL, amplitude_falloff, resTest);
   }
 
   /* Allocate memory for the list of grids. The number of grids must be less than lengthallGrids. */
@@ -1336,7 +1343,14 @@ int IMRPhenomXHMMultiBandOneModeMixing(
   IMRPhenomXHM_GetPhaseCoefficients(pAmp, pPhase, pAmp22, pPhase22, pWFHM, pWF,lalParams);
 
   dfmerger = deltaF_mergerBin(pWFHM->fDAMP, pPhase->alphaL_S, resTest);
-  dfringdown = deltaF_ringdownBin(pWFHM->fDAMP, pPhase->alphaL_S, pAmp->lambda/(pAmp->sigma*pWFHM->fDAMP), resTest);
+  double amplitude_falloff;
+  if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 122018){
+      amplitude_falloff = pAmp->lambda/(pAmp->sigma*pWFHM->fDAMP);
+  }
+  else{
+      amplitude_falloff = pAmp->RDCoefficient[1]/(pAmp->RDCoefficient[2]*pWFHM->fDAMP);
+  }
+  dfringdown = deltaF_ringdownBin(pWFHM->fDAMP, pPhase->alphaL_S, amplitude_falloff, resTest);
 
   #if DEBUG == 1
   printf("f_min = %.6f, Mfmin = %.6f\n", pWF->fMin, Mfmin);
