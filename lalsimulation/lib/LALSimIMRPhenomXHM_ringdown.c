@@ -637,7 +637,7 @@ static double IMRPhenomXHM_RD_Amp_32_rdaux2(double eta, double chi1, double chi2
   return total;
 }
 
-/* End of Parameter Space Fits */
+/* End of Amp Parameter Space Fits */
 
 
 /************** Ringdown coefficients from collocation points *************/
@@ -1044,7 +1044,7 @@ static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double c
 }
 
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_p1(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
@@ -1064,12 +1064,12 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p1(double eta, double chi1, double 
             total = noSpin + eqSpin + uneqSpin;
             break;
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p1: version is not valid. Recommended version is 122019.");}
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_p1: version is not valid. Recommended version is 122019.");}
     }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_p2(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
@@ -1086,12 +1086,12 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p2(double eta, double chi1, double 
             total = noSpin + eqSpin + uneqSpin;
             break;
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p2: version is not valid. Recommended version is 122019.");}
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_p2: version is not valid. Recommended version is 122019.");}
     }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_p3(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
@@ -1108,12 +1108,12 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p3(double eta, double chi1, double 
             total = noSpin + eqSpin + uneqSpin;
             break;
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p3: version is not valid. Recommended version is 122019.");}
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_p3: version is not valid. Recommended version is 122019.");}
     }
     return total;
 }
 // collocation points
-static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double chi1, double chi2, int RDPhaseFlag) {
+static double IMRPhenomXHM_RD_Phase_32_p4(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
         case 122019:{
@@ -1129,11 +1129,12 @@ static double IMRPhenomXHM_Ringdown_Phase_32_p4(double eta, double chi1, double 
             total = noSpin + eqSpin + uneqSpin;
             break;
         }
-        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_Ringdown_Phase_32_p4: version is not valid. Recommended version is 122019.");}
+        default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_p4: version is not valid. Recommended version is 122019.");}
     }
     return total;
 }
 
+/* End of Phase Parameter Space Fits */
 
 /**************  ANSATZ PHASE DERIVATIVE **************/
 
