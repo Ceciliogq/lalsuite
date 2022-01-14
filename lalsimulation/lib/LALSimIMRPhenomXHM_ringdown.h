@@ -68,7 +68,7 @@ static double IMRPhenomXHM_RD_Amp_44_rdcp3(double eta, double chi1, double chi2,
 static double IMRPhenomXHM_RD_Amp_32_rdaux1(double eta, double chi1, double chi2, int RDAmpFlag);
 static double IMRPhenomXHM_RD_Amp_32_rdaux2(double eta, double chi1, double chi2, int RDAmpFlag);
 
-/* End of Parameter Space Fits */
+/* End of Amp Parameter Space Fits */
 
 // Ringdown coefficients from collocation points
 static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp);
@@ -97,6 +97,9 @@ static double IMRPhenomXHM_RD_Phase_32_p1(double eta, double chi1, double chi2, 
 static double IMRPhenomXHM_RD_Phase_32_p2(double eta, double chi1, double chi2, int RingdownPhaseFlag);
 static double IMRPhenomXHM_RD_Phase_32_p3(double eta, double chi1, double chi2, int RingdownPhaseFlag);
 static double IMRPhenomXHM_RD_Phase_32_p4(double eta, double chi1, double chi2, int RingdownPhaseFlag);
+static double IMRPhenomXHM_RD_Phase_32_p5(double eta, double chi1, double chi2, int RDPhaseFlag);
+
+/* End of Phase Parameter Space Fits */
 
 //ansatz
 static double IMRPhenomXHM_RD_Phase_Ansatz(double ff,IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase);
