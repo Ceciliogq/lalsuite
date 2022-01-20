@@ -426,7 +426,8 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp1(double eta, double chi1, double chi2,
 	double total=0;
 	switch (RDAmpFlag){
         case 202109302:{
-            double S = 0.5*(chi1 + chi2);
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
             double chidiff = (chi1 - chi2)/2.;
             double eta1 = eta;
             double eta2 = eta * eta1;
@@ -453,7 +454,8 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp2(double eta, double chi1, double chi2,
 	double total=0;
 	switch (RDAmpFlag){
         case 202109302:{
-            double S = 0.5*(chi1 + chi2);
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
             double chidiff = (chi1 - chi2)/2.;
             double eta1 = eta;
             double eta2 = eta * eta1;
@@ -480,7 +482,8 @@ static double IMRPhenomXHM_RD_Amp_32_rdcp3(double eta, double chi1, double chi2,
 	double total=0;
 	switch (RDAmpFlag){
         case 202109302:{
-            double S = 0.5*(chi1 + chi2);
+            double delta = sqrt(1.-4*eta);
+            double S = (chi1 + chi2)/2. + ((chi1 - chi2)*delta)/(1 + delta*delta);
             double chidiff = (chi1 - chi2)/2.;
             double eta1 = eta;
             double eta2 = eta * eta1;
@@ -954,6 +957,7 @@ void IMRPhenomXHM_Ringdown_Amplitude_Veto(double *V2, double *V3, double V4, IMR
 static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total=0;
     switch (RDPhaseFlag){
+        case 20220114:
         case 122019:{
             double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,delta=sqrt(1-4*eta);
@@ -974,6 +978,7 @@ static double IMRPhenomXHM_RD_Phase_22_alpha2(double eta, double chi1, double ch
 static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total=0;
     switch (RDPhaseFlag){
+        case 20220114:
         case 122019:{
             double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double delta=sqrt(1.- 4.*eta),eta2,eta3,eta4,S2;
@@ -996,6 +1001,10 @@ static double IMRPhenomXHM_RD_Phase_22_alphaL(double eta, double chi1, double ch
 static double IMRPhenomXHM_RD_Phase_32_SpheroidalTimeShift(double eta, double chi1, double chi2, int RDPhaseFlag) {
     double total;
     switch (RDPhaseFlag){
+        case 20220114:{
+            total = 0.;
+            break;
+        }
         case 122019:{
             double S = XLALSimIMRPhenomXSTotR(eta,chi1,chi2);
             double eta2,eta3,eta4,eta5,S2,S3,S4;
@@ -1036,6 +1045,25 @@ static double IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(double eta, double c
             double eqSpin = (S*(-1.622727240110213 + 0.9960210841611344*S - 1.1239505323267036*S2 - 1.9586085340429995*S3 + eta2*(196.7055281997748 + 135.25216875394943*S + 1086.7504825459278*S2 + 546.6246807461155*S3 - 312.1010566468068*S4) + 0.7638287749489343*S4 + eta*(-47.475568056234245 - 35.074072557604445*S - 97.16014978329918*S2 - 34.498125910065156*S3 + 24.02858084544326*S4) + eta3*(62.632493533037625 - 22.59781899512552*S - 2683.947280170815*S2 - 1493.177074873678*S3 + 805.0266029288334*S4)))/(-2.950271397057221 + 1.*S);
             double uneqSpin = (sqrt(1. - 4.*eta)*(chi2*pow(eta,2.5)*(88.56162028006072 - 30.01812659282717*S) + chi2*eta2*(43.126266433486435 - 14.617728550838805*S) + chi1*eta2*(-43.126266433486435 + 14.617728550838805*S) + chi1*pow(eta,2.5)*(-88.56162028006072 + 30.01812659282717*S)))/(-2.950271397057221 + 1.*S);
             total = noSpin + eqSpin + uneqSpin;
+            break;
+        }
+        case 20220114:{ //In Mma is 20220119
+            double S = (chi1 + chi2)/2.;
+            double chidiff = (chi1 - chi2)/2.;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double eta5 = eta * eta4;
+            double eta6 = eta * eta5;
+            double eta7 = eta * eta6;
+            double eta8 = eta * eta7;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = (-2.0839444469881925 + 18.179511628911925*eta1 + 16.151290397182432*eta2 - 515.9862956917553*eta3 + 1208.8202832508368*eta4)/(1 - 10.049795569943262*eta1 + 25.81521310967399*eta2) + 2.358341681237494*chidiff1*(2405.129542632506*eta1 - 112671.80126034174*eta2 + 2.2205206074205763e6*eta3 - 2.380711503162427e7*eta4 + 1.498895606763917e8*eta5 - 5.540152007261529e8*eta6 + 1.1132213060904598e9*eta7 - 9.386674158241558e8*eta8) + 0.7545965304423774*chidiff2*(-47510.09234617656*eta1 + 2.049160647354806e6*eta2 - 3.706762756317315e7*eta3 + 3.647777361862915e8*eta4 - 2.1105166407967386e9*eta5 + 7.185702279548326e9*eta6 - 1.3345209172867895e10*eta7 + 1.0441858855269196e10*eta8) + 1.696888700379508*(6077.343838774144*eta1 - 277931.9634277177*eta2 + 5.346757141474431e6*eta3 - 5.603910458174605e7*eta4 + 3.4563488084824026e8*eta5 - 1.254741030808858e9*eta6 + 2.4831755287713494e9*eta7 - 2.0677005916535225e9*eta8)*S1 + chidiff1*(-21326.358269552587*eta1 + 967261.5492077847*eta2 - 1.8417609853556644e7*eta3 + 1.9087654531745675e8*eta4 - 1.1624327621291764e9*eta5 + 4.159880950743822e9*eta6 - 8.103623366391852e9*eta7 + 6.634841669947335e9*eta8)*S1 - 0.24190467179385491*(79247.71466821221*eta1 - 3.469789801268107e6*eta2 + 6.38820070620649e7*eta3 - 6.414850811566945e8*eta4 + 3.7953000663832307e9*eta5 - 1.3234091199685795e10*eta6 + 2.5196600046116955e10*eta7 - 2.0221245394815613e10*eta8)*S2 - 0.4215573898946505*(87369.63580065563*eta1 - 3.7613363405475975e6*eta2 + 6.801145325399612e7*eta3 - 6.701990162450998e8*eta4 + 3.891156124251066e9*eta5 - 1.3324690877752335e10*eta6 + 2.494380911613138e10*eta7 - 1.9711960744334473e10*eta8)*S3;
             break;
         }
         default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift: version is not valid. Recommended version is 122019.");}
@@ -1229,6 +1257,7 @@ static double IMRPhenomXHM_RD_Phase_32_p5(double eta, double chi1, double chi2, 
 
 static double IMRPhenomXHM_RD_Phase_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f,IMRPhenomXHMWaveformStruct *pWFHM,  IMRPhenomXHMPhaseCoefficients *pPhase){
 
+    double invf  = powers_of_f->m_one;
     double invf2 = powers_of_f->m_two;
     double frd   = pWFHM->fRING;
     double fda   = pWFHM->fDAMP;
@@ -1248,9 +1277,16 @@ static double IMRPhenomXHM_RD_Phase_Ansatz(double ff, IMRPhenomX_UsefulPowers *p
         case 1:
         {
             /*  calibration of spheroidal ringdown waveform for (32) */
-            /* ansatz: alpha0 + (alpha2)/(f^2)+ (alpha4)/(f^4)  + alphaL*(fdamplm)/((fdamplm)^2 + (f - fRDlm)^2)*/
             double invf4 = powers_of_f->m_four;
-            dphaseRD = ( pPhase->alpha0_S +  (pPhase->alpha2_S)*invf2 + (pPhase->alpha4_S)*invf4 +( (pPhase->alphaL_S)* fda/(fda*fda +(ff - frd)*(ff - frd)) ) );
+
+            if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+                /* ansatz: alpha0 + (alpha2)/(f^2)+ (alpha4)/(f^4)  + alphaL*(fdamplm)/((fdamplm)^2 + (f - fRDlm)^2)*/
+                dphaseRD = ( pPhase->alpha0_S +  (pPhase->alpha2_S)*invf2 + (pPhase->alpha4_S)*invf4 +( (pPhase->alphaL_S)* fda/(fda*fda +(ff - frd)*(ff - frd)) ) );
+            }
+            else{ // FIXME: 1/eta???
+                /* ansatz: a0 + a1/f + a2/f^2 + a3/f^4  + a4*fdamplm/(fdamplm^2 + (f - fRDlm)^2) */
+                dphaseRD = ( pPhase->RDCoefficient[0] +  pPhase->RDCoefficient[1] * invf + pPhase->RDCoefficient[2] * invf2 + pPhase->RDCoefficient[3] * invf4 + pPhase->RDCoefficient[4]*fda / (fda*fda + (ff - frd)*(ff - frd))  );
+            }
             break;
         }
         default:
@@ -1281,9 +1317,16 @@ static double IMRPhenomXHM_RD_Phase_AnsatzInt(double ff, IMRPhenomX_UsefulPowers
         case 1:
         {
             /*  calibration of spheroidal ringdown waveform for (32) */
-            /* ansatz: f alpha0 - (alpha4)/(3 f^3) - (alpha2)/f + alphaL ArcTan[(f - fRDlm)/fdamplm]*/
             double invf3 = powers_of_f->m_three;
-            phaseRD = pPhase->phi0_S+pPhase->alpha0_S*ff -(pPhase->alpha2_S)*invf -1./3.*(pPhase->alpha4_S)*invf3 +(pPhase->alphaL_S)* atan((ff-frd)/fda);
+
+            if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+                /* ansatz: f alpha0 - (alpha4)/(3 f^3) - (alpha2)/f + alphaL ArcTan[(f - fRDlm)/fdamplm]*/
+                phaseRD = pPhase->phi0_S+pPhase->alpha0_S*ff -(pPhase->alpha2_S)*invf -1./3.*(pPhase->alpha4_S)*invf3 +(pPhase->alphaL_S)* atan((ff-frd)/fda);
+            }
+            else{
+                /* ansatz: f a0 + a1 Log(f) - a2/f - a3/(3f^3)  + a4*ArcTan[(f - fRDlm)/fdamplm] */
+                phaseRD = pPhase->phi0_S + pPhase->RDCoefficient[0]*ff + pPhase->RDCoefficient[1]*powers_of_f->log - pPhase->RDCoefficient[2]*invf - 1/3.*pPhase->RDCoefficient[3]*invf3 + pPhase->RDCoefficient[4]*atan( (ff-frd)/fda );
+            }
             break;
         }
         default:
