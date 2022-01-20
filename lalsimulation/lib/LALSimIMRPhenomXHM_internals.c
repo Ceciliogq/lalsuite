@@ -1644,37 +1644,37 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
 
   }
 
-  double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
-      double factor = 0.;
-      switch(rescalefactor){
-          case -2:{
-              factor = 1.;
-              break;
-          }
-          case -1:{
-              factor = 1.; //pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
-              break;
-          }
-          case 1:{
-              factor = pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
-              break;
-          }
-          case 2:{
-              factor = 1.; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
-              break;
-          }
-          case 3:{
-              if (pAmp->PNdominantlmpower == 1) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->one_third;
-              if (pAmp->PNdominantlmpower == 2) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->two_thirds;
-              if (pAmp->PNdominantlmpower == 3) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->itself;
-              if (pAmp->PNdominantlmpower == 4) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->four_thirds;
-              printf("PNdominant, PNdominantlm, factor = %.6f %.6f %.6f\n", pAmp->PNdominant, pAmp->PNdominantlm, factor);
-              break;
-          }
-          default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in RescaleFactor: version %i is not valid. Recommended version is 1.", rescalefactor);}
+double RescaleFactor(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, INT4 rescalefactor){
+  double factor = 0.;
+  switch(rescalefactor){
+      case -2:{
+          factor = 1.;
+          break;
       }
-      return factor;
+      case -1:{
+          factor = 1.; //pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
+          break;
+      }
+      case 1:{
+          factor = pAmp->ampNorm * powers_of_Mf->m_seven_sixths;
+          break;
+      }
+      case 2:{
+          factor = 1.; // = Pi * Sqrt(2 eta/3) (2Pi Mf / m)^(-7/6)
+          break;
+      }
+      case 3:{
+          if (pAmp->PNdominantlmpower == 1) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->one_third;
+          if (pAmp->PNdominantlmpower == 2) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->two_thirds;
+          if (pAmp->PNdominantlmpower == 3) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->itself;
+          if (pAmp->PNdominantlmpower == 4) factor = pAmp->PNdominant * powers_of_Mf->m_seven_sixths * pAmp->PNdominantlm * powers_of_Mf->four_thirds;
+          printf("PNdominant, PNdominantlm, factor = %.6f %.6f %.6f\n", pAmp->PNdominant, pAmp->PNdominantlm, factor);
+          break;
+      }
+      default:{XLAL_ERROR_REAL8(XLAL_EINVAL,"Error in RescaleFactor: version %i is not valid. Recommended version is 1.", rescalefactor);}
   }
+  return factor;
+}
 
 
 /*******************************************/
