@@ -495,7 +495,7 @@ static double IMRPhenomXHM_Insp_Amp_44_iv3(double eta, double chi1, double chi2,
     return total;
 }
 
-/* End of Parameter Space Fits */
+/* End of Amp Parameter Space Fits */
 
 
 /***********************************************/
@@ -1030,6 +1030,8 @@ static double IMRPhenomXHM_Insp_Phase_44_lambda(double eta, double chi1, double 
     }
     return total;
 }
+
+/* End of Phase Parameter Space Fits */
 
 // Returns linear-in-f term coming from the complex part of each mode's amplitude that will be added to the orbital phase, this is an expansion of Eq. (4.9) truncated at linear order
 static double IMRPhenomXHM_Insp_Phase_LambdaPN(double eta, int modeInt){
