@@ -36,7 +36,7 @@ extern "C" {
 
 #define N_MAX_COEFFICIENTS_PHASE_INS 13       //Maximun number of coefficients of the inspiral ansatz
 #define N_MAX_COEFFICIENTS_PHASE_INTER 6      //Maximun number of coefficients of the intermediate ansatz
-#define N_MAX_COEFFICIENTS_PHASE_RING 4       //Maximun number of coefficients of the ringdown ansatz
+#define N_MAX_COEFFICIENTS_PHASE_RING 5       //Maximun number of coefficients of the ringdown ansatz
 
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INS 3    //Maximun number of collocation points in the inspiral
 #define N_MAX_COEFFICIENTS_AMPLITUDE_INTER 8  //Maximun number of collocation points in the intermediate. The fourth is for the EMR. FIXME
@@ -270,6 +270,7 @@ typedef struct tagIMRPhenomXHMPhaseCoefficients
         INT4  NCollocationPointsRD;
         REAL8 CollocationPointsValuesPhaseRD[N_MAX_COEFFICIENTS_PHASE_RING];
         REAL8 CollocationPointsFreqsPhaseRD[N_MAX_COEFFICIENTS_PHASE_RING];
+        REAL8 RDCoefficient[N_MAX_COEFFICIENTS_PHASE_RING];
 
         /* Flag to set how many collocation points the intermediate region uses */
         INT4  NCollocationPointsInt;
