@@ -693,7 +693,7 @@ static double IMRPhenomXHM_Inter_Amp_44_int4(double eta, double chi1, double chi
   return total;
 }
 
-/* End of Parameter Space Fits */
+/* End of Amp Parameter Space Fits */
 
 
 /* Solves system of equations for 5th order polynomial ansatz */
@@ -2480,31 +2480,42 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
         }
         // FIXME: throw error here if pAmp->VersionCollocPtsInter[i] == 2, cannot use derivatives if you don't have the parameter space fit
     }
-    if (pWFHM->MixingOn == 1){
-      REAL8 fRD = pAmp->CollocationPointsFreqsAmplitudeInter[tmpnCollocPts];
-      IMRPhenomX_UsefulPowers powers_of_fRD;
-      IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
-      pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
-      tmpnCollocPts++;
-    }
-    else{ // No mode mixing
+    // if (pWFHM->MixingOn == 1){
+    //   REAL8 fRD = pAmp->CollocationPointsFreqsAmplitudeInter[tmpnCollocPts];
+    //   IMRPhenomX_UsefulPowers powers_of_fRD;
+    //   IMRPhenomX_Initialize_Powers(&powers_of_fRD, fRD);
+    //   pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(fRD, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    //   tmpnCollocPts++;
+    // }
+    // else{ // No mode mixing
         IMRPhenomX_UsefulPowers powers_of_fRD;
         IMRPhenomX_Initialize_Powers(&powers_of_fRD, pAmp->fAmpMatchIM);
         switch(pAmp->VersionCollocPtsInter[pWFHM->nCollocPtsInterAmp + 1]){
             case 1:{ // Add point
-                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                if (pWFHM->MixingOn == 0){
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                }
+                else{
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(powers_of_fRD.itself, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+                }
                 tmpnCollocPts++;
                 break;
             }
             case 2:{ // Add point + derivative
-                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
-                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                if (pWFHM->MixingOn == 0){
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
+                }
+                else{
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(powers_of_fRD.itself, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+                    pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_NDAnsatz(&powers_of_fRD, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
+                }
                 tmpnCollocPts += 2;
                 break;
             }
             default: {XLALPrintError("Error in IMRPhenomXHM_Intermediate_Amp_Coefficients: version %i is not valid. Version recommended is 111111.", pAmp->VersionCollocPtsInter[pAmp->nCoefficientsInter - 1]);}
         }
-    }
+    //}
     /* tmpnCollocPts must be the same tahn pWFHM->nCollocPtsInterAmp + 2 (=number of free coefficients in intermediate ansatz) */
     if(tmpnCollocPts != pAmp->nCoefficientsInter)
         XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_Intermediate_Amp_CollocationPoints failed. Inconsistent number of free parameters %i, %i.", tmpnCollocPts, pAmp->nCoefficientsInter);
@@ -3200,7 +3211,7 @@ static double IMRPhenomXHM_Inter_Phase_44_p6(double eta, double chi1, double chi
     return total;
 }
 
-
+/* End of Phase Parameter Space Fits */
 
 /************* PHASE ANSATZ ****************/
 
