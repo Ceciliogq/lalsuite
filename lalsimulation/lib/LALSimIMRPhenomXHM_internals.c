@@ -176,6 +176,7 @@ void IMRPhenomXHM_SetHMWaveformVariables(
    //FIXME
   if(wf->IMRPhenomXHMInspiralAmpFitsVersion != 122018 && wf->IMRPhenomXHMRingdownAmpFitsVersion != 122018){
       wf->IMRPhenomXHMRingdownAmpVersion = 1;
+      wf->IMRPhenomXHMRingdownPhaseVersion = 20220114;
       //wf->IMRPhenomXHMIntermediateAmpVersion = 4;
       switch(wf->modeTag)
       {
@@ -218,7 +219,12 @@ void IMRPhenomXHM_SetHMWaveformVariables(
 
   /* Phase : Ringdown */
   wf->nCollocPtsRDPhase= 0;
-  if(wf->modeTag==32) {wf->nCollocPtsRDPhase=N_MAX_COEFFICIENTS_PHASE_RING;}
+  if(wf->modeTag==32) {
+      if(wf->IMRPhenomXHMRingdownPhaseVersion == 122019)
+        wf->nCollocPtsRDPhase = 4;//N_MAX_COEFFICIENTS_PHASE_RING;
+      else
+        wf->nCollocPtsRDPhase = 5;
+  }
 
   /* Limit between comparable and extreme mass ratios for the phase */
   wf->etaEMR=0.05;
@@ -293,11 +299,11 @@ void IMRPhenomXHM_FillPhaseFitsArray(IMRPhenomXHMPhaseCoefficients *pPhase){
   pPhase->IntermediatePhaseFits[23]=IMRPhenomXHM_Inter_Phase_44_p6;
 
   //32 Spheroidal
-  pPhase->RingdownPhaseFits[0]=IMRPhenomXHM_Ringdown_Phase_32_p1;
-  pPhase->RingdownPhaseFits[1]=IMRPhenomXHM_Ringdown_Phase_32_p2;
-  pPhase->RingdownPhaseFits[2]=IMRPhenomXHM_Ringdown_Phase_32_p3;
-  pPhase->RingdownPhaseFits[3]=IMRPhenomXHM_Ringdown_Phase_32_p4;
-
+  pPhase->RingdownPhaseFits[0]=IMRPhenomXHM_RD_Phase_32_p1;
+  pPhase->RingdownPhaseFits[1]=IMRPhenomXHM_RD_Phase_32_p2;
+  pPhase->RingdownPhaseFits[2]=IMRPhenomXHM_RD_Phase_32_p3;
+  pPhase->RingdownPhaseFits[3]=IMRPhenomXHM_RD_Phase_32_p4;
+  pPhase->RingdownPhaseFits[4]=IMRPhenomXHM_RD_Phase_32_p5;
 
 }
 
@@ -649,10 +655,21 @@ void IMRPhenomXHM_Ringdown_CollocPtsFreqs(IMRPhenomXHMPhaseCoefficients *pPhase,
   double fringlm = pWFHM->fRING, fdamplm = pWFHM->fDAMP;
   double fring22 = pWF22->fRING;
 
-  pPhase->CollocationPointsFreqsPhaseRD[0] = fring22;
-  pPhase->CollocationPointsFreqsPhaseRD[2] = fringlm - 0.5*fdamplm;
-  pPhase->CollocationPointsFreqsPhaseRD[1] = fringlm - 1.5*fdamplm;
-  pPhase->CollocationPointsFreqsPhaseRD[3] = fringlm + 0.5*fdamplm;
+  if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+        pPhase->CollocationPointsFreqsPhaseRD[0] = fring22;
+        pPhase->CollocationPointsFreqsPhaseRD[2] = fringlm - 0.5*fdamplm;
+        pPhase->CollocationPointsFreqsPhaseRD[1] = fringlm - 1.5*fdamplm;
+        pPhase->CollocationPointsFreqsPhaseRD[3] = fringlm + 0.5*fdamplm;
+  }
+  else{
+      double fdamp22 = pWF22->fDAMP;
+      pPhase->CollocationPointsFreqsPhaseRD[0] = fring22 - fdamp22;
+      pPhase->CollocationPointsFreqsPhaseRD[1] = fring22;
+      pPhase->CollocationPointsFreqsPhaseRD[2] = (fring22 + fringlm) * 0.5;
+      pPhase->CollocationPointsFreqsPhaseRD[3] = fringlm;
+      pPhase->CollocationPointsFreqsPhaseRD[4] = fringlm + fdamplm;
+  }
+
 }
 
 
@@ -988,14 +1005,14 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         for(UINT2 i = 0; i < 3; i++){
             printf("%.16e\n", pAmp->RDCoefficient[i]);
         }
-        // printf("RDAux Coll points\n");
-        // for(UINT2 i = 0; i < 4; i++){
-        //     printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRDAux[i], pAmp->CollocationPointsValuesAmplitudeRDAux[i]);
-        // }
-        // printf("RDAux Coefficients\n");
-        // for(UINT2 i = 0; i < 4; i++){
-        //     printf("%.16e\n", pAmp->RDAuxCoefficient[i]);
-        // }
+        printf("RDAux Coll points\n");
+        for(UINT2 i = 0; i < 4; i++){
+            printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRDAux[i], pAmp->CollocationPointsValuesAmplitudeRDAux[i]);
+        }
+        printf("RDAux Coefficients\n");
+        for(UINT2 i = 0; i < 4; i++){
+            printf("%.16e\n", pAmp->RDAuxCoefficient[i]);
+        }
 
         /* Set Rescale Factors to build Strain */
         pAmp->InspRescaleFactor = -pAmp->InspRescaleFactor;
@@ -1925,7 +1942,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
           double FF=fcutRD+(i-1)*fstep;
           IMRPhenomX_UsefulPowers powers_of_FF;
           IMRPhenomX_Initialize_Powers(&powers_of_FF,FF);
-          SphericalWF[i]=SpheroidalToSphericalPhase(FF, &powers_of_FF, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22);
+          SphericalWF[i]=SpheroidalToSpherical(FF, &powers_of_FF, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22);
 
         }
 
@@ -2184,37 +2201,60 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     printf("Initialize RD CollocPtsFreqs:\n");
     #endif
 
-    // first fill-in the collocation points for the phase
-    for(int i=0; i<nCollocationPts_RD_Phase; i++)
-    {
+    if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+        // first fill-in the collocation points for the phase
+        for(int i=0; i<nCollocationPts_RD_Phase; i++)
+        {
 
-      CollocValuesPhaseRingdown[i] =pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
-      CollocFreqsPhaseRingdown[i] =pPhase->CollocationPointsFreqsPhaseRD[i];
-      gsl_vector_set(b,i,CollocValuesPhaseRingdown[i]);
-      REAL8 ff=CollocFreqsPhaseRingdown[i], ffm1=1./ff, ffm2=ffm1*ffm1;
-      REAL8 fpowers[]={1., (pWFHM->fDAMP)/(pow(pWFHM->fDAMP,2)+pow(ff-(pWFHM->fRING),2)),ffm2,ffm2*ffm2};
-      for(int j=0; j<nCollocationPts_RD_Phase; j++)
-      gsl_matrix_set(A,i,j,fpowers[j]);
+          CollocValuesPhaseRingdown[i] =pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+          CollocFreqsPhaseRingdown[i] =pPhase->CollocationPointsFreqsPhaseRD[i];
+          gsl_vector_set(b,i,CollocValuesPhaseRingdown[i]);
+          REAL8 ff=CollocFreqsPhaseRingdown[i], ffm1=1./ff, ffm2=ffm1*ffm1;
+          REAL8 fpowers[]={1., (pWFHM->fDAMP)/(pow(pWFHM->fDAMP,2)+pow(ff-(pWFHM->fRING),2)),ffm2,ffm2*ffm2};
+          for(int j=0; j<nCollocationPts_RD_Phase; j++)
+          gsl_matrix_set(A,i,j,fpowers[j]);
 
+        }
+    }
+    else{
+        for(int i = 0; i < nCollocationPts_RD_Phase; i++){
+            CollocValuesPhaseRingdown[i] = pPhase->RingdownPhaseFits[i](pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+            CollocFreqsPhaseRingdown[i]  = pPhase->CollocationPointsFreqsPhaseRD[i];
+            gsl_vector_set(b,i,CollocValuesPhaseRingdown[i]);
+            REAL8 ff = CollocFreqsPhaseRingdown[i], ffm1 = 1./ff, ffm2 = ffm1 * ffm1;
+            REAL8 lorentzian = pWFHM->fDAMP / (pWFHM->fDAMP * pWFHM->fDAMP + (ff - pWFHM->fRING) * (ff - pWFHM->fRING));
+            REAL8 fpowers[] = {1., ffm1, ffm2, ffm2 * ffm2, lorentzian};
+            for(int j = 0; j < nCollocationPts_RD_Phase; j++){
+                gsl_matrix_set(A, i, j, fpowers[j]); // Ansatz spheroidal
+            }
+        }
     }
 
-    #if DEBUG == 1
+    //#if DEBUG == 1
     printf("Collocation points in ringdown region:\n");
     for(int i=0; i<nCollocationPts_RD_Phase; i++){
       printf("p%d=(%f,%f)\n",i+1,CollocFreqsPhaseRingdown[i],CollocValuesPhaseRingdown[i]);
     }
+    //#endif
 
-    #endif
     // solve the linear system of Eq. (6.8)
     gsl_linalg_LU_decomp(A,p,&s);
     gsl_linalg_LU_solve(A,p,b,x);
 
-    /* ansatz: alpha0 + (alpha2)/(f^2)+ (alpha4)/(f^4)  + alphaL*(fdamplm)/((fdamplm)^2 + (f - fRDlm)^2)*/
-
-    pPhase->alpha0_S = gsl_vector_get(x,0);
-    pPhase->alphaL_S = gsl_vector_get(x,1);
-    pPhase->alpha2_S = gsl_vector_get(x,2);
-    pPhase->alpha4_S = gsl_vector_get(x,3);
+    if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+        /* ansatz: alpha0 + (alpha2)/(f^2)+ (alpha4)/(f^4)  + alphaL*(fdamplm)/((fdamplm)^2 + (f - fRDlm)^2)*/
+        pPhase->alpha0_S = gsl_vector_get(x,0);
+        pPhase->alphaL_S = gsl_vector_get(x,1);
+        pPhase->alpha2_S = gsl_vector_get(x,2);
+        pPhase->alpha4_S = gsl_vector_get(x,3);
+    }
+    else{
+        printf("New Spheroidal Version. Getting coefficients\n");
+        for(int i=0; i<nCollocationPts_RD_Phase; i++){
+            pPhase->RDCoefficient[i] = gsl_vector_get(x, i);
+            printf("%i = %.6f\n", i, pPhase->RDCoefficient[i]);
+        }
+    }
 
     #if DEBUG == 1
     printf("**********\n alpha0_S=%f \n alphaL_S=%f \n alpha2_S=%f \n alpha4_S=%f \n \n ", pPhase->alpha0_S, pPhase->alphaL_S, pPhase->alpha2_S, pPhase->alpha4_S);
@@ -2237,13 +2277,28 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     // we compute dphi22(fref)
     IMRPhenomX_Phase_22_ConnectionCoefficients(pWF22,pPhase22);
     pWFHM->timeshift=IMRPhenomX_TimeShift_22(pPhase22, pWF22);
-    double dphi22ref=1./pWF22->eta*IMRPhenomX_dPhase_22(frefRD, &powers_of_FREF,pPhase22,pWF22)+pWFHM->timeshift;
 
     // we impose that dphiS(fref)-dphi22(fref) has the value given by our fit
-    pPhase->alpha0_S = pPhase->alpha0_S +dphi22ref+tshift-IMRPhenomXHM_RD_Phase_Ansatz(frefRD,&powers_of_FREF,pWFHM,pPhase);
+    if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+        double dphi22ref=1./pWF22->eta*IMRPhenomX_dPhase_22(frefRD, &powers_of_FREF,pPhase22,pWF22)+pWFHM->timeshift;
+        pPhase->alpha0_S = pPhase->alpha0_S +dphi22ref+tshift-IMRPhenomXHM_RD_Phase_Ansatz(frefRD,&powers_of_FREF,pWFHM,pPhase);
+    }
+    else{
+        REAL8 psi4tostrain=XLALSimIMRPhenomXPsi4ToStrain(pWF22->eta, pWF22->STotR, pWF22->dchi);
+        //pWFHM->timeshift += 2.*LAL_PI*(500+psi4tostrain);
+        printf("New Spheroidal Version a0 shiftSS, shift22 = %.6e %.6e\n", tshift, pWFHM->timeshift);
+        pPhase->RDCoefficient[0] -= 2.*LAL_PI*(500+psi4tostrain);
+        //pPhase->RDCoefficient[0] += (dphi22ref + tshift - IMRPhenomXHM_RD_Phase_Ansatz(frefRD, &powers_of_FREF, pWFHM, pPhase));
+    }
 
     /*************** phase-shift of spheroidal ansatz *******************/
-    frefRD=pWF22->fRING;
+    if(pWFHM->IMRPhenomXHMRingdownPhaseVersion == 122019){
+        frefRD = pWF22->fRING;
+    }
+    else{
+        frefRD = pWF22->fRING - pWF22->fDAMP;
+        //pWFHM->phaseshift += LAL_PI;
+    }
     IMRPhenomX_Initialize_Powers(&powers_of_FREF,frefRD);
 
     /* we compute phi22(fref) */
@@ -2253,11 +2308,11 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
     double phi22ref=1./pWF22->eta*IMRPhenomX_Phase_22(frefRD, &powers_of_FREF,pPhase22,pWF22) + pWFHM->timeshift*frefRD + pWFHM->phaseshift + pWFHM->phiref22;
     // we call a fit for Mod[phiS(fref)-phi22(fref),2*Pi]
     double phishift=IMRPhenomXHM_RD_Phase_32_SpheroidalPhaseShift(pWF22->eta,pWF22->chi1L,pWF22->chi2L,pWFHM->IMRPhenomXHMRingdownPhaseVersion);
+    printf("phishift = %.6f\n", phishift);
 
     pPhase->phi0_S = 0;
     //we adjust the relative phase of our reconstruction
-    pPhase->phi0_S= phi22ref-IMRPhenomXHM_RD_Phase_AnsatzInt(frefRD,&powers_of_FREF,pWFHM,pPhase)+phishift;
-
+    pPhase->phi0_S= phi22ref - IMRPhenomXHM_RD_Phase_AnsatzInt(frefRD,&powers_of_FREF,pWFHM,pPhase) + phishift;
 
     #if DEBUG == 1
     printf("**********\n alpha0_S=%f \n alphaL_S=%f \n alpha2_S=%f \n alpha4_S=%f \n \n ", pPhase->alpha0_S, pPhase->alphaL_S, pPhase->alpha2_S, pPhase->alpha4_S);
@@ -2283,31 +2338,6 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
 
   // In principle this could be generalized to the 43 mode: for the time being, assume the mode solved for is only the 32.
   double complex SpheroidalToSpherical(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm, IMRPhenomXWaveformStruct *pWF22)
-  {
-    // Compute the 22 mode using PhenomX functions. This gives the 22 mode rescaled with the leading order.  This is because the 32 is also rescaled.
-    double amp22=XLALSimIMRPhenomXRingdownAmplitude22AnsatzAnalytical(ff, pWF22->fRING, pWF22->fDAMP, pAmp22->gamma1, pAmp22->gamma2, pAmp22->gamma3);
-    double phi22=1./pWF22->eta*IMRPhenomX_Phase_22(ff, powers_of_f, pPhase22,pWF22) + pWFlm->timeshift*ff + pWFlm->phaseshift + pWFlm->phiref22;
-    complex double wf22R = pWF22->ampNorm * powers_of_f->m_seven_sixths * amp22 * cexp(I * phi22);
-    //printf("f, R@wf22, Im@wf22, abs = \n%.16e %.16e %.16e %.16e \n", ff, creal(wf22R), cimag(wf22R), cabs(wf22R));
-    wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->RDRescaleFactor);
-    if(pAmplm->InterRescaleFactor>0){
-        wf22R /= RescaleFactor(powers_of_f, pAmplm, pAmplm->InterRescaleFactor);
-    }
-    // Compute 32 mode in spheroidal.
-    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
-    double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
-    //printf("%.16e %.16e %.16e %.16e \n", ff, creal(amplm*cexp(I*philm)), cimag(amplm*cexp(I*philm)), cabs(amplm*cexp(I*philm)));
-    // Do the rotation.
-    double complex sphericalWF_32=conj(pWFlm->mixingCoeffs[2]) * wf22R + conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
-    // wf22R = 7.77014*cexp(-I*0.699226);
-    // sphericalWF_32=conj(pWFlm->mixingCoeffs[2]) * wf22R + conj(pWFlm->mixingCoeffs[3])*0.219592*cexp(I*0.486587);
-    //sphericalWF_32= 0.0659066*cexp(I*0.177919)*wf22R + 1.00319*cexp(I*0.0204912)*amplm*cexp(I*philm);
-    //sphericalWF_32 = 0.433852;
-    return sphericalWF_32;
-
-  }
-
-  double complex SpheroidalToSphericalPhase(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm, IMRPhenomXWaveformStruct *pWF22)
   {
     // Compute the 22 mode using PhenomX functions. This gives the 22 mode rescaled with the leading order.  This is because the 32 is also rescaled.
     double amp22=XLALSimIMRPhenomXRingdownAmplitude22AnsatzAnalytical(ff, pWF22->fRING, pWF22->fDAMP, pAmp22->gamma1, pAmp22->gamma2, pAmp22->gamma3);
