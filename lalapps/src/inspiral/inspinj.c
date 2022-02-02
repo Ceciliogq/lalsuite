@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 
@@ -366,8 +366,9 @@
  * </dl>
  */
 
+#include "config.h"
+
 #include <ctype.h>
-#include <lalapps.h>
 #include <lal/Date.h>
 #include <lal/LALgetopt.h>
 #include <lal/LIGOMetadataTables.h>
@@ -1922,7 +1923,7 @@ int main( int argc, char *argv[] )
   CHAR *virgoFakePsd=NULL;
   REAL8FrequencySeries *ligoPsd  = NULL;
   REAL8FrequencySeries *virgoPsd = NULL;
-  status=blank_status;
+  XLAL_INIT_MEM(status);
 
   /* LALgetopt arguments */
   struct LALoption long_options[] =
@@ -3066,7 +3067,7 @@ int main( int argc, char *argv[] )
       case 'V':
         /* print version information and exit */
         fprintf( stdout, "LIGO/LSC inspiral injection engine\n");
-        XLALOutputVersionString(stderr, 0);
+        XLALOutputVCSInfo(stderr, lalAppsVCSInfoList, 0, "%% ");
         exit( 0 );
         break;
 
@@ -4500,11 +4501,11 @@ int main( int argc, char *argv[] )
   XLALSimInspiralAssignIDs ( injections.simInspiralTable, 0, 0 );
   if ( injections.simInspiralTable )
   {
-    LAL_CALL( LALBeginLIGOLwXMLTable( &status, &xmlfp, sim_inspiral_table ),
-        &status );
-    LAL_CALL( LALWriteLIGOLwXMLTable( &status, &xmlfp, injections,
-          sim_inspiral_table ), &status );
-    LAL_CALL( LALEndLIGOLwXMLTable ( &status, &xmlfp ), &status );
+    int retcode = XLALWriteLIGOLwXMLSimInspiralTable(&xmlfp, injections.simInspiralTable);
+    if ( retcode != XLAL_SUCCESS )
+    {
+        XLAL_ERROR(retcode);
+    }
   }
 
   LAL_CALL( LALCloseLIGOLwXMLFile ( &status, &xmlfp ), &status );

@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include <lal/XLALError.h>
@@ -44,7 +44,7 @@ main ( int argc, char *argv[] )
 
   // ----- load ephemeris
   EphemerisData *ephem;
-  XLAL_CHECK ( (ephem = XLALInitBarycenter ( TEST_PKG_DATA_DIR "earth00-19-DE405.dat.gz", TEST_PKG_DATA_DIR "sun00-19-DE405.dat.gz" )) != NULL, XLAL_EFUNC );
+  XLAL_CHECK ( (ephem = XLALInitBarycenter ( TEST_PKG_DATA_DIR "earth00-40-DE405.dat.gz", TEST_PKG_DATA_DIR "sun00-40-DE405.dat.gz" )) != NULL, XLAL_EFUNC );
 
   // ----- setup injection and data parameters
   LALStringVector *detNames = NULL;

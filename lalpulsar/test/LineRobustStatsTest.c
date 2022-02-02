@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 /* ---------- Includes -------------------- */
@@ -410,7 +410,7 @@ XLALCheckBSGLVectorFunctions ( void )
 
   REAL4 cohFstar0 = 4.37; // 10% false-alarm: invFalseAlarm_chi2 ( 0.1, 4 * 3 ) / 3
   UINT4 numDet = 3;
-  REAL4 oLtLGX[3] = {0.1, 0.8, 1.5}; /* per-IFO prior odds ratio for line vs. Gaussian noise */
+  REAL4 oLtLGX[PULSAR_MAX_DETECTORS] = {0.1, 0.8, 1.5}; /* per-IFO prior odds ratio for line vs. Gaussian noise */
 
   BSGLSetup *setup_noLogCorr;
   BSGLSetup *setup_withLogCorr;

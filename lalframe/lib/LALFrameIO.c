@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include <config.h>
@@ -502,12 +502,14 @@ int XLALFrameAdd ## laltype ## TimeSeriesProcData(LALFrameH *frame, const laltyp
 	{ \
 		LIGOTimeGPS frameStart; \
 		double timeOffset; \
+		double tRange; \
 		const char unitX[] = "s"; \
 		char unitY[LALUnitTextSize]; \
 		LALFrameUFrChan *channel = NULL; \
 		void *data = NULL; \
 		XLALUnitAsString(unitY, sizeof(unitY), &series->sampleUnits); \
 		XLALFrameQueryGTime(&frameStart, frame); \
+		tRange = series->deltaT * series->data->length; \
 		timeOffset = XLALGPSDiff(&series->epoch, &frameStart); \
 		if (timeOffset < 0) \
 			XLAL_ERROR(XLAL_EINVAL, "Series start time %d.%09d " \
@@ -524,6 +526,7 @@ int XLALFrameAdd ## laltype ## TimeSeriesProcData(LALFrameH *frame, const laltyp
 			goto failure; \
 		memcpy(data, series->data->data, series->data->length * sizeof(*series->data->data)); \
 		XLALFrameUFrChanSetTimeOffset(channel, timeOffset); \
+		XLALFrameUFrChanSetTRange(channel, tRange); \
 		XLALFrameUFrChanVectorSetName(channel, series->name); \
 		XLALFrameUFrChanVectorSetDx(channel, series->deltaT); \
 		XLALFrameUFrChanVectorSetStartX(channel, 0.0); \

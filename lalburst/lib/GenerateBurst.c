@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with with program; see the file COPYING. If not, write to the Free
- * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307  USA
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
  */
 
 
@@ -120,6 +120,10 @@ int XLALGenerateSimBurst(
 	} else if(!strcmp(sim_burst->waveform, "Impulse")) {
 		XLALPrintInfo("%s(): impulse @ %9d.%09u s (GPS): hpeak = %.16g\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->amplitude);
 		if(XLALGenerateImpulseBurst(hplus, hcross, sim_burst->amplitude, delta_t))
+			XLAL_ERROR(XLAL_EFUNC);
+	} else if(!strcmp(sim_burst->waveform, "Cherenkov")) {
+		XLALPrintInfo("%s(): Cherenkov @ %9d.%09u s (GPS): natural_freq = %.16g Hz, beta = %.16g\n", __func__, sim_burst->time_geocent_gps.gpsSeconds, sim_burst->time_geocent_gps.gpsNanoSeconds, sim_burst->frequency, sim_burst->bandwidth);
+		if(XLALSimBurstCherenkovRadiation(hplus, hcross, sim_burst->frequency, sim_burst->bandwidth, sim_burst->egw_over_rsquared, delta_t))
 			XLAL_ERROR(XLAL_EFUNC);
 	} else {
 		/* unrecognized waveform */

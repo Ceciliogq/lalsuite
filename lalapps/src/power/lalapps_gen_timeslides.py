@@ -103,8 +103,7 @@ def new_doc(comment = None, **kwargs):
 		cvs_entry_time = __date__,
 		comment = comment
 	)
-	timeslidetable = lsctables.New(lsctables.TimeSlideTable)
-	doc.childNodes[0].appendChild(timeslidetable)
+	doc.childNodes[0].appendChild(lsctables.New(lsctables.TimeSlideTable))
 
 	return doc, process
 
@@ -202,7 +201,7 @@ if options.remove_zero_lag:
 #
 
 
-time_slides = time_slides.values()
+time_slides = list(time_slides.values())
 
 
 #
@@ -249,13 +248,13 @@ while filenames:
 	# Finish off the document.
 	#
 
-	ligolw_process.set_process_end_time(process)
+	process.set_end_time_now()
 
 	#
 	# Write.
 	#
 
 	filename = filenames.pop(0)
-	ligolw_utils.write_filename(xmldoc, filename, verbose = options.verbose, gz = (filename or "stdout").endswith(".gz"))
+	ligolw_utils.write_filename(xmldoc, filename, verbose = options.verbose)
 
 assert not time_slides

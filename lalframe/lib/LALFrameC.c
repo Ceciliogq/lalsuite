@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #define _GNU_SOURCE   /* for mkstemp() */
@@ -644,6 +644,12 @@ int XLALFrameUFrChanSetTimeOffset_FrameC_(LALFrameUFrChan * channel, double time
 {
     fr_chan_time_offset_t offset = timeOffset;
     TRY_FRAMEC_FUNCTION(FrameCFrChanSet, channel, FR_CHAN_FIELD_TIME_OFFSET, offset, FR_CHAN_FIELD_LAST);
+}
+
+int XLALFrameUFrChanSetTRange_FrameC_(LALFrameUFrChan * channel, double tRange)
+{
+    fr_chan_t_range_t dt = tRange;
+    TRY_FRAMEC_FUNCTION(FrameCFrChanSet, channel, FR_CHAN_FIELD_T_RANGE, dt, FR_CHAN_FIELD_LAST);
 }
 
 /*

@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 /*********************************************************************************/
@@ -87,7 +87,7 @@ int main(void)
   LALDetector *detector;
   XLAL_CHECK_MAIN ( (detector = XLALGetSiteInfo ( "H1" )) != NULL, XLAL_EFUNC );
   EphemerisData *edat;
-  XLAL_CHECK_MAIN ( (edat = XLALInitBarycenter ( TEST_PKG_DATA_DIR "earth00-19-DE405.dat.gz", TEST_PKG_DATA_DIR "sun00-19-DE405.dat.gz" )) != NULL, XLAL_EFUNC );
+  XLAL_CHECK_MAIN ( (edat = XLALInitBarycenter ( TEST_PKG_DATA_DIR "earth00-40-DE405.dat.gz", TEST_PKG_DATA_DIR "sun00-40-DE405.dat.gz" )) != NULL, XLAL_EFUNC );
   tic = XLALGetCPUTime();
   XLAL_CHECK_MAIN ( (detStates = XLALPrepareCWSignalBand ( &skypos_maxdoppler, t0, Tspan, dT, detector, edat )) != NULL, XLAL_EFUNC );
   REAL8 time_XLALPrepareCWSignalBand = XLALGetCPUTime() - tic;

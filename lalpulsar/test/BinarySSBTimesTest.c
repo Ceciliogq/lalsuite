@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #include <config.h>
@@ -101,8 +101,8 @@ main ( int argc, char *argv[] )
   REAL8 startTimeREAL8 	= 714180733;
   REAL8 duration 	= 180000;	/* 50 hours */
   REAL8 Tsft 		= 1800;		/* assume 30min SFTs */
-  char earthEphem[] 	= TEST_PKG_DATA_DIR "earth00-19-DE200.dat.gz";
-  char sunEphem[]   	= TEST_PKG_DATA_DIR "sun00-19-DE200.dat.gz";
+  char earthEphem[] 	= TEST_PKG_DATA_DIR "earth00-40-DE405.dat.gz";
+  char sunEphem[]   	= TEST_PKG_DATA_DIR "sun00-40-DE405.dat.gz";
 
   //REAL8 tolerance = 2e-10;	/* same algorithm, should be basically identical results */
 

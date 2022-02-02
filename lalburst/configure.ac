@@ -1,15 +1,41 @@
 AC_PREREQ([2.63])
-AC_INIT([LALBurst],[1.5.6.1],[lal-discuss@ligo.org])
+AC_INIT([LALBurst],[1.5.11.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([lib/config.h lib/LALBurstConfig.h])
 AC_CONFIG_SRCDIR([lib/EPSearch.c])
 AC_CONFIG_AUX_DIR([gnuscripts])
 AC_CONFIG_MACRO_DIR([gnuscripts])
+
+# set library api info
+# 1. start with version information of "0:0:0" for each libtool library
+# 2. update the version information only immediately before a public
+#    release of your software. More frequent updates are unnecessary,
+#    and only guarantee that the current interface number gets larger
+#    faster.
+# 3. if the library source code has changed at all since the last
+#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
+# 4. if any interfaces have been added, removed, or changed since the
+#    last update, increment current, and set revision to 0.
+# 5. if any interfaces have been added since the last public release,
+#    then increment age.
+# 6. if any interfaces have been removed since the last public release,
+#    then set age to 0.
+AC_SUBST([LIBCURRENT],[6])
+AC_SUBST([LIBREVISION],[4])
+AC_SUBST([LIBAGE],[0])
+AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
+AS_CASE([${host_os}],
+  [freebsd-aout|qnx|sco|sunos], [AC_SUBST([LIBMAJOR],[${LIBCURRENT}])],
+  [AC_SUBST([LIBMAJOR],[$((LIBCURRENT-LIBAGE))])]
+)
+
 AC_CONFIG_FILES([ \
   Makefile \
   conda/Makefile \
   conda/meta.yaml.in \
+  conda/migrations/Makefile \
   debian/Makefile \
   debian/control \
+  debian/liblalburst${LIBMAJOR}.install:debian/liblalburst.install.in \
   doxygen/Makefile \
   doxygen/doxygen.cfg \
   include/Makefile \
@@ -43,11 +69,13 @@ AM_INIT_AUTOMAKE([ \
 
 # version requirements
 MIN_LAL_VERSION="7.1.0"
-MIN_LALMETAIO_VERSION="2.0.0"
-MIN_LALSIMULATION_VERSION="2.3.0"
+MIN_LALMETAIO_VERSION="2.1.0"
+MIN_LALSIMULATION_VERSION="3.1.0"
+MIN_PYTHON_LIGO_LW_VERSION="1.7.0"
 AC_SUBST([MIN_LAL_VERSION])
 AC_SUBST([MIN_LALMETAIO_VERSION])
 AC_SUBST([MIN_LALSIMULATION_VERSION])
+AC_SUBST([MIN_PYTHON_LIGO_LW_VERSION])
 
 AC_CANONICAL_HOST
 
@@ -55,25 +83,6 @@ LALSUITE_ARG_VAR
 
 LALSUITE_CHECK_GIT_REPO
 LALSUITE_DISTCHECK_CONFIGURE_FLAGS
-
-# set library api info
-# 1. start with version information of "0:0:0" for each libtool library
-# 2. update the version information only immediately before a public
-#    release of your software. More frequent updates are unnecessary,
-#    and only guarantee that the current interface number gets larger
-#    faster.
-# 3. if the library source code has changed at all since the last
-#    update, then increment revision ("c:r:a" becomes "c:r+1:a").
-# 4. if any interfaces have been added, removed, or changed since the
-#    last update, increment current, and set revision to 0.
-# 5. if any interfaces have been added since the last public release,
-#    then increment age.
-# 6. if any interfaces have been removed since the last public release,
-#    then set age to 0.
-AC_SUBST([LIBCURRENT],[6])
-AC_SUBST([LIBREVISION],[2])
-AC_SUBST([LIBAGE],[0])
-AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
 
 # nightly build
 LALSUITE_ENABLE_NIGHTLY
@@ -87,6 +96,9 @@ LALSUITE_ENABLE_SWIG
 # enable Doxygen documentation
 LALSUITE_ENABLE_DOXYGEN
 
+# enable help2man documentation
+LALSUITE_ENABLE_HELP2MAN
+
 # define version/configure info
 LALSUITE_VERSION_CONFIGURE_INFO
 
@@ -98,10 +110,11 @@ LALSUITE_PROG_COMPILERS
 
 # checks for programs
 AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_AWK
 AC_PROG_SED
-LALSUITE_CHECK_PYTHON([2.6])
+LALSUITE_CHECK_PYTHON([3.5])
 
 # check for supported mac os x version
 LALSUITE_OSX_VERSION_CHECK
@@ -109,14 +122,11 @@ LALSUITE_OSX_VERSION_CHECK
 # link tests using libtool
 LALSUITE_USE_LIBTOOL
 
-# check for header files
-AC_HEADER_STDC
-
 # check for required libraries
 AC_CHECK_LIB([m],[main],,[AC_MSG_ERROR([could not find the math library])])
 
 # check for Python
-LALSUITE_CHECK_PYTHON([2.6])
+LALSUITE_CHECK_PYTHON([3.5])
 
 # check for gsl
 PKG_CHECK_MODULES([GSL],[gsl],[true],[false])

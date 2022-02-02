@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Copyright (C) 2008  Kipp Cannon
 #               2015  Leo Singer
 #
@@ -245,7 +243,7 @@ def read_psd_xmldoc(xmldoc, root_name = u"psd"):
 class PSDContentHandler(ligolw.LIGOLWContentHandler):
     """A content handler suitable for reading PSD documents. Use like this:
 
-    >>> from glue.ligolw.utils import load_filename
+    >>> from ligo.lw.utils import load_filename
     >>> xmldoc = load_filename('psd.xml', contenthandler=PSDContentHandler)
     >>> psds = read_psd_xmldoc(xmldoc)
     """

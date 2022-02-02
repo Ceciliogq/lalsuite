@@ -19,8 +19,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 /*
 #include <stdlib.h>
@@ -207,17 +207,17 @@ int XLALSimInspiralTaylorF2CoreEcc(
 	case LAL_SIM_INSPIRAL_TIDAL_ORDER_ALL:
         case LAL_SIM_INSPIRAL_TIDAL_ORDER_75PN:
             pft15 = pfa.v[15];
-#if __GNUC__ >= 7
+#if __GNUC__ >= 7 && !defined __INTEL_COMPILER
             __attribute__ ((fallthrough));
 #endif
         case LAL_SIM_INSPIRAL_TIDAL_ORDER_7PN:
             pft14 = pfa.v[14];
-#if __GNUC__ >= 7
+#if __GNUC__ >= 7 && !defined __INTEL_COMPILER
             __attribute__ ((fallthrough));
 #endif
         case LAL_SIM_INSPIRAL_TIDAL_ORDER_65PN:
             pft13 = pfa.v[13];
-#if __GNUC__ >= 7
+#if __GNUC__ >= 7 && !defined __INTEL_COMPILER
             __attribute__ ((fallthrough));
 #endif
         case LAL_SIM_INSPIRAL_TIDAL_ORDER_6PN:

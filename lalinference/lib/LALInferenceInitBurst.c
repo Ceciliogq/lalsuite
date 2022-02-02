@@ -15,8 +15,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 
@@ -313,7 +313,7 @@ LALInferenceModel * LALInferenceInitBurstModel(LALInferenceRunState *state)
       char *name=strings[N];
       node=LALInferenceGetItem(&tempParams,name);
       if(node) {LALInferenceAddVariable(currentParams,node->name,node->value,node->type,node->vary); printf("pinned %s \n",node->name);}
-      else {fprintf(stderr,"Error: Cannot pin parameter %s. No such parameter found in injection!\n",node->name);}
+      else {fprintf(stderr,"Error: Cannot pin parameter %s. No such parameter found in injection!\n",name);}
     }
   }
     

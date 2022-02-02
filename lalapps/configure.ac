@@ -1,13 +1,14 @@
-AC_PREREQ([2.63])
-AC_INIT([LALApps],[7.0.0.1],[lal-discuss@ligo.org])
+XAC_PREREQ([2.63])
+AC_INIT([LALApps],[8.0.0.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([src/config.h])
-AC_CONFIG_SRCDIR([src/lalapps/lalapps.c])
+AC_CONFIG_SRCDIR([src/lalapps/tconvert.c])
 AC_CONFIG_AUX_DIR([gnuscripts])
 AC_CONFIG_MACRO_DIR([gnuscripts])
 AC_CONFIG_FILES([\
   Makefile \
   conda/Makefile \
   conda/meta.yaml.in \
+  conda/migrations/Makefile \
   debian/Makefile \
   debian/control \
   doxygen/Makefile \
@@ -17,7 +18,6 @@ AC_CONFIG_FILES([\
   src/Makefile \
   src/findchirp/Makefile \
   src/frametools/Makefile \
-  src/hwinjection/Makefile \
   src/inspiral/Makefile \
   src/lalapps/LALAppsVCSInfo.c \
   src/lalapps/LALAppsVCSInfo.h \
@@ -31,10 +31,10 @@ AC_CONFIG_FILES([\
   src/pulsar/Fstatistic/Makefile \
   src/pulsar/GCT/Makefile \
   src/pulsar/HeterodyneSearch/Makefile \
+  src/pulsar/HWInjection/Makefile \
   src/pulsar/Hough/Makefile \
   src/pulsar/HoughFstat/Makefile \
-  src/pulsar/Injections/Makefile \
-  src/pulsar/MakeSFTs/Makefile \
+  src/pulsar/MakeData/Makefile \
   src/pulsar/Makefile \
   src/pulsar/SFTTools/Makefile \
   src/pulsar/SidebandSearch/Makefile \
@@ -59,13 +59,14 @@ AM_INIT_AUTOMAKE([ \
 # version requirements
 MIN_FRAMEL_VERSION="8.39.2"
 MIN_LAL_VERSION="7.1.0"
-MIN_LALFRAME_VERSION="1.5.0"
-MIN_LALMETAIO_VERSION="2.0.0"
-MIN_LALSIMULATION_VERSION="2.3.0"
+MIN_LALFRAME_VERSION="1.6.0"
+MIN_LALMETAIO_VERSION="2.1.0"
+MIN_LALSIMULATION_VERSION="3.1.0"
 MIN_LALBURST_VERSION="1.5.3"
 MIN_LALINSPIRAL_VERSION="2.0.0"
-MIN_LALPULSAR_VERSION="2.1.0"
-MIN_LALINFERENCE_VERSION="2.0.0"
+MIN_LALPULSAR_VERSION="3.1.0"
+MIN_LALINFERENCE_VERSION="3.0.0"
+MIN_PYTHON_LIGO_LW_VERSION="1.7.0"
 AC_SUBST([MIN_FRAMEL_VERSION])
 AC_SUBST([MIN_LAL_VERSION])
 AC_SUBST([MIN_LALFRAME_VERSION])
@@ -75,6 +76,7 @@ AC_SUBST([MIN_LALBURST_VERSION])
 AC_SUBST([MIN_LALINSPIRAL_VERSION])
 AC_SUBST([MIN_LALPULSAR_VERSION])
 AC_SUBST([MIN_LALINFERENCE_VERSION])
+AC_SUBST([MIN_PYTHON_LIGO_LW_VERSION])
 
 LT_INIT()
 
@@ -129,10 +131,11 @@ LALSUITE_USE_LIBTOOL
 
 # checks for programs
 AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_AWK
 AC_PROG_SED
-LALSUITE_CHECK_PYTHON([2.6])
+LALSUITE_CHECK_PYTHON([3.5])
 
 # check for pager programs
 LALSUITE_CHECK_PAGER
@@ -167,19 +170,10 @@ LALSUITE_OSX_VERSION_CHECK
 AC_CHECK_LIB([m],[sin])
 
 # check for system headers
-AC_HEADER_STDC
 AC_CHECK_HEADERS([unistd.h glob.h])
 
 # check for specific functions
 AC_CHECK_FUNC([strdup], [], [AC_MSG_ERROR([could not find the strdup function])])
-
-# check for zlib libraries and headers
-PKG_CHECK_MODULES([ZLIB],[zlib],[true],[false])
-LALSUITE_PUSH_UVARS
-LALSUITE_ADD_FLAGS([C],[${ZLIB_CFLAGS}],[${ZLIB_LIBS}])
-AC_SEARCH_LIBS([compress],[],[:],[AC_MSG_ERROR([could not find the zlib library])])
-AC_CHECK_HEADER([zlib.h],[:],[AC_MSG_ERROR([could not find the zlib.h header])])
-LALSUITE_POP_UVARS
 
 # check for gsl
 PKG_CHECK_MODULES([GSL],[gsl],[true],[false])
@@ -213,7 +207,7 @@ if test "${gds}" = "true"; then
 fi
 LALSUITE_ENABLE_MODULE([GDS])
 
-# check for libFrame
+# check for FrameL
 if test "${framel}" = "true"; then
   PKG_CHECK_MODULES([FRAMEL],[framel],[true],[false])
   lal_pre_framel_LIBS="$LIBS"
@@ -221,7 +215,6 @@ if test "${framel}" = "true"; then
   AC_SEARCH_LIBS([FrLibIni],[framel],,
                  [AC_MSG_WARN([could not find the FrameL library])]
                  [framel="false"]
-                 [lalframe="false"]
                  [LIBS="$lal_pre_framel_LIBS"])
 fi
 
@@ -232,7 +225,6 @@ if test "${framel}" = "true"; then
   AC_CHECK_HEADERS([FrameL.h],,
                    [AC_MSG_WARN([could not find the FrameL.h header])]
                    [framel="false"]
-                   [lalframe="false"]
                    [CPPFLAGS="$lal_pre_framel_CPPFLAGS"])
 fi
 LALSUITE_ENABLE_MODULE([FRAMEL])
@@ -282,7 +274,7 @@ LALSUITE_ENABLE_MODULE([PSS])
 # check for lal libararies and headers
 LALSUITE_CHECK_LIB([LAL],[${MIN_LAL_VERSION}],[XLALPerror],[lal/XLALError.h])
 LALSUITE_CHECK_LIB([LALSupport],[${MIN_LAL_VERSION}],[XLALCacheImport],[lal/LALCache.h])
-LALSUITE_CHECK_OPT_LIB([LALFrame],[${MIN_LALFRAME_VERSION}],[LALFrOpen],[lal/LALFrameL.h])
+LALSUITE_CHECK_OPT_LIB([LALFrame],[${MIN_LALFRAME_VERSION}],[XLALFrStreamOpen],[lal/LALFrStream.h])
 LALSUITE_CHECK_OPT_LIB([LALMetaIO],[${MIN_LALMETAIO_VERSION}],[XLALLIGOLwHasTable],[lal/LIGOLwXMLRead.h])
 LALSUITE_CHECK_OPT_LIB([LALSimulation],[${MIN_LALSIMULATION_VERSION}],[XLALSimDetectorStrainREAL8TimeSeries],[lal/LALSimulation.h])
 LALSUITE_CHECK_OPT_LIB([LALBurst],[${MIN_LALBURST_VERSION}],[XLALEPSearch],[lal/EPSearch.h])

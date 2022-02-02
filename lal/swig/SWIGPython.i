@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with with program; see the file COPYING. If not, write to the
-// Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-// MA  02111-1307  USA
+// Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+// MA  02110-1301  USA
 //
 
 // SWIG interface code specific to Python.
@@ -584,10 +584,15 @@ SWIGINTERN bool swiglal_release_parent(void *ptr) {
     swiglal_py_array_tinfo_from_descr(&isptr, &tinfo, PyArray_DESCR(nparr));
     assert(tinfo != NULL);
 
-    // When assigning Python objects to a C array, assume the struct who owns the C array takes
-    // ownership of the memory of the C array element. The Python object wrapping the C array
-    // element should therefore disown the underlying memory.
-    const int tflags = SWIG_POINTER_DISOWN;
+    // When assigning Python objects to a C array of pointers, assume the struct
+    // who owns the C array takes ownership of the memory of the C array element.
+    // The Python object wrapping the C array element should therefore disown the
+    // underlying memory.
+    // When assigning Python objects to a C array of data blocks, however, the C
+    // array just struct-copies the object rather than taking ownership of its
+    // pointer, and so the Python object should not be disowned so that it can
+    // be garbage-collected later.
+    const int tflags = isptr ? SWIG_POINTER_DISOWN : 0;
 
     // Set the C array element to the supplied Python object.
     const size_t esize = PyArray_DESCR(nparr)->elsize;
@@ -655,24 +660,6 @@ SWIGINTERN bool swiglal_release_parent(void *ptr) {
     (PyArray_FastTakeFunc*)NULL,   // fasttake
   };
 
-  // NumPy array descriptor function for type ACFTYPE.
-  static PyArray_Descr swiglal_py_array_objview_##ACFTYPE##_arrdescr = {
-    PyObject_HEAD_INIT(NULL)
-    (PyTypeObject*) NULL,   // typeobj
-    NPY_VOIDLTR,   // kind
-    NPY_VOIDLTR,   // type
-    '=',   // byteorder
-    NPY_LIST_PICKLE | NPY_USE_GETITEM | NPY_USE_SETITEM
-    | NPY_ITEM_IS_POINTER | NPY_NEEDS_INIT | NPY_NEEDS_PYAPI,   // hasobject
-    0,   // type_num
-    0,   // elsize
-    0,   // alignment
-    (PyArray_ArrayDescr*)NULL,   // subarray
-    (PyObject*)NULL,   // fields
-    (PyObject*)NULL,   // names
-    &swiglal_py_array_objview_##ACFTYPE##_arrfuncs,   // f
-  };
-
   // This function returns the NumPy array descriptor appropriate for the supplied SWIG type
   // descriptor. If no array descriptor exists, it creates one from the array descriptor for type
   // ACFTYPE.
@@ -683,13 +670,21 @@ SWIGINTERN bool swiglal_release_parent(void *ptr) {
 
     // Create NumPy array descriptor if none yet exists.
     if (*pdescr == NULL) {
-      *pdescr = PyArray_DescrNew(&swiglal_py_array_objview_##ACFTYPE##_arrdescr);
+      *pdescr = PyArray_DescrNewFromType(NPY_VOID);
       if (*pdescr == NULL) {
         return NULL;
       }
       (*pdescr)->typeobj = SwigPyObject_type();
+      (*pdescr)->byteorder = '=';
+      (*pdescr)->flags = NPY_LIST_PICKLE | NPY_NEEDS_INIT | NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM;
+      (*pdescr)->type_num = 0;
       (*pdescr)->elsize = esize;
       (*pdescr)->alignment = 1;
+      (*pdescr)->subarray = NULL;
+      (*pdescr)->names = NULL;
+      (*pdescr)->fields = NULL;
+      (*pdescr)->f = &swiglal_py_array_objview_##ACFTYPE##_arrfuncs;
+
       if (PyArray_RegisterDataType(*pdescr) < 0) {
         return NULL;
       }

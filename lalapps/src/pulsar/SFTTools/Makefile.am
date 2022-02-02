@@ -12,6 +12,7 @@ bin_PROGRAMS = \
 	lalapps_compareSFTs \
 	lalapps_dumpSFT \
 	lalapps_splitSFTs \
+	lalapps_WriteSFTsfromSFDBs \
 	$(END_OF_LIST)
 
 lalapps_ComputePSD_SOURCES = ComputePSD.c
@@ -20,10 +21,7 @@ lalapps_SFTvalidate_SOURCES = SFTvalidate.c
 lalapps_compareSFTs_SOURCES = compareSFTs.c
 lalapps_dumpSFT_SOURCES = dumpSFT.c
 lalapps_splitSFTs_SOURCES = splitSFTs.c
-
-EXTRA_DIST += \
-	SFTSpecification.dox \
-	$(END_OF_LIST)
+lalapps_WriteSFTsfromSFDBs_SOURCES = WriteSFTsfromSFDBs.c
 
 # Add shell test scripts to this variable
 test_scripts += testComputePSD.sh
@@ -31,8 +29,15 @@ test_scripts += testSFTvalidate.sh
 test_scripts += testdumpSFT.sh
 test_scripts += testcompareSFTs.sh
 test_scripts += testsplitSFTs.sh
+test_scripts += testSFTclean.sh
+if HAVE_PYTHON
+test_scripts += testWriteSFTsfromSFDBs.py
+endif
 
 # Add any helper programs required by tests to this variable
 test_helpers += SFTwrite
+
+# Add any extra files required by tests (e.g. helper scripts) to this variable
+test_extra_files +=
 
 SFTwrite_SOURCES = SFTwrite.c

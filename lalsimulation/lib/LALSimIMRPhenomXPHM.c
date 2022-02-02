@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include <lal/LALSimIMR.h>
@@ -247,7 +247,7 @@ int XLALSimIMRPhenomXPHM(
   else{
       lalParams_aux = XLALDictDuplicate(lalParams);
   }
-  
+
   #if DEBUG == 1
   printf("\n\n **** Initializing waveform struct... **** \n\n");
   #endif
@@ -315,6 +315,7 @@ int XLALSimIMRPhenomXPHM(
     /* The user has requested a higher f_max than Mf = fCut.
     Resize the frequency series to fill with zeros beyond the cutoff frequency. */
     lastfreq = pWF->fMax;
+    XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
   }
   else{  // We have to look for a power of 2 anyway.
     lastfreq = pWF->f_max_prime;
@@ -337,7 +338,7 @@ int XLALSimIMRPhenomXPHM(
   LALFree(pPrec);
   XLALDestroyREAL8Sequence(freqs);
   XLALDestroyDict(lalParams_aux);
-  
+
   return XLAL_SUCCESS;
 }
 
@@ -429,7 +430,7 @@ int XLALSimIMRPhenomXPHMFromModes(
 
   /* If no reference frequency is given, set it to the starting gravitational wave frequency */
   REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
-  
+
   /* Use an auxiliar laldict to not overwrite the input argument */
   LALDict *lalParams_aux;
   /* setup mode array */
@@ -440,7 +441,7 @@ int XLALSimIMRPhenomXPHMFromModes(
   else{
       lalParams_aux = XLALDictDuplicate(lalParams);
   }
-  
+
   #if DEBUG == 1
   printf("\n\n **** Initializing waveform struct... **** \n\n");
   #endif
@@ -507,6 +508,7 @@ int XLALSimIMRPhenomXPHMFromModes(
     /* The user has requested a higher f_max than Mf = fCut.
     Resize the frequency series to fill with zeros beyond the cutoff frequency. */
     lastfreq = pWF->fMax;
+    XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
   }
   else{  // We have to look for a power of 2 anyway.
     lastfreq = pWF->f_max_prime;
@@ -871,7 +873,7 @@ int XLALSimIMRPhenomXPHMFromModes(
          }
       }
 
-      if (!(htildelm)){ XLAL_ERROR(XLAL_EFUNC);}
+      if (!(htildelm)){ XLAL_ERROR(XLAL_EFUNC); }
 
       /*
          For very special cases of deltaF, it can happen that building htildelm with 'freqs_In' or with 'freqs' gives different lengths.
@@ -899,7 +901,6 @@ int XLALSimIMRPhenomXPHMFromModes(
            XLALDestroyCOMPLEX16FrequencySeries(htildelm);
           continue;
         }
-
 
        /*
                                 TWISTING UP
@@ -1006,7 +1007,7 @@ int XLALSimIMRPhenomXPHMFromModes(
                REAL8 Mf = coarseFreqs->data[j];
                const REAL8 v        = cbrt (LAL_PI * Mf * (2.0 / emmprime) );
                const vector vangles = IMRPhenomX_Return_phi_zeta_costhetaL_MSA(v,pWF,pPrec);
-               REAL8 beta  = 0.0;
+               REAL8 cos_beta  = 0.0;
 
                /* Get the offset for the Euler angles alpha and epsilon. */
                REAL8 alpha_offset_mprime = 0, epsilon_offset_mprime = 0;
@@ -1014,10 +1015,10 @@ int XLALSimIMRPhenomXPHMFromModes(
 
                valpha[j]   = vangles.x - alpha_offset_mprime;
                vepsilon[j] = vangles.y - epsilon_offset_mprime;
+               cos_beta    = vangles.z;
 
-               beta        = acos(vangles.z);
-               cBetah      = cos(beta/2.);
-               sBetah      = sin(beta/2.);
+               status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
+               XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
 
                vbetah[j]   = acos(cBetah);
              }
@@ -1217,8 +1218,6 @@ static int IMRPhenomXPHM_hplushcross_from_modes(
 
   INT4 status = 0; //Variable to check correc functions calls
 
-  COMPLEX16FrequencySeries *hlmpos = NULL;
-  COMPLEX16FrequencySeries *hlmneg = NULL;
 
   /* Build the frequency array and initialize hctilde to the length of freqs. */
   REAL8Sequence *freqs;
@@ -1246,6 +1245,9 @@ static int IMRPhenomXPHM_hplushcross_from_modes(
       printf("                     Precessing mode (%i%i)                          ", ell, emm);
       printf("*******************************************************************\n");
       #endif
+
+      COMPLEX16FrequencySeries *hlmpos = NULL;
+      COMPLEX16FrequencySeries *hlmneg = NULL;
 
       /* We now call one single precessing mode.  */
       status = IMRPhenomXPHM_OneMode(&hlmpos, &hlmneg, freqs, pWF, pPrec, ell, emm, lalParams);
@@ -1277,6 +1279,9 @@ static int IMRPhenomXPHM_hplushcross_from_modes(
         (*hptilde)->data->data[i] +=   0.5*(hlmpos->data->data[i] * Ylm + conj(hlmneg->data->data[i]) * Ylmstar);
         (*hctilde)->data->data[i] += I*0.5*(hlmpos->data->data[i] * Ylm - conj(hlmneg->data->data[i]) * Ylmstar);
       }
+
+      XLALDestroyCOMPLEX16FrequencySeries(hlmpos);
+      XLALDestroyCOMPLEX16FrequencySeries(hlmneg);
     }
   }// End loop over precessing modes
 
@@ -1366,7 +1371,7 @@ static int IMRPhenomXPHMTwistUp(
         /* Get Euler angles. */
         const double v        = cbrt (LAL_PI * Mf * (2.0 / mprime) );
         const vector vangles  = IMRPhenomX_Return_phi_zeta_costhetaL_MSA(v,pWF,pPrec);
-        double beta               = 0.0;
+        double cos_beta       = 0.0;
 
         /* Get the offset for the Euler angles alpha and epsilon. */
         REAL8 alpha_offset_mprime = 0, epsilon_offset_mprime = 0;
@@ -1374,10 +1379,11 @@ static int IMRPhenomXPHMTwistUp(
 
         alpha       = vangles.x - alpha_offset_mprime;
         epsilon     = vangles.y - epsilon_offset_mprime;
+        cos_beta    = vangles.z;
 
-        beta        = acos(vangles.z);
-        cBetah      = cos(beta/2.);
-        sBetah      = sin(beta/2.);
+        INT4 status = 0;
+        status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
+        XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
 
         break;
       }
@@ -1654,7 +1660,8 @@ static int IMRPhenomXPHMTwistUp(
   return XLAL_SUCCESS;
 }
 
-
+/* @} */
+/* @} */
 
 /** @addtogroup LALSimIMRPhenomX_c
 * @{
@@ -1699,8 +1706,7 @@ static int IMRPhenomXPHMTwistUp(
 *   MBandPrecVersion: Determines the algorithm to build the non-uniform frequency grid for the Euler angles.
 *        - 0: (DEFAULT) Not use multibanding.  Activated to 1 when PrecThresholdMband is non-zero.
 *        - 1: Use the same grid that for the non-precessing modes. Activated when PrecThresholdMband is non-zero.
-*
-* @{ **/
+**/
 
 
 
@@ -1732,6 +1738,7 @@ int XLALSimIMRPhenomXPHMOneMode(
   REAL8 chi2y,                            /**< y-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
   REAL8 chi2z,                            /**< z-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
   const REAL8 distance,                   /**< distance of source (m) */
+  const REAL8 inclination,                /**< inclination of source (rad) */
   const REAL8 phiRef,                     /**< reference orbital phase (rad) */
   const REAL8 deltaF,                     /**< Sampling frequency (Hz) */
   const REAL8 f_min,                      /**< Starting GW frequency (Hz) */
@@ -1819,7 +1826,7 @@ int XLALSimIMRPhenomXPHMOneMode(
   /* We pass inclination 0 since for the individual modes is not relevant. */
   IMRPhenomXWaveformStruct *pWF;
   pWF    = XLALMalloc(sizeof(IMRPhenomXWaveformStruct));
-  status = IMRPhenomXSetWaveformVariables(pWF, m1_SI, m2_SI, chi1z, chi2z, deltaF, fRef, phiRef, f_min, f_max, distance, 0.0, lalParams_aux, PHENOMXDEBUG);
+  status = IMRPhenomXSetWaveformVariables(pWF, m1_SI, m2_SI, chi1z, chi2z, deltaF, fRef, phiRef, f_min, f_max, distance, inclination, lalParams_aux, PHENOMXDEBUG);
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomXSetWaveformVariables failed.\n");
 
   /*
@@ -1922,6 +1929,7 @@ int XLALSimIMRPhenomXPHMOneMode(
     /* The user has requested a higher f_max than Mf = fCut.
     Resize the frequency series to fill with zeros beyond the cutoff frequency. */
     lastfreq = pWF->fMax;
+    XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
   }
   else{  // We have to look for a power of 2 anyway.
     lastfreq = pWF->f_max_prime;
@@ -1943,6 +1951,210 @@ int XLALSimIMRPhenomXPHMOneMode(
   LALFree(pWF);
   LALFree(pPrec);
   XLALDestroyREAL8Sequence(freqs);
+  XLALDestroyDict(lalParams_aux);
+
+  return XLAL_SUCCESS;
+}
+
+/**
+    Function to compute one hlm precessing mode on a custom frequency grid.
+    Returns two frequency series, one for the positive frequencies and other for the negative frequencies since, as opposite to the
+    aligned spin case, in the precessing case all the modes have support in the whole frequency regime.
+    This is a wrapper of the internal core function that actually does the calculation IMRPhenomXPHM_OneMode.
+*/
+int XLALSimIMRPhenomXPHMOneModeFrequencySequence(
+  COMPLEX16FrequencySeries **hlmpos,      /**< [out] Frequency-domain waveform hlm inertial frame positive frequencies */
+  COMPLEX16FrequencySeries **hlmneg,      /**< [out] Frequency-domain waveform hlm inertial frame negative frequencies */
+  REAL8Sequence *freqs,                   /**< Input Frequency series [Hz]         */
+  const UINT4 l,                          /**< First index of the (l,m) precessing mode */
+  const INT4  m,                          /**< Second index of the (l,m) precessing mode */
+  REAL8 m1_SI,                            /**< mass of companion 1 (kg) */
+  REAL8 m2_SI,                            /**< mass of companion 2 (kg) */
+  REAL8 chi1x,                            /**< x-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+  REAL8 chi1y,                            /**< y-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+  REAL8 chi1z,                            /**< z-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+  REAL8 chi2x,                            /**< x-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+  REAL8 chi2y,                            /**< y-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+  REAL8 chi2z,                            /**< z-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+  const REAL8 distance,                   /**< distance of source (m) */
+  const REAL8 phiRef,                     /**< reference orbital phase (rad) */
+  const REAL8 fRef_In,                    /**< Reference frequency */
+  LALDict *lalParams                      /**<LAL Dictionary */
+)
+{
+  /* Variable to check correct calls to functions. */
+  INT4 status;
+
+  /* Check if m1 > m2, swap the bodies otherwise. */
+  status = XLALIMRPhenomXPCheckMassesAndSpins(&m1_SI,&m2_SI,&chi1x,&chi1y,&chi1z,&chi2x,&chi2y,&chi2z);
+  XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: XLALIMRPhenomXPCheckMassesAndSpins failed.\n");
+
+  #if DEBUG == 1
+  printf("fRef_In : %e\n",fRef_In);
+  printf("m1_SI   : %e\n",m1_SI);
+  printf("m2_SI   : %e\n",m2_SI);
+  printf("chi1_l   : %e\n",chi1z);
+  printf("chi2_l   : %e\n",chi2z);
+  printf("phiRef  : %e\n",phiRef);
+  printf("Prec V. : %d\n\n",XLALSimInspiralWaveformParamsLookupPhenomXPrecVersion(lalParams));
+  printf("Performing sanity checks...\n");
+  #endif
+
+  /* Perform initial sanity checks */
+  XLAL_CHECK(NULL != hlmpos, XLAL_EFAULT,  "Error: hlmpos already defined.                         \n");
+  XLAL_CHECK(NULL != hlmneg, XLAL_EFAULT,  "Error: hlmneg already defined.                         \n");
+  XLAL_CHECK(fRef_In  >= 0, XLAL_EFUNC,    "Error: fRef_In must be positive or set to 0 to ignore. \n");
+  XLAL_CHECK(m1_SI    >  0, XLAL_EFUNC,    "Error: m1 must be positive and greater than 0.         \n");
+  XLAL_CHECK(m2_SI    >  0, XLAL_EFUNC,    "Error: m2 must be positive and greater than 0.         \n");
+  XLAL_CHECK(distance >  0, XLAL_EFUNC,    "Error: Distance must be positive and greater than 0.   \n");
+
+  /* Get minimum and maximum frequencies. */
+  REAL8 f_min  = freqs->data[0];
+  REAL8 f_max  = freqs->data[freqs->length - 1];
+
+  /*
+  Perform a basic sanity check on the region of the parameter space in which model is evaluated.
+  Behaviour is as follows, consistent with the choices for IMRPhenomXAS/IMRPhenomXHM
+    - For mass ratios <= 20.0 and spins <= 0.99: no warning messages.
+    - For 1000 > mass ratio > 20 and spins <= 0.99: print a warning message that we are extrapolating outside of *NR* calibration domain.
+    - For mass ratios > 1000: throw a hard error that model is not valid.
+    - For spins > 0.99: throw a warning that we are extrapolating the model to extremal
+  */
+  REAL8 mass_ratio;
+  if(m1_SI > m2_SI)
+  {
+    mass_ratio = m1_SI / m2_SI;
+  }
+  else
+  {
+    mass_ratio = m2_SI / m1_SI;
+  }
+  if(mass_ratio > 20.0  ) { XLAL_PRINT_WARNING("Warning: Extrapolating outside of Numerical Relativity calibration domain. NNLO angles may become pathological at large mass ratios.\n"); }
+  if(mass_ratio > 1000. && fabs(mass_ratio - 1000) > 1e-12) { XLAL_ERROR(XLAL_EDOM, "ERROR: Model not valid at mass ratios beyond 1000.\n"); } // The 1e-12 is to avoid rounding errors
+  if(fabs(chi1z) > 0.99 || fabs(chi2z) > 0.99) { XLAL_PRINT_WARNING("Warning: Extrapolating to extremal spins, model is not trusted.\n"); }
+
+  /* If no reference frequency is given, set it to the starting gravitational wave frequency. */
+  REAL8 fRef = (fRef_In == 0.0) ? f_min : fRef_In;
+
+  /* Use an auxiliar laldict to not overwrite the input argument */
+  LALDict *lalParams_aux;
+  /* setup mode array */
+  if (lalParams == NULL)
+  {
+      lalParams_aux = XLALCreateDict();
+  }
+  else{
+      lalParams_aux = XLALDictDuplicate(lalParams);
+  }
+
+  /* Check that the modes chosen are available for the model */
+  XLAL_CHECK(check_input_mode_array(lalParams_aux) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+
+  #if DEBUG == 1
+  printf("\n\n **** Initializing waveform struct... **** \n\n");
+  #endif
+
+  /* Initialize the useful powers of LAL_PI */
+  status = IMRPhenomX_Initialize_Powers(&powers_of_lalpi, LAL_PI);
+  XLAL_CHECK(XLAL_SUCCESS == status, status, "Failed to initialize useful powers of LAL_PI.");
+
+  /* Initialize IMR PhenomX Waveform struct and check that it initialized correctly. */
+  /* We pass inclination 0 since for the individual modes is not relevant. */
+  IMRPhenomXWaveformStruct *pWF;
+  pWF    = XLALMalloc(sizeof(IMRPhenomXWaveformStruct));
+  status = IMRPhenomXSetWaveformVariables(pWF, m1_SI, m2_SI, chi1z, chi2z, 0.0, fRef, phiRef, f_min, f_max, distance, 0.0, lalParams_aux, PHENOMXDEBUG);
+  XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomXSetWaveformVariables failed.\n");
+
+
+  #if DEBUG == 1
+  printf("\n\n **** Initializing precession struct... **** \n\n");
+  #endif
+
+  /* Initialize IMRPhenomX Precession struct and check that it generated successfully. */
+  IMRPhenomXPrecessionStruct *pPrec;
+  pPrec  = XLALMalloc(sizeof(IMRPhenomXPrecessionStruct));
+
+  status = IMRPhenomXGetAndSetPrecessionVariables(
+             pWF,
+             pPrec,
+             m1_SI,
+             m2_SI,
+             chi1x,
+             chi1y,
+             chi1z,
+             chi2x,
+             chi2y,
+             chi2z,
+             lalParams_aux,
+             PHENOMXDEBUG
+           );
+  XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomXSetPrecessionVariables failed.\n");
+
+  /* Ensure recovering AS limit when modes are in the L0 frame. */
+  if(XLALSimInspiralWaveformParamsLookupPhenomXPHMModesL0Frame(lalParams_aux)==1)
+  {
+    XLAL_PRINT_WARNING("The L0Frame option only works near the AS limit, it should not be used otherwise.");
+    switch(XLALSimInspiralWaveformParamsLookupPhenomXPConvention(lalParams_aux))
+    {
+      case 0:
+      case 5:
+        //pWF->phi0 = pPrec->phi0_aligned;
+        break;
+      case 1:
+      case 6:
+      case 7:
+      {
+        //pWF->phi0 = pPrec->epsilon0 - pPrec->alpha0 + phiRef;
+        pWF->phi0 = phiRef;
+        break;
+      }
+    }
+  }
+
+  #if DEBUG == 1
+  printf("\n\n **** Calling IMRPhenomXPHM_OneMode... **** \n\n");
+  #endif
+
+  // Ensure that multibanding is *always* off when calling a custom grid
+  XLALSimInspiralWaveformParamsInsertPhenomXHMThresholdMband(lalParams_aux,0);
+
+  /* We now call the core IMRPhenomXPHM_OneMode waveform generator */
+  status = IMRPhenomXPHM_OneMode(hlmpos, hlmneg, freqs, pWF, pPrec, l, m, lalParams_aux);
+  XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "IMRPhenomXPHM_OneMode failed to generate IMRPhenomXHM waveform.");
+
+  /* Tranform modes to L0-frame if requested. It only works for (near) AS cases. */
+  if(XLALSimInspiralWaveformParamsLookupPhenomXPHMModesL0Frame(lalParams_aux)==1)
+  {
+    switch(XLALSimInspiralWaveformParamsLookupPhenomXPConvention(lalParams_aux))
+    {
+      case 0:
+      case 5:
+        //pWF->phi0 = pPrec->phi0_aligned;
+        break;
+      case 1:
+      case 6:
+      case 7:
+      {
+        COMPLEX16 shiftpos = cexp( abs(m)*I*( pPrec->epsilon0 - pPrec->alpha0) );
+        COMPLEX16 shiftneg = 1./shiftpos;
+
+        for(UINT4 i = 0; i<(*hlmpos)->data->length; i++)
+        {
+          (*hlmpos)->data->data[i] *= shiftpos;
+          (*hlmneg)->data->data[i] *= shiftneg;
+        }
+        break;
+      }
+    }
+  }
+
+  #if DEBUG == 1
+  printf("\n\n **** Call to IMRPhenomXPHM_OneMode complete. **** \n\n");
+  #endif
+
+  /* Free memory */
+  LALFree(pWF);
+  LALFree(pPrec);
   XLALDestroyDict(lalParams_aux);
 
   return XLAL_SUCCESS;
@@ -1983,6 +2195,19 @@ static int IMRPhenomXPHM_OneMode(
     XLAL_ERROR(XLAL_EDOM, "ModeArray is NULL when it shouldn't be. Aborting.\n");
   }
 
+  /* Check that the co-precessing ModeArray has at least one ell mode. If not, twisting-up is not possible. */
+  bool mode_arrays_consistent = false;
+  INT4 emm = -(INT4)ell;
+  while (mode_arrays_consistent == false && emm<=(INT4)ell){
+    if (XLALSimInspiralModeArrayIsModeActive(ModeArray, ell, emm) ==1){
+      mode_arrays_consistent = true;
+    }
+    emm++;
+  }
+  if(mode_arrays_consistent == false){
+    XLAL_ERROR(XLAL_EDOM, "ModeArrays are not consistent. The (%i,%i) mode in the inertial J-frame requires at least one mode with l=%i in the ModeArray (L-frame) option.\n", ell, emm-1, ell);
+  }
+
   INT4 status = 0; //Variable to check correct functions calls.
 
   /* Build the frequency array and initialize hctilde to the length of freqs. */
@@ -2010,6 +2235,7 @@ static int IMRPhenomXPHM_OneMode(
   status = IMRPhenomX_Initialize_Powers(&powers_of_lalpiHM, LAL_PI);
   XLAL_CHECK(XLAL_SUCCESS == status, status, "Failed to initialize useful powers of LAL_PI.");
 
+  UINT4 n_coprec_modes = 0;
 
   /***** Loop over non-precessing modes ******/
   for (UINT4 emmprime = 1; emmprime <= ell; emmprime++)
@@ -2029,6 +2255,8 @@ static int IMRPhenomXPHM_OneMode(
     {
       continue;
     }
+
+    n_coprec_modes++;
 
     #if DEBUG == 1
     printf("\n*************************************************\n Non-precessing Mode %i%i\n************************************",ell, emmprime);
@@ -2073,7 +2301,7 @@ static int IMRPhenomXPHM_OneMode(
       }
     }
 
-    if (!(htildelm)){ XLAL_ERROR(XLAL_EFUNC); }
+    if (!(htildelm)){ XLAL_ERROR(XLAL_EFUNC);}
 
 
     /* htildelm is recomputed every time in the loop. Check that it always comes out with the same length */
@@ -2090,7 +2318,6 @@ static int IMRPhenomXPHM_OneMode(
         XLALDestroyCOMPLEX16FrequencySeries(htildelm);
        continue;
      }
-
      /*
                               TWISTING UP
           Transform modes from the precessing L-frame to inertial J-frame.
@@ -2123,14 +2350,19 @@ static int IMRPhenomXPHM_OneMode(
         }
      }
 
-
-    XLALDestroyCOMPLEX16FrequencySeries(htildelm);
+     XLALDestroyCOMPLEX16FrequencySeries(htildelm);
 
   }// End Loop over emmprime
 
-  XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "IMRPhenomXHM_Multimode failed to generate IMRPhenomXPHM waveform.");
+  if(n_coprec_modes == 0)
+  {
+    XLAL_PRINT_ERROR("For computing the mode (%i,%i) in the inertial J-frame we need at least one l=%i mode activated in the co-precessing L-frame. \nConsider activate some l=%i modes in L-frame with the ModeArray option of the LAL dictionary. \nWe filled the (%i,%i) mode with zeroes." , ell, m, ell, ell, ell, m);
+  }
+
+  XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "IMRPhenomXPHM_OneMode failed to generate IMRPhenomXPHM waveform.");
 
 /* Free memory */
+XLALDestroyREAL8Sequence(freqs);
 XLALDestroyCOMPLEX16FrequencySeries(htilde22);
 XLALDestroyValue(ModeArray);
 
@@ -2190,18 +2422,18 @@ static int IMRPhenomXPHMTwistUpOneMode(
       /* ~~~~~ Euler Angles from Chatziioannou et al, PRD 95, 104004, (2017)  ~~~~~ */
       const double v            = cbrt(LAL_PI * Mf * (2.0/mprime) );
       const vector vangles      = IMRPhenomX_Return_phi_zeta_costhetaL_MSA(v,pWF,pPrec);
-      double beta               = 0.0;
+      double cos_beta           = 0.0;
 
       REAL8 alpha_offset_mprime = 0, epsilon_offset_mprime = 0;
       Get_alpha_epsilon_offset(&alpha_offset_mprime, &epsilon_offset_mprime, mprime, pPrec);
 
       alpha    = vangles.x - alpha_offset_mprime;
       epsilon  = vangles.y - epsilon_offset_mprime;
-      beta     = acos(vangles.z);
+      cos_beta = vangles.z;
 
-
-      cBetah   = cos(beta/2.0);
-      sBetah   = sin(beta/2.0);
+      INT4 status = 0;
+      status = IMRPhenomXWignerdCoefficients_cosbeta(&cBetah, &sBetah, cos_beta);
+      XLAL_CHECK(status == XLAL_SUCCESS, XLAL_EFUNC, "Call to IMRPhenomXWignerdCoefficients_cosbeta failed.");
 
       break;
     }
@@ -2319,6 +2551,126 @@ static int IMRPhenomXPHMTwistUpOneMode(
 }
 
 
+/** Function to obtain a SphHarmFrequencySeries with the individual modes h_lm.
+    By default it returns all the modes available in the model, positive and negatives.
+    With the mode array option in the LAL dictionary, the user can specify a custom mode array.
+    The modes are computed in the inertial J-frame, so the mode array option does not refers to
+    the modes in the co-precessing frame conversely to the functions for the polarizations XLALSimIMRPhenomXPHM.
+    This function is to be used by ChooseFDModes.
+*/
+int XLALSimIMRPhenomXPHMModes(
+      SphHarmFrequencySeries **hlms,              /**< [out] list with single modes h_lm in the J-frame */
+  	  REAL8 m1_SI,                                /**< mass of companion 1 (kg) */
+      REAL8 m2_SI,                                /**< mass of companion 2 (kg) */
+      REAL8 S1x,                                  /**< x-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+      REAL8 S1y,                                  /**< y-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+      REAL8 S1z,                                  /**< z-component of the dimensionless spin of object 1  w.r.t. Lhat = (0,0,1) */
+      REAL8 S2x,                                  /**< x-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+      REAL8 S2y,                                  /**< y-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+      REAL8 S2z,                                  /**< z-component of the dimensionless spin of object 2  w.r.t. Lhat = (0,0,1) */
+      REAL8 deltaF,                               /**< frequency spacing (Hz) */
+  		REAL8 f_min,                                /**< starting GW frequency (Hz) */
+  		REAL8 f_max,                                /**< ending GW frequency (Hz) */
+      REAL8 f_ref,                                /**< reference GW frequency (Hz) */
+      REAL8 phiRef,                               /**< phase shift at reference frequency */
+      REAL8 distance,                             /**< distance of source (m) */
+      REAL8 inclination,                          /**< inclination of source (rad) */
+  		LALDict *lalParams                          /**< LAL dictionary with extra options */
+)
+{
+    LALValue *ModeArrayJframe = NULL;  // Modes in the precessing J-frame. Specified through the new LAL dictionary option "ModeArrayJframe"
+
+    /* Use an auxiliar laldict to not overwrite the input argument */
+    LALDict *lalParams_aux;
+    /* setup mode array */
+    if (lalParams == NULL)
+    {
+        lalParams_aux = XLALCreateDict();
+    }
+    else{
+        lalParams_aux = XLALDictDuplicate(lalParams);
+    }
+
+    /* Check that the co-precessing modes chosen are available for the model */
+    XLAL_CHECK(check_input_mode_array(lalParams_aux) == XLAL_SUCCESS, XLAL_EFAULT, "Not available co-precessing mode chosen.\n");
+
+
+    /* Read mode array from LAL dictionary */
+    ModeArrayJframe = XLALSimInspiralWaveformParamsLookupModeArrayJframe(lalParams_aux);
+
+    /* If input LAL dictionary does not have mode array, use all the modes available for XPHM (l<=4)  */
+    if(ModeArrayJframe == NULL)
+    {
+      ModeArrayJframe = XLALSimInspiralModeArrayActivateAllModesAtL(XLALSimInspiralCreateModeArray(), 2);
+      ModeArrayJframe = XLALSimInspiralModeArrayActivateAllModesAtL(ModeArrayJframe, 3);
+      ModeArrayJframe = XLALSimInspiralModeArrayActivateAllModesAtL(ModeArrayJframe, 4);
+    }
+    else{
+      /* Check that the modes chosen are available for the model */
+      XLAL_CHECK(check_input_mode_array_Jframe(ModeArrayJframe) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen. l must be lower than %i\n", L_MAX);
+    }
+
+
+    INT4 length = 0;
+    /***** Loop over modes ******/
+    for (UINT4 ell = 2; ell <= LAL_SIM_L_MAX_MODE_ARRAY; ell++)
+    {
+      for (INT4 emm = -(INT4)ell; emm <= (INT4)ell; emm++)
+      {
+        if(XLALSimInspiralModeArrayIsModeActive(ModeArrayJframe, ell, emm) !=1)
+        {
+          /* Skip mode if user did not specified it. */
+          continue;
+        }
+        //Variable to store the strain of only one (positive/negative) mode: h_lm
+        COMPLEX16FrequencySeries *hlmpos = NULL;
+        COMPLEX16FrequencySeries *hlmneg = NULL;
+        COMPLEX16FrequencySeries *hlmall = NULL;
+
+        /* Compute precessing single mode */
+        XLALSimIMRPhenomXPHMOneMode(&hlmpos, &hlmneg, ell, emm, m1_SI, m2_SI, S1x, S1y, S1z, S2x, S2y, S2z, distance, inclination, phiRef, deltaF, f_min, f_max, f_ref, lalParams_aux);
+
+        if (!(hlmpos) || !hlmneg){ XLAL_ERROR(XLAL_EFUNC);}
+
+        length = hlmpos->data->length-1;
+
+        hlmall = XLALCreateCOMPLEX16FrequencySeries("hlmall: precessing FD mode",  &(hlmpos->epoch), hlmpos->f0, hlmpos->deltaF, &(hlmpos->sampleUnits), 2*length+1);
+
+        for(INT4 i=0; i<=length; i++)
+        {
+          hlmall->data->data[i+length] = hlmpos->data->data[i];
+          hlmall->data->data[i] = hlmneg->data->data[length-i];
+        }
+
+
+        // Add single mode to list
+        *hlms = XLALSphHarmFrequencySeriesAddMode(*hlms, hlmall, ell, emm);
+
+        // Free memory
+        XLALDestroyCOMPLEX16FrequencySeries(hlmpos);
+        XLALDestroyCOMPLEX16FrequencySeries(hlmneg);
+        XLALDestroyCOMPLEX16FrequencySeries(hlmall);
+      }
+    } /* End loop over modes */
+
+
+    /* Add frequency array to SphHarmFrequencySeries */
+    REAL8Sequence *freqs = XLALCreateREAL8Sequence(2*length+1);
+    for (INT4 i = -length; i<=length; i++)
+    {
+      freqs->data[i+length] = i*deltaF;
+    }
+    XLALSphHarmFrequencySeriesSetFData(*hlms, freqs);
+
+    /* Free memory */
+    XLALDestroyDict(lalParams_aux);
+    XLALDestroyValue(ModeArrayJframe);
+
+
+    return XLAL_SUCCESS;
+
+}
+
 
 /*********************************************/
 /*                                           */
@@ -2370,6 +2722,22 @@ LALDict *IMRPhenomXPHM_setup_mode_array(LALDict *lalParams)
   return lalParams;
 }
 
+
+/* Function to check if the input mode array in the J-frame contains unsupported modes */
+INT4 check_input_mode_array_Jframe(LALValue *ModeArrayJframe){
+  /* Check if the input array has a too high l. */
+  for(INT4 ell=2; ell<=LAL_SIM_L_MAX_MODE_ARRAY; ell++)
+  {
+    for(INT4 emm=0; emm<=ell; emm++)
+    {
+      if(XLALSimInspiralModeArrayIsModeActive(ModeArrayJframe, ell, emm) == 1 && ell>L_MAX){
+        XLALDestroyValue(ModeArrayJframe);
+        return XLAL_FAILURE;
+      }
+    }
+  }
+  return XLAL_SUCCESS;
+}
 
 /*
   Return the offset at reference frequency for alpha and epsilon Euler angles for a particular non-precessing mode.
@@ -2644,3 +3012,6 @@ INT4 XLALSimIMRPhenomXPHMMultibandingGrid(
  LALFree(allGrids);
  return actualnumberofGrids;
 }
+
+/* @} */
+/* @} */

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #include <math.h>
@@ -758,8 +758,6 @@ int XLALSimInspiralTaylorT2PNEvolveOrbit(
 		)
 {
 	const UINT4 blocklen = 1024;
-	REAL8 m = m1 + m2;
-	m *= LAL_G_SI / pow(LAL_C_SI, 3.0);/* convert m from kilograms to seconds */
 	REAL8 tC, xmin, xmax, xacc, v, phase;
 	REAL8 (*timing2)(REAL8, void *);
 	UINT4 j, len, idxRef = 0;

@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with with program; see the file COPYING. If not, write to the
-// Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-// MA  02111-1307  USA
+// Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+// MA  02110-1301  USA
 //
 
 // Code for SWIG tests of the LAL bindings.
@@ -587,7 +587,7 @@ void swig_lal_test_Destroy_arrayofptrs(swig_lal_test_arrayofptrs* ap) {
 // Test typemaps for strings and double pointers
 int swig_lal_test_typemaps_string_ptrptr(
   const char *str, const char *empty_str, const char *null_str,
-  const swig_lal_test_struct** ptr_ptr, const swig_lal_test_struct** ptr_null_ptr, const swig_lal_test_struct** null_ptr_ptr
+  swig_lal_test_struct** ptr_ptr, swig_lal_test_struct** ptr_null_ptr, swig_lal_test_struct** null_ptr_ptr
   )
 {
   XLAL_CHECK( str != NULL && strcmp( str, "abcde" ) == 0, XLAL_EFAILED );
@@ -596,7 +596,21 @@ int swig_lal_test_typemaps_string_ptrptr(
   XLAL_CHECK( ptr_ptr != NULL && *ptr_ptr != NULL, XLAL_EFAILED );
   XLAL_CHECK( ptr_null_ptr != NULL && *ptr_null_ptr == NULL, XLAL_EFAILED );
   XLAL_CHECK( null_ptr_ptr == NULL, XLAL_EFAILED );
-  *ptr_null_ptr = *ptr_ptr;
+  *ptr_null_ptr = XLALCalloc( 1, sizeof(**ptr_null_ptr) );
+  XLAL_CHECK( *ptr_null_ptr != NULL, XLAL_ENOMEM );
+  memcpy( *ptr_null_ptr, *ptr_ptr, sizeof(**ptr_null_ptr) );
+  return XLAL_SUCCESS;
+}
+int swig_lal_test_typemaps_ptrptr(
+  swig_lal_test_struct** ptr_ptr
+  )
+{
+  XLAL_CHECK( ptr_ptr != NULL, XLAL_EFAILED );
+  if (*ptr_ptr == NULL) {
+    *ptr_ptr = XLALCalloc( 1, sizeof(**ptr_ptr) );
+    XLAL_CHECK( *ptr_ptr != NULL, XLAL_ENOMEM );
+  }
+  ++( *ptr_ptr )->n;
   return XLAL_SUCCESS;
 }
 

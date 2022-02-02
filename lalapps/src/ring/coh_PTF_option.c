@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include "config.h"
@@ -391,7 +391,7 @@ int coh_PTF_parse_options(struct coh_PTF_params *params,int argc,char **argv )
         localparams.shortSlideOffset = atoi( LALoptarg );
         break;
       case 'V': /* version */
-        XLALOutputVersionString(stderr, 0);
+        XLALOutputVCSInfo(stderr, lalAppsVCSInfoList, 0, "%% ");
         exit( 0 );
      case '#': /* sky grid file */
         localparams.skyPositionsFile = LALoptarg;
@@ -841,17 +841,6 @@ int coh_PTF_params_inspiral_sanity_check( struct coh_PTF_params *params )
   sanity_check( ! (params->doShortSlides && params->shortSlideOffset == 0));
 
   sanity_check( ! (params->writeSnglInspiralTable && (params->numIFO != 1)));
-
-  return 0;
-}
-
-/* Sanity check for coh_PTF_spin_checker specific */
-int coh_PTF_params_spin_checker_sanity_check( struct coh_PTF_params *params )
-{
-  sanity_check( params->spinSNR2threshold > 0 );
-  sanity_check( params->nonspinSNR2threshold > 0 );
-  sanity_check( params->spinBank );
-  sanity_check( params->noSpinBank);
 
   return 0;
 }

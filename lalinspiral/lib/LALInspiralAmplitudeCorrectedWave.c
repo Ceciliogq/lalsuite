@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 /**
@@ -359,7 +359,7 @@ LALInspiralAmplitudeCorrectedWaveEngine(
    REAL8 etab = 0;
    REAL8 fFac = 0; /* SI normalization for f and t */
    REAL8 UNUSED f2aFac = 0;/* factor multiplying f in amplitude function */
-   REAL8 apFac = 0, acFac = 0;/* extra factor in plus and cross amplitudes */
+   REAL8 UNUSED apFac = 0, acFac = 0;/* extra factor in plus and cross amplitudes */
 
    REAL4 hPlus, hCross;
    double fPlus, fCross;

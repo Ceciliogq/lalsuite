@@ -22,11 +22,20 @@
 ###############################################################################
 
 import os
+import getpass
 import socket, tempfile
+import warnings
 from optparse import OptionParser
 from glue.pipeline import DeepCopyableConfigParser as dcConfigParser
 from glue import pipeline
 from lalapps import inspiral
+
+warnings.warn(
+    "this script has been moved into the independent `sbank` project, "
+    "see https://pypi.org/project/sbank/ for details, and will be "
+    "removed from lalapps in an upcoming release",
+    DeprecationWarning,
+)
 
 ###############################################################################
 #
@@ -36,7 +45,7 @@ from lalapps import inspiral
 
 def log_path():
     host = socket.getfqdn()
-    username = os.environ['USER']
+    username = getpass.getuser()
     #FIXME add more hosts as you need them
     if 'caltech.edu' in host: return '/usr1/' + username
     if 'phys.uwm.edu' in host: return '/localscratch/' + username
@@ -53,9 +62,8 @@ class bank_DAG(pipeline.CondorDAG):
         logfile = tempfile.mktemp()
         fh = open( logfile, "w" )
         fh.close()
-        pipeline.CondorDAG.__init__(self,logfile, dax=False)
+        pipeline.CondorDAG.__init__(self,logfile)
         self.set_dag_file(self.basename)
-        self.set_dax_file(self.basename)
         self.jobsDict = {}
         self.node_id = 0
         self.output_cache = []
@@ -74,11 +82,11 @@ class bank_DAG(pipeline.CondorDAG):
         f.close()
 
 class InspinjJob(inspiral.InspiralAnalysisJob):
-    def __init__(self, cp, dax=False, tag_base="inspinj"):
+    def __init__(self, cp, tag_base="inspinj"):
         exec_name = 'lalapps_inspinj'
         extension = 'xml'
         sections = ['inspinj']
-        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension,dax)
+        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension)
         self.set_universe("local")
         self.set_sub_file(tag_base+'.sub')
         self.tag_base = tag_base
@@ -104,11 +112,11 @@ class InspinjNode(pipeline.CondorDAGNode):
         dag.add_node(self)
 
 class BankSimJob(inspiral.InspiralAnalysisJob):
-    def __init__(self, cp, dax=False, tag_base ="banksim"):
+    def __init__(self, cp, tag_base ="banksim"):
         exec_name = 'lalapps_cbc_sbank_sim'
         extension = 'xml'
         sections = ['banksim']
-        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension,dax)
+        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension)
         self.add_condor_cmd('request_memory', '3999')
         self.tag_base = tag_base
         self.add_condor_cmd('getenv','True')
@@ -136,11 +144,11 @@ class BankSimNode(pipeline.CondorDAGNode):
 
 
 class PlotSimJob(inspiral.InspiralAnalysisJob):
-    def __init__(self, cp, dax=False, tag_base="lalapps_cbc_sbank_plot_sim"):
+    def __init__(self, cp, tag_base="lalapps_cbc_sbank_plot_sim"):
         exec_name = 'lalapps_cbc_sbank_plot_sim'
         extension = 'h5'
         sections = []
-        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension,dax)
+        inspiral.InspiralAnalysisJob.__init__(self,cp,sections,exec_name,extension)
         self.tag_base = tag_base
         self.set_universe("local")
         self.set_sub_file(tag_base+'.sub')

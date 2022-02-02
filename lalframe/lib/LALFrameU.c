@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include "config.h"
@@ -320,6 +320,11 @@ int XLALFrameUFrChanSetSampleRate(LALFrameUFrChan * channel, double sampleRate)
 int XLALFrameUFrChanSetTimeOffset(LALFrameUFrChan * channel, double timeOffset)
 {
     FRAME_LIBRARY_SELECT(XLALFrameUFrChanSetTimeOffset, channel, timeOffset);
+}
+
+int XLALFrameUFrChanSetTRange(LALFrameUFrChan * channel, double tRange)
+{
+    FRAME_LIBRARY_SELECT(XLALFrameUFrChanSetTRange, channel, tRange);
 }
 
 int XLALFrameUFrChanVectorAlloc(LALFrameUFrChan * channel, int dtype, size_t ndata)

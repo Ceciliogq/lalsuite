@@ -13,9 +13,11 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
+
+#include "config.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -54,11 +56,10 @@
 #include <lal/PrintFTSeries.h>
 #include <lal/FindChirpPTF.h>
 #include <lal/RingUtils.h>
-#include <LALAppsVCSInfo.h>
 #include <lal/SkyCoordinates.h>
 #include <lal/XLALError.h>
 
-#include "lalapps.h"
+#include <LALAppsVCSInfo.h>
 #include "getdata.h"
 #include "injsgnl.h"
 #include "getresp.h"
@@ -422,18 +423,6 @@ void coh_PTF_cluster_sngl_triggers(
     SnglInspiralTable      **thisEvent
 );
 
-
-/* Function declarations for coh_PTF_spin_checker */
-
-int coh_PTF_spin_checker(
-    REAL8Array              *PTFM[LAL_NUM_IFO+1],
-    REAL8Array              *PTFN[LAL_NUM_IFO+1],
-    struct coh_PTF_params   *params,
-    UINT4                   singleDetector,
-    REAL4                   *Fplus,
-    REAL4                   *Fcross,
-    INT4                    segmentNumber
-);
 
 /* Function declarations for coh_PTF_utils */
 
@@ -1128,8 +1117,6 @@ int coh_PTF_default_params( struct coh_PTF_params *params );
 int coh_PTF_params_sanity_check( struct coh_PTF_params *params );
 
 int coh_PTF_params_inspiral_sanity_check( struct coh_PTF_params *params );
-
-int coh_PTF_params_spin_checker_sanity_check( struct coh_PTF_params *params );
 
 int coh_PTF_usage( const char *program );
 

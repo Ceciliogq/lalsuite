@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #include <math.h>
@@ -60,18 +60,18 @@ typedef struct
 } expnCoeffsTaylorEt;
 
 typedef REAL8 (SimInspiralTaylorEtdPhase)(
-	REAL8 zeta, /**< post-Newtonian parameter */
-	expnCoeffsTaylorEt *ak
+	REAL8 zeta,             /**< post-Newtonian parameter */
+	expnCoeffsTaylorEt *ak  /**< coefficients for TaylorEt evolution */
 );
 
 typedef REAL8 (SimInspiralTaylorEtdZeta)(
-	REAL8 zeta, /**< post-Newtonian parameter */
-	expnCoeffsTaylorEt *ak
+	REAL8 zeta,             /**< post-Newtonian parameter */
+	expnCoeffsTaylorEt *ak  /**< coefficients for TaylorEt evolution */
 );
 
 typedef REAL8 (SimInspiralTaylorEtVOfZeta)(
-	REAL8 zeta, /**< post-Newtonian parameter */
-	expnCoeffsTaylorEt *ak
+	REAL8 zeta,             /**< post-Newtonian parameter */
+	expnCoeffsTaylorEt *ak  /**< coefficients for TaylorEt evolution */
 );
 
 /*

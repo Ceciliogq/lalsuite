@@ -14,8 +14,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #include <lal/FileIO.h>
@@ -151,6 +151,9 @@ XLALInitTimeCorrections ( const CHAR *timeCorrectionFile /**< File containing Ea
   /* set output time delay vector */
   tdat->timeCorrs = tvec;
 
+  /* store *copy* of ephemeris-file name in output structure */
+  tdat->timeEphemeris = XLALStringDuplicate( timeCorrectionFile );
+
   return tdat;
 
 } /* XLALInitTimeCorrections() */
@@ -167,6 +170,9 @@ XLALDestroyTimeCorrectionData ( TimeCorrectionData *tcd )
 
   if ( tcd->timeCorrs )
     XLALFree ( tcd->timeCorrs );
+
+  if ( tcd->timeEphemeris )
+    XLALFree ( tcd->timeEphemeris );
 
   XLALFree ( tcd );
 

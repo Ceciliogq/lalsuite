@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with with program; see the file COPYING. If not, write to the
-// Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-// MA  02111-1307  USA
+// Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+// MA  02110-1301  USA
 //
 
 // Code for SWIG tests of the LAL bindings.
@@ -345,14 +345,23 @@ void swig_lal_test_Destroy_arrayofptrs(swig_lal_test_arrayofptrs* ap);
 
 // Test typemaps for strings and double pointers
 #ifdef SWIG
-SWIGLAL(INOUT_STRUCTS(const swig_lal_test_struct**, ptr_ptr, ptr_null_ptr, null_ptr_ptr));
+SWIGLAL(INOUT_STRUCTS(swig_lal_test_struct**, ptr_ptr, ptr_null_ptr, null_ptr_ptr));
 #endif // SWIG
 int swig_lal_test_typemaps_string_ptrptr(
   const char *str, const char *empty_str, const char *null_str,
-  const swig_lal_test_struct** ptr_ptr, const swig_lal_test_struct** ptr_null_ptr, const swig_lal_test_struct** null_ptr_ptr
+  swig_lal_test_struct** ptr_ptr, swig_lal_test_struct** ptr_null_ptr, swig_lal_test_struct** null_ptr_ptr
   );
 #ifdef SWIG
-SWIGLAL_CLEAR(INOUT_STRUCTS(const swig_lal_test_struct**, ptr_ptr, ptr_null_ptr, null_ptr_ptr));
+SWIGLAL_CLEAR(INOUT_STRUCTS(swig_lal_test_struct**, ptr_ptr, ptr_null_ptr, null_ptr_ptr));
+#endif // SWIG
+#ifdef SWIG
+SWIGLAL(INOUT_STRUCTS(swig_lal_test_struct**, ptr_ptr));
+#endif // SWIG
+int swig_lal_test_typemaps_ptrptr(
+  swig_lal_test_struct** ptr_ptr
+  );
+#ifdef SWIG
+SWIGLAL_CLEAR(INOUT_STRUCTS(swig_lal_test_struct**, ptr_ptr));
 #endif // SWIG
 
 // Test LIGOTimeGPS operations.

@@ -15,8 +15,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 
@@ -624,7 +624,7 @@ void LALInferenceInitCalibrationVariables(LALInferenceRunState *runState, LALInf
   }
 }
 
-void LALInferenceRegisterGaussianVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char name[VARNAME_MAX], REAL8 startval, REAL8 mean, REAL8 stdev, LALInferenceParamVaryType varytype)
+void LALInferenceRegisterGaussianVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char *name, REAL8 startval, REAL8 mean, REAL8 stdev, LALInferenceParamVaryType varytype)
 {
   char meanopt[VARNAME_MAX+8];
   char sigmaopt[VARNAME_MAX+9];
@@ -652,7 +652,7 @@ void LALInferenceRegisterGaussianVariableREAL8(LALInferenceRunState *state, LALI
 
 }
 
-void LALInferenceRegisterUniformVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char name[VARNAME_MAX], REAL8 startval, REAL8 min, REAL8 max, LALInferenceParamVaryType varytype)
+void LALInferenceRegisterUniformVariableREAL8(LALInferenceRunState *state, LALInferenceVariables *var, const char *name, REAL8 startval, REAL8 min, REAL8 max, LALInferenceParamVaryType varytype)
 {
   char minopt[VARNAME_MAX+7];
   char maxopt[VARNAME_MAX+7];
@@ -966,10 +966,10 @@ LALInferenceModel *LALInferenceInitCBCModel(LALInferenceRunState *state) {
     while(N>0){
       N--;
       char *name=strings[N];
-      fprintf(stdout,"Pinning parameter %s\n",node->name);
+      fprintf(stdout,"Pinning parameter %s\n",name);
       node=LALInferenceGetItem(&tempParams,name);
       if(node) LALInferenceAddVariable(model->params,node->name,node->value,node->type,node->vary);
-      else {fprintf(stderr,"Error: Cannot pin parameter %s. No such parameter found in injection!\n",node->name);}
+      else {fprintf(stderr,"Error: Cannot pin parameter %s. No such parameter found in injection!\n",name);}
     }
   }
 

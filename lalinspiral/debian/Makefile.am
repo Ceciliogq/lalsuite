@@ -3,11 +3,11 @@ EXTRA_DIST = \
 	compat \
 	control \
 	copyright \
-	lalinspiral-dev.install \
-	lalinspiral-octave.install \
-	python-lalinspiral.install \
-	python3-lalinspiral.install \
 	lalinspiral.install \
+	lalinspiral-octave.install \
+	liblalinspiral@LIBMAJOR@.install \
+	liblalinspiral-dev.install \
+	python3-lalinspiral.install \
 	rules \
 	lalsuite.mk \
 	source/format

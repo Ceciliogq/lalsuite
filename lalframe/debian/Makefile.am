@@ -3,9 +3,10 @@ EXTRA_DIST = \
 	compat \
 	control \
 	copyright \
-	lalframe-dev.install \
+	lalframe.install \
 	lalframe-octave.install \
-	python-lalframe.install \
+	liblalframe@LIBMAJOR@.install \
+	liblalframe-dev.install \
 	python3-lalframe.install \
 	lalframe.install \
 	rules \

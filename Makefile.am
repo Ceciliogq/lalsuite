@@ -8,13 +8,15 @@ ACLOCAL_AMFLAGS = -I gnuscripts
 
 SUBDIRS = @subdirs@ wheel
 
+.PHONY: wheel
 wheel:
 	$(MAKE) -C wheel wheel
 
 # Override automake's default rule for rebuilding aclocal.m4, to ensure that
 # ./configure is successfully recreated after certain build system changes which
 # require other autotools (e.g. autoheader) to be re-run. See Redmine issue #728.
-$(ACLOCAL_M4): $(am__aclocal_m4_deps)
+$(lalsuite_package_configure_deps):
+$(ACLOCAL_M4): $(am__aclocal_m4_deps) $(lalsuite_package_configure_deps)
 	$(am__cd) $(srcdir) && $(SHELL) ./00boot
 
 # Override automake's default rule for rebuilding ./config.status, to ensure that
@@ -23,7 +25,7 @@ $(ACLOCAL_M4): $(am__aclocal_m4_deps)
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) $(top_srcdir)/configure $(ac_configure_args)
 
-.PHONY: cscopelist-subdirs wheel
+.PHONY: cscopelist-subdirs
 cscopelist-am: cscopelist-subdirs
 cscopelist-subdirs:
 	for subdir in @subdirs@; do \

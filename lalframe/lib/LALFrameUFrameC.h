@@ -13,8 +13,8 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with with program; see the file COPYING. If not, write to the
-*  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-*  MA  02111-1307  USA
+*  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+*  MA  02110-1301  USA
 */
 
 #ifndef _LALFRAMEUFRAMEC_H
@@ -66,6 +66,7 @@ const char *XLALFrameUFrChanQueryName_FrameC_(const LALFrameUFrChan * channel);
 double XLALFrameUFrChanQueryTimeOffset_FrameC_(const LALFrameUFrChan * channel);
 int XLALFrameUFrChanSetSampleRate_FrameC_(LALFrameUFrChan * channel, double sampleRate);
 int XLALFrameUFrChanSetTimeOffset_FrameC_(LALFrameUFrChan * channel, double timeOffset);
+int XLALFrameUFrChanSetTRange_FrameC_(LALFrameUFrChan * channel, double tRange);
 int XLALFrameUFrChanVectorAlloc_FrameC_(LALFrameUFrChan * channel, int dtype, size_t ndata);
 int XLALFrameUFrChanVectorCompress_FrameC_(LALFrameUFrChan * channel, int compressLevel);
 int XLALFrameUFrChanVectorExpand_FrameC_(LALFrameUFrChan * channel);

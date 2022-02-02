@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with with program; see the file COPYING. If not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- *  MA  02111-1307  USA
+ *  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #include <math.h>
@@ -1053,6 +1053,20 @@ int XLALSimInspiralChooseFDWaveformSequence(
 
             ret = XLALSimIMRSEOBNRv4ROMFrequencySequence(hptilde, hctilde, frequencies,
                     phiRef, f_ref, distance, inclination, m1, m2, S1z, S2z, -1, LALpars, NoNRT_V);
+            break;
+
+        case SEOBNRv4HM_ROM:
+            /* Waveform-specific sanity checks */
+            if( !XLALSimInspiralWaveformParamsFlagsAreDefault(LALpars) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-default flags given, but this approximant does not support this case.");
+            if( !checkTransverseSpinsZero(S1x, S1y, S2x, S2y) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero transverse spins were given, but this is a non-precessing approximant.");
+            if( !checkTidesZero(lambda1, lambda2) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero tidal parameters were given, but this is approximant doe not have tidal corrections.");
+
+            int nModes = 5;
+            ret = XLALSimIMRSEOBNRv4HMROMFrequencySequence(hptilde, hctilde, frequencies,
+            phiRef, f_ref, distance, inclination, m1, m2, S1z, S2z, -1, nModes, LALpars);
             break;
 
         case SEOBNRv4_ROM_NRTidal:
