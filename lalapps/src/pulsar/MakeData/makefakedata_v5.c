@@ -213,7 +213,7 @@ main(int argc, char *argv[])
       UINT4 numBins = sft0->data->length;
       REAL8 dFreq   = sft0->deltaF;
       REAL8 fMin    = sft0->f0;
-      REAL8 fMax    = fMin + ( numBins - 1 ) * dFreq;
+      REAL8 fMax    = fMin + numBins * dFreq;
       MultiSFTVector *mNoiseSFTs;
       XLAL_CHECK ( (mNoiseSFTs = XLALLoadMultiSFTsFromView ( GV.multiNoiseCatalogView, fMin, fMax )) != NULL, XLAL_EFUNC );
       XLAL_CHECK ( XLALMultiSFTVectorAdd ( mSFTs, mNoiseSFTs ) == XLAL_SUCCESS, XLAL_EFUNC );
@@ -457,7 +457,7 @@ XLALInitMakefakedata ( ConfigVars_t *cfg, UserVariables_t *uvar )
           REAL8 noise_fmin    = desc->header.f0;
           REAL8 noise_dFreq   = desc->header.deltaF;
           UINT4 noise_numBins = desc->numBins;
-          REAL8 noise_band    = (noise_numBins-1) * noise_dFreq;
+          REAL8 noise_band    = noise_numBins * noise_dFreq;
           cfg->fminOut = noise_fmin;
           cfg->BandOut = noise_band;
         }

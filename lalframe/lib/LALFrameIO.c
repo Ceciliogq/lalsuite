@@ -424,9 +424,7 @@ LALFrameH *XLALFrameNew(const LIGOTimeGPS * epoch, double duration,
     int detind;
 
     /* allocate frame and set run */
-    frame =
-        XLALFrameUFrameHAlloc(project, XLALGPSGetREAL8(epoch), duration,
-        frnum);
+    frame = XLALFrameUFrameHAlloc(project, epoch->gpsSeconds, 1e-9 * epoch->gpsNanoSeconds, duration, frnum);
     if (!frame)
         XLAL_ERROR_NULL(XLAL_EFUNC);
     if (XLALFrameUFrameHSetRun(frame, run) < 0) {
@@ -502,12 +500,14 @@ int XLALFrameAdd ## laltype ## TimeSeriesProcData(LALFrameH *frame, const laltyp
 	{ \
 		LIGOTimeGPS frameStart; \
 		double timeOffset; \
+		double tRange; \
 		const char unitX[] = "s"; \
 		char unitY[LALUnitTextSize]; \
 		LALFrameUFrChan *channel = NULL; \
 		void *data = NULL; \
 		XLALUnitAsString(unitY, sizeof(unitY), &series->sampleUnits); \
 		XLALFrameQueryGTime(&frameStart, frame); \
+		tRange = series->deltaT * series->data->length; \
 		timeOffset = XLALGPSDiff(&series->epoch, &frameStart); \
 		if (timeOffset < 0) \
 			XLAL_ERROR(XLAL_EINVAL, "Series start time %d.%09d " \
@@ -524,6 +524,7 @@ int XLALFrameAdd ## laltype ## TimeSeriesProcData(LALFrameH *frame, const laltyp
 			goto failure; \
 		memcpy(data, series->data->data, series->data->length * sizeof(*series->data->data)); \
 		XLALFrameUFrChanSetTimeOffset(channel, timeOffset); \
+		XLALFrameUFrChanSetTRange(channel, tRange); \
 		XLALFrameUFrChanVectorSetName(channel, series->name); \
 		XLALFrameUFrChanVectorSetDx(channel, series->deltaT); \
 		XLALFrameUFrChanVectorSetStartX(channel, 0.0); \

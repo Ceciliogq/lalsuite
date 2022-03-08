@@ -1,5 +1,5 @@
 AC_PREREQ([2.63])
-AC_INIT([LALPulsar],[3.1.0.1],[lal-discuss@ligo.org])
+AC_INIT([LALPulsar],[3.1.2.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([lib/config.h lib/LALPulsarConfig.h])
 AC_CONFIG_SRCDIR([lib/ComputeFstat.c])
 AC_CONFIG_AUX_DIR([gnuscripts])
@@ -20,7 +20,7 @@ AC_CONFIG_MACRO_DIR([gnuscripts])
 # 6. if any interfaces have been removed since the last public release,
 #    then set age to 0.
 AC_SUBST([LIBCURRENT],[24])
-AC_SUBST([LIBREVISION],[0])
+AC_SUBST([LIBREVISION],[1])
 AC_SUBST([LIBAGE],[1])
 AC_SUBST([LIBVERSION],[${LIBCURRENT}:${LIBREVISION}:${LIBAGE}])
 AS_CASE([${host_os}],
@@ -32,6 +32,7 @@ AC_CONFIG_FILES([ \
   Makefile \
   conda/Makefile \
   conda/meta.yaml.in \
+  conda/migrations/Makefile \
   debian/Makefile \
   debian/control \
   debian/liblalpulsar${LIBMAJOR}.install:debian/liblalpulsar.install.in \
@@ -68,8 +69,8 @@ AM_INIT_AUTOMAKE([ \
 ])
 
 # version requirements
-MIN_LAL_VERSION="7.1.0"
-MIN_LALFRAME_VERSION="1.5.0"
+MIN_LAL_VERSION="7.1.5"
+MIN_LALFRAME_VERSION="1.6.0"
 AC_SUBST([MIN_LAL_VERSION])
 AC_SUBST([MIN_LALFRAME_VERSION])
 
@@ -98,6 +99,12 @@ LALSUITE_ENABLE_SWIG
 # enable Doxygen documentation
 LALSUITE_ENABLE_DOXYGEN
 
+# enable CUDA
+LALSUITE_WITH_CUDA
+if test "${cuda}" = "true"; then
+  AC_DEFINE([LALPULSAR_CUDA_ENABLED],[1],[Define if using cuda library])
+fi
+
 # enable help2man documentation
 LALSUITE_ENABLE_HELP2MAN
 
@@ -114,8 +121,12 @@ LALSUITE_PROG_COMPILERS
 LALSUITE_CHECK_SIMD
 LALPULSAR_CHECK_ALTIVEC
 
+# install only a minimal set of ephemeris files
+LALPULSAR_INSTALL_MINIMAL_EPHEM
+
 # checks for programs
 AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_AWK
 AC_PROG_SED
@@ -198,6 +209,7 @@ LALPulsar has now been successfully configured:
 
 * Python support is $PYTHON_ENABLE_VAL
 * CFITSIO library support is $CFITSIO_ENABLE_VAL
+* CUDA support is $CUDA_ENABLE_VAL
 * SWIG bindings for Octave are $SWIG_BUILD_OCTAVE_ENABLE_VAL
 * SWIG bindings for Python are $SWIG_BUILD_PYTHON_ENABLE_VAL
 * OpenMP acceleration is $OPENMP_ENABLE_VAL

@@ -3,7 +3,6 @@ EXTRA_DIST =
 MOSTLYCLEANFILES =
 include $(top_srcdir)/gnuscripts/lalapps.am
 include $(top_srcdir)/gnuscripts/lalsuite_python.am
-include $(top_srcdir)/gnuscripts/lalapps_pulsar_test.am
 include $(top_srcdir)/gnuscripts/lalsuite_help2man.am
 
 BURSTPROGS = lalapps_binj
@@ -36,9 +35,6 @@ pybin_scripts = \
 
 test_scripts += \
 	test_bucluster.sh \
-	$(END_OF_LIST)
-test_extra_files += \
-	H1-POWER_S5-830046410-50274.xml.gz \
 	$(END_OF_LIST)
 endif
 
