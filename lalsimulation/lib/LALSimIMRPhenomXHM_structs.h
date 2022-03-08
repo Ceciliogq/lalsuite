@@ -75,6 +75,8 @@ typedef struct tagIMRPhenomXHMWaveformStruct
         INT4  IMRPhenomXHMInspiralAmpVersion;
         INT4  IMRPhenomXHMIntermediateAmpVersion;
         INT4  IMRPhenomXHMRingdownAmpVersion;
+        
+        INT4 IMRPhenomXHMReleaseVersion;
 
 
         /* Spin Parameters */

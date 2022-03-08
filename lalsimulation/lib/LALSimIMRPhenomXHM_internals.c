@@ -159,63 +159,103 @@ void IMRPhenomXHM_SetHMWaveformVariables(
     /* Here we select the version of the fits and of the reconstruction that will be used in the code.
        Through XLALSimInspiralWaveformParamsLookupPhenomXHM(Inspiral/Intermediate/Ringdown)(Amp/Phase)Version we call the version of the fits used by the phase in each region.
        Currently there is only one version available and is tagged by the release date in the format mmyyyy (122019)*/
+  wf->IMRPhenomXHMReleaseVersion             = XLALSimInspiralWaveformParamsLookupPhenomXHMReleaseVersion(LALParams); // 122019
+
   wf->IMRPhenomXHMInspiralPhaseVersion       = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralPhaseVersion(LALParams);//122019
   wf->IMRPhenomXHMIntermediatePhaseVersion   = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediatePhaseVersion(LALParams); //122019
   wf->IMRPhenomXHMRingdownPhaseVersion       = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownPhaseVersion(LALParams); //122019
+  
   wf->IMRPhenomXHMInspiralAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMIntermediateAmpFitsVersion = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFitsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFitsVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFitsVersion(LALParams); //122018
+  
   wf->IMRPhenomXHMInspiralAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpFreqsVersion(LALParams); //122018
-  wf->IMRPhenomXHMIntermediateAmpFreqsVersion= 122018;//XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFreqsVersion(LALParams); //122018
+  wf->IMRPhenomXHMIntermediateAmpFreqsVersion= XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpFreqsVersion(LALParams); //122018
   wf->IMRPhenomXHMRingdownAmpFreqsVersion    = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpFreqsVersion(LALParams); //122018
+ 
   /* Reconstruction version for the amplitude */
   wf->IMRPhenomXHMInspiralAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMInspiralAmpVersion(LALParams); //3  (3 collocation points)
   wf->IMRPhenomXHMIntermediateAmpVersion     = XLALSimInspiralWaveformParamsLookupPhenomXHMIntermediateAmpVersion(LALParams); //2   (2 collocation points)
   wf->IMRPhenomXHMRingdownAmpVersion         = XLALSimInspiralWaveformParamsLookupPhenomXHMRingdownAmpVersion(LALParams); //0  (0 collocation points)
 
-   //FIXME
-  if(wf->IMRPhenomXHMInspiralAmpFitsVersion != 122018 && wf->IMRPhenomXHMRingdownAmpFitsVersion != 122018){
-      wf->IMRPhenomXHMRingdownAmpVersion = 1;
-      wf->IMRPhenomXHMRingdownPhaseVersion = 20220114;
-      //wf->IMRPhenomXHMIntermediateAmpVersion = 4;
+  
+  if(wf->IMRPhenomXHMReleaseVersion != 122019){
+      if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpFreqsVersionIsDefault(LALParams))
+        wf->IMRPhenomXHMInspiralAmpFreqsVersion     = 102021;
+      if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpFreqsVersionIsDefault(LALParams))
+        wf->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
+      if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFreqsVersionIsDefault(LALParams))
+        wf->IMRPhenomXHMRingdownAmpFreqsVersion     = 102021;
+
+      wf->nCollocPtsInterAmp = 4;
+      
+      if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+        wf->IMRPhenomXHMRingdownAmpVersion = 1;
+      if(XLALSimInspiralWaveformParamsPhenomXHMRingdownPhaseVersionIsDefault(LALParams))
+        wf->IMRPhenomXHMRingdownPhaseVersion = 20220114;
+        
       switch(wf->modeTag)
       {
           case 21:{
-            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
-            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
-            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
+                wf->IMRPhenomXHMIntermediateAmpVersion = 111112;
             break;
           }
           case 33:{
-            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
-            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211004;
-            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211004;
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211004;
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211004;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
+                wf->IMRPhenomXHMIntermediateAmpVersion = 211112;
             break;
           }
           case 32:{
-            wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
-            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 202109302;
-            wf->IMRPhenomXHMRingdownAmpFitsVersion = 202109302;
-            //wf->IMRPhenomXHMRingdownAmpFreqsVersion = 122018;
-            //wf->IMRPhenomXHMRingdownAmpVersion = 0;
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMIntermediateAmpFitsVersion = 202109302;
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMRingdownAmpFitsVersion = 202109302;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
+                wf->IMRPhenomXHMIntermediateAmpVersion = 111111;
             break;
           }
           case 44:{
-            wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
-            wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
-            wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+                wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
+                wf->IMRPhenomXHMIntermediateAmpVersion = 111111;
             break;
           }
       }
+  } // End of new release
+  else{      
+      wf->nCollocPtsInterAmp = wf->IMRPhenomXHMIntermediateAmpVersion;
   }
 
 
   // Default collocation points for amplitude
   wf->nCollocPtsInspAmp  = wf->IMRPhenomXHMInspiralAmpVersion;
-  wf->nCollocPtsInterAmp = wf->IMRPhenomXHMIntermediateAmpVersion;
 
-  if(wf->modeTag==32){ wf->nCollocPtsInterPhase=6;}
-  else {wf->nCollocPtsInterPhase=5;}
+  if(wf->modeTag==32){ 
+      wf->nCollocPtsInterPhase=6;
+  }
+  else {
+      wf->nCollocPtsInterPhase=5;
+  }
 
   /* Phase : Ringdown */
   wf->nCollocPtsRDPhase= 0;
@@ -906,36 +946,11 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     pAmp->nCoefficientsInter = 0;
 
     /*** Proceed region by region ***/
-    if(pWFHM->IMRPhenomXHMInspiralAmpFitsVersion != 122018){ //FIXME
+    if(pWFHM->IMRPhenomXHMReleaseVersion != 122018){ 
         pAmp->InspRescaleFactor = 2;
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
-        pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
-        pWFHM->nCollocPtsInterAmp = 4;
-
-        if ( pWFHM->IMRPhenomXHMIntermediateAmpVersion == 2 ){ // The default value (from the 122018 version)
-            switch(pWFHM->modeTag){
-                case 21:{
-                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111112;
-                    break;
-                }
-                case 33:{
-                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 211112;
-                    break;
-                }
-                case 32:{
-                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111111;
-                    break;
-                }
-                case 44:{
-                    pWFHM->IMRPhenomXHMIntermediateAmpVersion = 111111;
-                    break;
-                }
-                default:
-                  {XLALPrintError("Error in IMRPhenomXHM_GetAmplitudeCoefficients: mode selected is not currently available. Modes available are ((2,|2|),(2,|1|),(3,|2|),(3,|3|),(4,|4|)).\n");}
-            }
-        }
-
+                    
         UINT4 InputnCollPointsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
 
         /* Transform IMRPhenomXHMIntermediateAmpVersion number to int array defining what to do for each collocation point */
@@ -950,7 +965,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         UINT2 nCollocPtsInterAmp = 0;
         for (UINT2 i = 0; i < InputnCollPointsInter; i++) nCollocPtsInterAmp += pAmp->VersionCollocPtsInter[i];
         /* nCollocPtsInterAmp needs to be the same than the number of free coefficients in the ansatz */
-        if (nCollocPtsInterAmp > pWFHM->nCollocPtsInterAmp + 4 )
+        if (nCollocPtsInterAmp > pWFHM->nCollocPtsInterAmp + 4 ) //FIXME: +4 ?
             XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_GetAmplitudeCoefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", nCollocPtsInterAmp, pWFHM->nCollocPtsInterAmp + 4);
         pAmp->nCoefficientsInter = nCollocPtsInterAmp;
 
