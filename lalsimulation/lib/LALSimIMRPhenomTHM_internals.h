@@ -151,11 +151,11 @@ typedef struct tagIMRPhenomTPhase22Struct
 	REAL8 dtM;     // Dimensionless time step
 	REAL8 EulerRDslope; // Slope of the analytical ringdown approximation for the precessing alpha angle. FIXME: check if its needed.
 
-	REAL8 xmeco, xpeak, xCutInsp, xCutMerger, xmin, xRef, tshiftT2;
+	REAL8 xpeak, xCutInsp, xCutMerger, xmin, xRef, tshiftT2;
 	REAL8 dT2_1PN, dT2_1halfPN, dT2_2PN, dT2_2halfPN, dT2_3PN, dT2_3halfPN, dT2_3PNlog;
-	REAL8 dtInspC1, dtInspC2, dtInspC3, dtInspC4;
-	REAL8 bb0Int, bb1Int, bb2Int, bb3Int, bb4Int, bb5Int;
-	REAL8 cc0M, cc1M, cc2M, cc3M, cc4M;
+	REAL8 dtInspC1, dtInspC2, dtInspC3;
+	REAL8 tLateC1, tLateC2, tLateC3, tLateC4, tLateC5, tLateC6, tLateC7, tLateC8;
+	REAL8 cc0M, cc1M, cc2M, cc3M, cc4M,cc5M;
 
 } IMRPhenomTPhase22Struct;
 
@@ -219,6 +219,9 @@ typedef struct tahIMRPhenomTHMAmpStruct
 	REAL8 inspC1;
 	REAL8 inspC2;
 	REAL8 inspC3;
+	REAL8 inspC4;
+	REAL8 inspC5;
+	REAL8 inspC6;
 
 	/* Phenomenological coefficients of merger ansatz */
 	REAL8 mergerC1;

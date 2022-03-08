@@ -649,10 +649,8 @@ int LALSimIMRPhenomTHM_Modes_v2(
 
   IMRPhenomTPhase22Struct *pPhase;
   pPhase = XLALMalloc(sizeof(IMRPhenomTPhase22Struct));
-  IMRPhenomTPhase22Struct *pPhaseAmp;
-  pPhaseAmp = XLALMalloc(sizeof(IMRPhenomTPhase22Struct));
+
   if(pWF->inspVersion==2){
-    status   = IMRPhenomTSetPhase22Coefficients(pPhaseAmp, pWF);
     status   = IMRPhenomTSetPhase22v2Coefficients(pPhase, pWF);
   }
   else{
@@ -734,7 +732,7 @@ int LALSimIMRPhenomTHM_Modes_v2(
       COMPLEX16TimeSeries *tmp_mode = NULL;
 
 
-      status = LALSimIMRPhenomTHM_OneMode_v2(&tmp_mode, pWF, pPhase, pPhaseAmp, times, expPhiorb, xorb, ell, emm);
+      status = LALSimIMRPhenomTHM_OneMode_v2(&tmp_mode, pWF, pPhase, times, expPhiorb, xorb, ell, emm);
 
 
       if(posMode==1) /* Modes are generated only for positive m. If positive m is requested, simply add to the SphHarmTimeSeries structure */
@@ -759,7 +757,6 @@ int LALSimIMRPhenomTHM_Modes_v2(
   /*Free structures and destroy sequences and dict */
   XLALDestroyValue(ModeArray);
   LALFree(pPhase);
-  LALFree(pPhaseAmp);
   LALFree(pWF);
 
   XLALDestroyREAL8Sequence(xorb);
@@ -902,7 +899,6 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 	COMPLEX16TimeSeries **hlm,
 	IMRPhenomTWaveformStruct *pWF,
 	IMRPhenomTPhase22Struct *pPhase,
-  IMRPhenomTPhase22Struct *pPhaseAmp, //FIXME
 	REAL8Sequence *times,
 	COMPLEX16Sequence *expPhiorb,
 	REAL8Sequence *xorb,
@@ -939,7 +935,7 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 
     IMRPhenomTHMAmpStruct *pAmplm;
     pAmplm = XLALMalloc(sizeof(IMRPhenomTHMAmpStruct));
-    status   = IMRPhenomTSetHMAmplitudeCoefficients(ell,emm, pAmplm, pPhaseAmp, pWF);
+    status   = IMRPhenomTSetHMAmplitudev2Coefficients(pAmplm, pPhase, pWF);
     XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMAmplitudeCoefficients failed for %d,%d.\n",ell,emm);
 
     IMRPhenomTHMPhaseStruct *pPhaselm;
@@ -964,8 +960,8 @@ int LALSimIMRPhenomTHM_OneMode_v2(
       for(UINT4 jdx = 0; jdx < xorb->length; jdx++){
         t = times->data[jdx];
         x = xorb->data[jdx];
-        amphm = IMRPhenomTHMAmp(t, x, pAmplm);
-        ampAbsHM->data[jdx] = cabs(amphm);
+        amphm = IMRPhenomTHMAmpv2(t, x, pAmplm);
+        ampAbsHM->data[jdx] = creal(amphm);
       }
 
     	accel_amp_abs = gsl_interp_accel_alloc();

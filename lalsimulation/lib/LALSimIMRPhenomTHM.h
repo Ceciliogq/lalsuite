@@ -47,7 +47,6 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 					COMPLEX16TimeSeries **hlm,
 					IMRPhenomTWaveformStruct *pWF,
 					IMRPhenomTPhase22Struct *pPhase,
-					IMRPhenomTPhase22Struct *pPhaseAmp,
 					REAL8Sequence *times,
 					COMPLEX16Sequence *expPhiorb,
 					REAL8Sequence *xorb,
