@@ -2425,7 +2425,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     /* Define collocation points frequencies */
     switch(pWFHM->IMRPhenomXHMIntermediateAmpFreqsVersion){
         case 102021:{ // Equispaced. Get boundaries too
-            REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
+            REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp - 1);
             UINT2 idx = 0;
             for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
                 if(pAmp->VersionCollocPtsInter[i] == 1){
