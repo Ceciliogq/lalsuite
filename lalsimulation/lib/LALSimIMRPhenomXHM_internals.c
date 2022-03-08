@@ -921,10 +921,8 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
             if(pWF22->q == 1){
                 pAmp->PNdominantlmpower = 4;
                 pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->dchi * 0.5 * (65/24. - 28/3. * pWF22->eta) * pow(2 * LAL_PI / pWFHM->emm, 4/3.);
-                printf("EQUAL MASS\n");
             }
             else{
-                printf("UNequal MASS\n");
                 pAmp->PNdominantlmpower = 1;
                 pAmp->PNdominantlm = 0.75 * sqrt(5./7) * pWF22->delta * pow(2 * LAL_PI / pWFHM->emm, 1/3.);
             }

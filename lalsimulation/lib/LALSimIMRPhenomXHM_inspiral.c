@@ -838,10 +838,6 @@ void IMRPhenomXHM_Get_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
         pAmp->PNAmplitudeInsp[i] = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(&(powers_of_Mf_inspcollpoints[i]), pWFHM, pAmp);
     }
 
-    // Inspiral coefficients
-    // for (UINT4 i=0; i <= pWFHM->nCollocPtsInspAmp; i++){
-    //     pAmp->InspiralCoefficient[i] = pAmp->InspiralCoefficientFunction[i](powers_of_Mf_inspcollpoints, pAmp);
-    // }
     IMRPhenomXHM_Inspiral_Amp_Coefficients(pAmp, powers_of_Mf_inspcollpoints, pWFHM);
 
     LALFree(powers_of_Mf_inspcollpoints);
