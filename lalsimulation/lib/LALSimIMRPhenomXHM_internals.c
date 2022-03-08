@@ -186,8 +186,7 @@ void IMRPhenomXHM_SetHMWaveformVariables(
         wf->IMRPhenomXHMIntermediateAmpFreqsVersion = 102021;
       if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFreqsVersionIsDefault(LALParams))
         wf->IMRPhenomXHMRingdownAmpFreqsVersion     = 102021;
-
-      wf->nCollocPtsInterAmp = 4;
+  
       
       if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
         wf->IMRPhenomXHMRingdownAmpVersion = 1;
@@ -241,6 +240,9 @@ void IMRPhenomXHM_SetHMWaveformVariables(
             break;
           }
       }
+      wf->nCollocPtsInterAmp = snprintf(NULL, 0, "%i", wf->IMRPhenomXHMIntermediateAmpVersion);
+      printf("wf->IMRPhenomXHMIntermediateAmpVersion = %i\n", wf->IMRPhenomXHMIntermediateAmpVersion);
+      printf("wf->nCollocPtsInterAmp = %i\n", wf->nCollocPtsInterAmp);
   } // End of new release
   else{      
       wf->nCollocPtsInterAmp = wf->IMRPhenomXHMIntermediateAmpVersion;
@@ -951,24 +953,22 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
                     
-        UINT4 InputnCollPointsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-        printf("InputnCollPointsInter = %i\n", InputnCollPointsInter);
-        
+            
         /* Transform IMRPhenomXHMIntermediateAmpVersion number to int array defining what to do for each collocation point */
         /* 0: don't use coll point, 1: use point, 2: use point and derivative (this only applies for boundaries) */
-        // e.g. pAmp->VersionCollocPtsInter = {1, 1, 1, 1, 0, 2} -> use the two boundaries, add derivative to the right one
+        // e.g. pAmp->VersionCollocPtsInter = {1, 1, 1, 1, 0, 2} -> use the two boundaries, add derivative to the right one, skip third collocation point
         UINT4 num = pWFHM->IMRPhenomXHMIntermediateAmpVersion;
-        for(UINT2 i = 0; i < InputnCollPointsInter; i++){
-            pAmp->VersionCollocPtsInter[InputnCollPointsInter - i - 1] = num % 10;
+        for(UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
+            pAmp->VersionCollocPtsInter[pWFHM->nCollocPtsInterAmp - i - 1] = num % 10;
             num/=10;
         }
 
-        UINT2 nCollocPtsInterAmp = 0;
-        for (UINT2 i = 0; i < InputnCollPointsInter; i++) nCollocPtsInterAmp += pAmp->VersionCollocPtsInter[i];
-        /* nCollocPtsInterAmp needs to be the same than the number of free coefficients in the ansatz */
-        if (nCollocPtsInterAmp > pWFHM->nCollocPtsInterAmp + 4 ) //FIXME: +4 ?
-            XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_GetAmplitudeCoefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", nCollocPtsInterAmp, pWFHM->nCollocPtsInterAmp + 4);
-        pAmp->nCoefficientsInter = nCollocPtsInterAmp;
+        pAmp->nCoefficientsInter = 0;
+        for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp; i++) pAmp->nCoefficientsInter += pAmp->VersionCollocPtsInter[i];
+        /* The number of coefficients in the intermediate ansatz cannot be larger than the number of available collocation points in IMRPhenomXHMIntermediateAmpVersion 
+           If e.g. IMRPhenomXHMIntermediateAmpVersion has 6 slots, the maximum number of coefficients would be 6 + 2 because we count for the derivatives at the boundaries. */
+        if (pAmp->nCoefficientsInter > pWFHM->nCollocPtsInterAmp + 2) 
+            XLAL_ERROR_VOID(XLAL_EFUNC, "IMRPhenomXHM_GetAmplitudeCoefficients failed. Inconsistent number of collocation points (%i) and free parameters (%i).", pWFHM->nCollocPtsInterAmp + 2, pAmp->nCoefficientsInter);
 
         pAmp->nCoefficientsRDAux = 0;
         if (pWFHM->MixingOn){
@@ -996,37 +996,37 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         pAmp->InterRescaleFactor = 2;
         IMRPhenomXHM_Intermediate_Amp_Coefficients(pAmp, pWFHM, pWF22, pPhase, pAmp22, pPhase22);
 
-        printf("Insp Coll points\n");
+        printf("\nInsp Coll points\n");
         for(UINT2 i = 0; i < 3; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInsp[i], pAmp->CollocationPointsValuesAmplitudeInsp[i]);
         }
-        printf("Inter Coll points\n");
+        printf("\nInter Coll points\n");
         for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeInter[i], pAmp->CollocationPointsValuesAmplitudeInter[i]);
         }
-        printf("RD Coll points\n");
+        printf("\nRD Coll points\n");
         for(UINT2 i = 0; i < 3; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRD[i], pAmp->CollocationPointsValuesAmplitudeRD[i]);
         }
-        // printf("Insp Coefficients\n");
-        // for(UINT2 i = 0; i < 3; i++){
-        //     printf("%.16e\n", pAmp->InspiralCoefficient[i]);
-        // }
-
-        printf("Inter Coefficients %i\n", pAmp->nCoefficientsInter);
+        
+        printf("\nInsp Coefficients\n");
+        for(UINT2 i = 0; i < 3; i++){
+            printf("%.16e\n", pAmp->InspiralCoefficient[i]);
+        }
+        printf("\nInter Coefficients %i\n", pAmp->nCoefficientsInter);
         for(UINT2 i = 0; i < pAmp->nCoefficientsInter; i++){
             printf("%.16e\n", pAmp->InterCoefficient[i]);
         }
-        printf("RD Coefficients\n");
+        printf("\nRD Coefficients\n");
         for(UINT2 i = 0; i < 3; i++){
             printf("%.16e\n", pAmp->RDCoefficient[i]);
         }
-        printf("RDAux Coll points\n");
-        for(UINT2 i = 0; i < 4; i++){
+        printf("\nRDAux Coll points\n");
+        for(UINT2 i = 0; i < pAmp->nCoefficientsRDAux; i++){
             printf("%.16f %.16e\n", pAmp->CollocationPointsFreqsAmplitudeRDAux[i], pAmp->CollocationPointsValuesAmplitudeRDAux[i]);
         }
-        printf("RDAux Coefficients\n");
-        for(UINT2 i = 0; i < 4; i++){
+        printf("\nRDAux Coefficients\n");
+        for(UINT2 i = 0; i < pAmp->nCoefficientsRDAux; i++){
             printf("%.16e\n", pAmp->RDAuxCoefficient[i]);
         }
 

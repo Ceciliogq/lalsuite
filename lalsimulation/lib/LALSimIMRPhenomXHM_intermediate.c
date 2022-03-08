@@ -2427,7 +2427,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
         case 102021:{ // Equispaced. Get boundaries too
             REAL8 deltaf = (pAmp->fAmpMatchIM - pAmp->fAmpMatchIN) / (pWFHM->nCollocPtsInterAmp + 1);
             UINT2 idx = 0;
-            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
+            for (UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
                 if(pAmp->VersionCollocPtsInter[i] == 1){
                     // Add point
                     pAmp->CollocationPointsFreqsAmplitudeInter[idx] = pAmp->fAmpMatchIN + deltaf * i;
@@ -2468,8 +2468,9 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     }
 
     /* Call parameter space fits */
+    /* pWFHM->nCollocPtsInterAmp also includes the boundaries, for the parameter space fits we just need the in between points */
     UINT2 idx = 0;
-    for(UINT2 i = 1; i < (1 + pWFHM->nCollocPtsInterAmp); i++){
+    for(UINT2 i = 1; i < pWFHM->nCollocPtsInterAmp - 1; i++){
         if(i <= 2)
             idx = pWFHM->modeInt * 2 + i - 1;
         else
@@ -2490,7 +2491,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
     // else{ // No mode mixing
         IMRPhenomX_UsefulPowers powers_of_fRD;
         IMRPhenomX_Initialize_Powers(&powers_of_fRD, pAmp->fAmpMatchIM);
-        switch(pAmp->VersionCollocPtsInter[pWFHM->nCollocPtsInterAmp + 1]){
+        switch(pAmp->VersionCollocPtsInter[pWFHM->nCollocPtsInterAmp - 1]){
             case 1:{ // Add point
                 if (pWFHM->MixingOn == 0){
                     pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
@@ -2548,7 +2549,7 @@ void IMRPhenomXHM_Intermediate_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAm
     /* A is the matrix of multiplicative factors to each coefficient of the ansatz.
        Each row gives the ansatz evaluated at a collocation point frequency. */
     UINT2 tmpnCollocPts = 0;
-    for(UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp + 2; i++){
+    for(UINT2 i = 0; i < pWFHM->nCollocPtsInterAmp; i++){
         /* Skip the 0 cases, means that collocation point is not used */
         if(pAmp->VersionCollocPtsInter[i] > 0){
             // Set b vector
