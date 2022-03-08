@@ -616,8 +616,8 @@ int IMRPhenomXHMGenerateFDOneMode(
         }
         else
         {
-          amp = IMRPhenomXHM_Amplitude_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
-          phi = IMRPhenomXHM_Phase_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+          amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+          phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
           /* Reconstruct waveform: h_l-m(f) = A(f) * Exp[I phi(f)] */
           ((*htildelm)->data->data)[idx+offset] = Amp0 * amp * cexp(I * phi);
 
@@ -638,8 +638,8 @@ int IMRPhenomXHMGenerateFDOneMode(
         }
         else
         {
-          amp = IMRPhenomXHM_Amplitude_noModeMixing(Mf, &powers_of_Mf, pAmp, pWFHM);
-          phi = IMRPhenomXHM_Phase_noModeMixing(Mf, &powers_of_Mf, pPhase, pWFHM, pWF);
+          amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf, pAmp, pWFHM);
+          phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf, pPhase, pWFHM, pWF);
           /* Reconstruct waveform: h_l-m(f) = A(f) * Exp[I phi(f)] */
           ((*htildelm)->data->data)[idx+offset] = Amp0 * amp * cexp(I * phi);
           #if DEBUG == 1
@@ -2114,8 +2114,8 @@ static int IMRPhenomXHM_MultiMode2(
             for (UINT4 idx = 0; idx < len; idx++)
             {
               COMPLEX16 wf22 = htilde22->data->data[idx + offset]; //This will be rescaled inside SpheroidalToSphericalRecycle for the rotation
-              amp = IMRPhenomXHM_Amplitude_ModeMixingRecycle(Mf[idx], &powers_of_Mf[idx], wf22, pAmp, pPhase, pWFHM);
-              phi = IMRPhenomXHM_Phase_ModeMixingRecycle(Mf[idx], &powers_of_Mf[idx], wf22, pAmp, pPhase, pWFHM);
+              amp = IMRPhenomXHM_Amplitude_ModeMixingRecycle(&powers_of_Mf[idx], wf22, pAmp, pPhase, pWFHM);
+              phi = IMRPhenomXHM_Phase_ModeMixingRecycle(&powers_of_Mf[idx], wf22, pAmp, pPhase, pWFHM);
               /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
               ((htildelm)->data->data)[idx+offset] = Amp0 * amp * cexp(I * phi);
             }
@@ -2124,8 +2124,8 @@ static int IMRPhenomXHM_MultiMode2(
           else{
             for (UINT4 idx = 0; idx < len; idx++)
             {
-              amp = IMRPhenomXHM_Amplitude_ModeMixing(Mf[idx], &powers_of_Mf[idx], pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
-              phi = IMRPhenomXHM_Phase_ModeMixing(Mf[idx], &powers_of_Mf[idx], pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+              amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf[idx], pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+              phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf[idx], pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
               /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
               ((htildelm)->data->data)[idx+offset] = Amp0 * amp * cexp(I * phi);
             }
@@ -2134,8 +2134,8 @@ static int IMRPhenomXHM_MultiMode2(
         else{
           for (UINT4 idx = 0; idx < len; idx++)
           {
-            amp = IMRPhenomXHM_Amplitude_noModeMixing(Mf[idx], &powers_of_Mf[idx], pAmp, pWFHM);
-            phi = IMRPhenomXHM_Phase_noModeMixing(Mf[idx], &powers_of_Mf[idx], pPhase, pWFHM, pWF);
+            amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf[idx], pAmp, pWFHM);
+            phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf[idx], pPhase, pWFHM, pWF);
             /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
             ((htildelm)->data->data)[idx+offset] = Amp0 * amp * cexp(I * phi);
           }
@@ -2486,7 +2486,7 @@ int XLALSimIMRPhenomXHMAmplitude(
           }
           else
           {
-            amp = IMRPhenomXHM_Amplitude_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+            amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
             ((*amplitude)->data->data)[idx+offset] = Amp0 * amp;
           }
         }
@@ -2503,7 +2503,7 @@ int XLALSimIMRPhenomXHMAmplitude(
           }
           else
           {
-            amp = IMRPhenomXHM_Amplitude_noModeMixing(Mf, &powers_of_Mf, pAmp, pWFHM);
+            amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf, pAmp, pWFHM);
             ((*amplitude)->data->data)[idx+offset] = Amp0 * amp;
           }
         }
@@ -2714,7 +2714,7 @@ int XLALSimIMRPhenomXHMAmplitude(
             }
             else
             {
-              REAL8 phi = IMRPhenomXHM_Phase_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+              REAL8 phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
               ((*phase)->data->data)[idx+offset] = phi + addpi;
             }
           }
@@ -2731,7 +2731,7 @@ int XLALSimIMRPhenomXHMAmplitude(
             }
             else
             {
-              REAL8 phi = IMRPhenomXHM_Phase_noModeMixing(Mf, &powers_of_Mf, pPhase, pWFHM, pWF);
+              REAL8 phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf, pPhase, pWFHM, pWF);
               ((*phase)->data->data)[idx+offset] = phi + addpi;
             }
           }

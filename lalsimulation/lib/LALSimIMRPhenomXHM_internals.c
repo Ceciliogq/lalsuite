@@ -1362,7 +1362,7 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
         double inspF1 = IMRPhenomXHM_Inspiral_Amp_Ansatz(&powers_of_F1, pWFHM, pAmp);
         double rdF4;
         if (pWFHM->MixingOn == 1){
-          rdF4 = cabs(SpheroidalToSpherical(F4, &powers_of_F4, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+          rdF4 = cabs(SpheroidalToSpherical(&powers_of_F4, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
         }else{
           rdF4 = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_F4, pWFHM, pAmp);
         }
@@ -1949,7 +1949,7 @@ void IMRPhenomXHM_GetPhaseCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhe
           double FF=fcutRD+(i-1)*fstep;
           IMRPhenomX_UsefulPowers powers_of_FF;
           IMRPhenomX_Initialize_Powers(&powers_of_FF,FF);
-          SphericalWF[i]=SpheroidalToSpherical(FF, &powers_of_FF, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22);
+          SphericalWF[i]=SpheroidalToSpherical(&powers_of_FF, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22);
 
         }
 
@@ -2344,38 +2344,39 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
 */
 
   // In principle this could be generalized to the 43 mode: for the time being, assume the mode solved for is only the 32.
-  double complex SpheroidalToSpherical(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm, IMRPhenomXWaveformStruct *pWF22)
+  COMPLEX16 SpheroidalToSpherical(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm, IMRPhenomXWaveformStruct *pWF22)
   {
+    REAL8 Mf = powers_of_Mf->itself;
     // Compute the 22 mode using PhenomX functions. This gives the 22 mode rescaled with the leading order.  This is because the 32 is also rescaled.
-    double amp22=XLALSimIMRPhenomXRingdownAmplitude22AnsatzAnalytical(ff, pWF22->fRING, pWF22->fDAMP, pAmp22->gamma1, pAmp22->gamma2, pAmp22->gamma3);
-    double phi22=1./pWF22->eta*IMRPhenomX_Phase_22(ff, powers_of_f, pPhase22,pWF22) + pWFlm->timeshift*ff + pWFlm->phaseshift + pWFlm->phiref22;
-    complex double wf22R =  amp22 * cexp(I * phi22);
+    REAL8 amp22=XLALSimIMRPhenomXRingdownAmplitude22AnsatzAnalytical(Mf, pWF22->fRING, pWF22->fDAMP, pAmp22->gamma1, pAmp22->gamma2, pAmp22->gamma3);
+    REAL8 phi22=1./pWF22->eta*IMRPhenomX_Phase_22(Mf, powers_of_Mf, pPhase22,pWF22) + pWFlm->timeshift*Mf + pWFlm->phaseshift + pWFlm->phiref22;
+    COMPLEX16 wf22R = amp22 * cexp(I * phi22);
     if (pAmplm->RDRescaleFactor == 0){
-        wf22R *= pWFlm->ampNorm * powers_of_f->m_seven_sixths;
+        wf22R *= pWFlm->ampNorm * powers_of_Mf->m_seven_sixths;
     }
     // Compute 32 mode in spheroidal.
-    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
-    double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
+    REAL8 amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_Mf, pWFlm, pAmplm);
+    REAL8 philm=IMRPhenomXHM_RD_Phase_AnsatzInt(Mf, powers_of_Mf,pWFlm, pPhaselm);
     // Do the rotation.
-    double complex sphericalWF_32=conj(pWFlm->mixingCoeffs[2]) * wf22R + conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
+    COMPLEX16 sphericalWF_32=conj(pWFlm->mixingCoeffs[2]) * wf22R + conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
     return sphericalWF_32;
 
   }
 
   // If the 22 mode has been previously computed, we use it here for the rotation.
-  double complex SpheroidalToSphericalRecycle(double ff, IMRPhenomX_UsefulPowers *powers_of_f, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm)
+  COMPLEX16 SpheroidalToSphericalRecycle(IMRPhenomX_UsefulPowers *powers_of_Mf, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmplm, IMRPhenomXHMPhaseCoefficients *pPhaselm, IMRPhenomXHMWaveformStruct *pWFlm)
   {
     // The input 22 in the whole 22, and for the rotation we have to rescaled with the leading order. This is because the 32 is also rescaled.
     //complex double wf22R = wf22/(powers_of_f->m_seven_sixths * pWF22->amp0);
-    complex double wf22R = wf22 / pWFlm->Amp0;
+    COMPLEX16 wf22R = wf22 / pWFlm->Amp0;
     if (pAmplm->RDRescaleFactor == 1){
-        wf22R /= (pWFlm->ampNorm * powers_of_f->m_seven_sixths);
+        wf22R /= (pWFlm->ampNorm * powers_of_Mf->m_seven_sixths);
     }
     // Compute 32 mode in spheroidal.
-    double amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWFlm, pAmplm);
-    double philm=IMRPhenomXHM_RD_Phase_AnsatzInt(ff, powers_of_f,pWFlm, pPhaselm);
+    REAL8 amplm=IMRPhenomXHM_RD_Amp_Ansatz(powers_of_Mf, pWFlm, pAmplm);
+    REAL8 philm=IMRPhenomXHM_RD_Phase_AnsatzInt(powers_of_Mf->itself, powers_of_Mf, pWFlm, pPhaselm);
     // Do the rotation
-    double complex sphericalWF_32 = conj(pWFlm->mixingCoeffs[2])*wf22R  +  conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
+    COMPLEX16 sphericalWF_32 = conj(pWFlm->mixingCoeffs[2])*wf22R  +  conj(pWFlm->mixingCoeffs[3])*amplm*cexp(I*philm);
     return sphericalWF_32;
 
   }
@@ -2398,106 +2399,96 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
   /*******************************************************************************/
 
   // WITHOUT mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))]
-  double IMRPhenomXHM_Amplitude_noModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWF) {
+  REAL8 IMRPhenomXHM_Amplitude_noModeMixing(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMWaveformStruct *pWF) {
     // If it is an odd mode and equal black holes case this mode is zero.
     if(pWF->Ampzero==1){
       return 0.;
     }
 
     // Use step function to only calculate IMR regions in approrpiate frequency regime
-    double Amp;
+    REAL8 Amp, Mf = powers_of_Mf->itself;
     // Inspiral range
-    if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
-    {
-      Amp = IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
+    if (!IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIN)){
+      Amp = IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
     }
     // MRD range
-    else if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
-    {
-      if (pAmp->fAmpRDfalloff > 0 && IMRPhenomX_StepFuncBool(f, pAmp->fAmpRDfalloff)){
-          Amp = pAmp->RDCoefficient[3] * exp(- pAmp->RDCoefficient[4] * (f - pAmp->fAmpRDfalloff));
+    else if (IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIM)){
+      if (pAmp->fAmpRDfalloff > 0 && IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpRDfalloff)){
+          Amp = pAmp->RDCoefficient[3] * exp(- pAmp->RDCoefficient[4] * (Mf - pAmp->fAmpRDfalloff));
       }
       else{
-          Amp = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_f, pWF, pAmp);
+          Amp = IMRPhenomXHM_RD_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
      }
     }
     /* Intermediate range */
     // First intermediate region.
-    else if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
-    {
+    else if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchInt12)){
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
     }
     else{  //Second intermediate region
-        Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+        Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
     }
     if (Amp < 0 ) Amp = FALSE_ZERO;
     return Amp;
   }
 
   // WITH mode mixing. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
-  double IMRPhenomXHM_Amplitude_ModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22) {
+  REAL8 IMRPhenomXHM_Amplitude_ModeMixing(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF, IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22) {
     // Use step function to only calculate IMR regions in approrpiate frequency regime
+    REAL8 Amp, Mf = powers_of_Mf->itself;
     // Inspiral range
-    if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
-    {
-      double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      return AmpIns;//*factor;
+    if (!IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIN)){
+      Amp =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
     }
     // MRD range
-    if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
-    {
-      double AmpMRD = cabs(SpheroidalToSpherical(f, powers_of_f, pAmp22, pPhase22, pAmp, pPhase, pWF, pWF22));
-      //printf("f, amp = %.16e %.16e\n", f, AmpMRD);
-      return AmpMRD;//*factor;
+    else if (IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIM)){
+      Amp = cabs(SpheroidalToSpherical(powers_of_Mf, pAmp22, pPhase22, pAmp, pPhase, pWF, pWF22));
     }
     /* Intermediate range */
     // First intermediate region
-    if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
-    {
+    else if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchInt12)){
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
-      return AmpInt1;
     }
     //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
-    return AmpInt;
+    else{
+        Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
+    }
+    if (Amp < 0 ) Amp = FALSE_ZERO;
+    return Amp;
   }
 
   // WITH mode mixing and recycling the previously computed 22 mode. It returns the whole amplitude (in NR units) without the normalization factor of the 22: sqrt[2 * eta / (3 * pi^(1/3))].
-  double IMRPhenomXHM_Amplitude_ModeMixingRecycle(double f, IMRPhenomX_UsefulPowers *powers_of_f, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF) {
-    //  double f_seven_sixths = powers_of_f->seven_sixths;
-    //double factor = powers_of_f->m_seven_sixths;
+  REAL8 IMRPhenomXHM_Amplitude_ModeMixingRecycle(IMRPhenomX_UsefulPowers *powers_of_Mf, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF) {
     // Use step function to only calculate IMR regions in approrpiate frequency regime
+    REAL8 Amp, Mf = powers_of_Mf->itself;
     // Inspiral range
-    if (!IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIN))
-    {
-      double AmpIns =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_f, pWF, pAmp);
-      return AmpIns;//*factor;
+    if (!IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIN)){
+      Amp =  IMRPhenomXHM_Inspiral_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
     }
     // MRD range
-    if (IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchIM))
-    {
-      double AmpMRD = cabs(SpheroidalToSphericalRecycle(f, powers_of_f, wf22, pAmp, pPhase, pWF));
-      return AmpMRD;//*factor;
+    else if (IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchIM)){
+      Amp = cabs(SpheroidalToSphericalRecycle(powers_of_Mf, wf22, pAmp, pPhase, pWF));
     }
     /* Intermediate range */
     // First intermediate region
-    if ((pWF->AmpEMR==1) )//&& !IMRPhenomX_StepFuncBool(f, pAmp->fAmpMatchInt12))
-    {
+    else if ((pWF->AmpEMR==1) && !IMRPhenomX_StepFuncBool(Mf, pAmp->fAmpMatchInt12)){ // FIXME: why was the second condition commented?
       INT4 tmp = pAmp->InterAmpPolOrder;
       pAmp->InterAmpPolOrder = 1042;
-      double AmpInt1 = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
+      Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
       pAmp->InterAmpPolOrder = tmp;
-      return AmpInt1;
     }
     //Second intermediate region
-    double AmpInt = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_f, pWF, pAmp);
-    return AmpInt;
+    else{
+        Amp = IMRPhenomXHM_Intermediate_Amp_Ansatz(powers_of_Mf, pWF, pAmp);
+    }
+    if (Amp < 0 ) Amp = FALSE_ZERO;
+    return Amp;
   }
 
 
@@ -2505,65 +2496,68 @@ void  GetSpheroidalCoefficients(IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenom
   /*  Compute IMRPhenomXHM PHASE given a phase coefficients struct pPhase        */
   /*******************************************************************************/
 
-  // WITHOUT mode mixing.
-  double IMRPhenomXHM_Phase_noModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF, UNUSED IMRPhenomXWaveformStruct *pWF22)
+// WITHOUT mode mixing.
+REAL8 IMRPhenomXHM_Phase_noModeMixing(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF, UNUSED IMRPhenomXWaveformStruct *pWF22)
+{
+  REAL8 Mf = powers_of_Mf->itself;
+  // Inspiral range, f < fPhaseInsMax
+  if (!IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIN))
   {
-    // Inspiral range, f < fPhaseInsMax
-    if (!IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIN))
-    {
-      double PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(f, powers_of_f, pPhase);
-      return PhiIns + pPhase->C1INSP*f + pPhase->CINSP + pPhase->deltaphiLM;
-    }
-    // MRD range, f > fPhaseIntMax
-    if (IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIM))
-    {
-      double PhiMRD = IMRPhenomXHM_RD_Phase_AnsatzInt(f, powers_of_f, pWF, pPhase);
-      return PhiMRD + pPhase->C1RD*f + pPhase->CRD + pPhase->deltaphiLM;
-    }
-    //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
-    double PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(f, powers_of_f, pWF, pPhase);
-    return PhiInt + pPhase->deltaphiLM;
+      REAL8 PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(Mf, powers_of_Mf, pPhase);
+      return PhiIns + pPhase->C1INSP*Mf + pPhase->CINSP + pPhase->deltaphiLM;
   }
+  // MRD range, f > fPhaseIntMax
+  if (IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIM))
+  {
+      REAL8 PhiMRD = IMRPhenomXHM_RD_Phase_AnsatzInt(Mf, powers_of_Mf, pWF, pPhase);
+      return PhiMRD + pPhase->C1RD*Mf + pPhase->CRD + pPhase->deltaphiLM;
+  }
+  //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
+  REAL8 PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(Mf, powers_of_Mf, pWF, pPhase);
+  return PhiInt + pPhase->deltaphiLM;
+}
 
-  // WITH mode mixing.
-  double IMRPhenomXHM_Phase_ModeMixing(double f, IMRPhenomX_UsefulPowers *powers_of_f,IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22)
+// WITH mode mixing.
+REAL8 IMRPhenomXHM_Phase_ModeMixing(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF,  IMRPhenomXAmpCoefficients *pAmp22, IMRPhenomXPhaseCoefficients *pPhase22, IMRPhenomXWaveformStruct *pWF22)
+{
+  REAL8 Mf = powers_of_Mf->itself;
+  // Inspiral range, f < fPhaseInsMax
+  if (!IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIN))
   {
-    // Inspiral range, f < fPhaseInsMax
-    if (!IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIN))
-    {
-      double PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(f, powers_of_f, pPhase);
-      return PhiIns + pPhase->C1INSP*f + pPhase->CINSP + pPhase->deltaphiLM;
-    }
-    // MRD range, f > fPhaseIntMax
-    if (IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIM))
-    {
-      double PhiMRD = carg(SpheroidalToSpherical(f, powers_of_f, pAmp22, pPhase22, pAmp, pPhase, pWF, pWF22));
-      return PhiMRD + pPhase->C1RD*f + pPhase->CRD + pPhase->deltaphiLM;
-    }
-    //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
-    double PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(f, powers_of_f, pWF, pPhase);
-    return PhiInt + pPhase->deltaphiLM;
+      REAL8 PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(Mf, powers_of_Mf, pPhase);
+      return PhiIns + pPhase->C1INSP*Mf + pPhase->CINSP + pPhase->deltaphiLM;
   }
+  // MRD range, f > fPhaseIntMax
+  if (IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIM))
+  {
+      REAL8 PhiMRD = carg(SpheroidalToSpherical(powers_of_Mf, pAmp22, pPhase22, pAmp, pPhase, pWF, pWF22));
+      return PhiMRD + pPhase->C1RD*Mf + pPhase->CRD + pPhase->deltaphiLM;
+  }
+  //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
+  REAL8 PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(Mf, powers_of_Mf, pWF, pPhase);
+  return PhiInt + pPhase->deltaphiLM;
+}
 
-  // WITH mode mixing and recycling the previously computed 22 mode.
-  double IMRPhenomXHM_Phase_ModeMixingRecycle(double f, IMRPhenomX_UsefulPowers *powers_of_f, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF)
+// WITH mode mixing and recycling the previously computed 22 mode.
+REAL8 IMRPhenomXHM_Phase_ModeMixingRecycle(IMRPhenomX_UsefulPowers *powers_of_Mf, COMPLEX16 wf22, IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomXHMPhaseCoefficients *pPhase, IMRPhenomXHMWaveformStruct *pWF)
+{
+  REAL8 Mf = powers_of_Mf->itself;
+  // Inspiral range, f < fPhaseInsMax
+  if (!IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIN))
   {
-    // Inspiral range, f < fPhaseInsMax
-    if (!IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIN))
-    {
-      double PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(f, powers_of_f, pPhase);
-      return PhiIns + pPhase->C1INSP*f + pPhase->CINSP + pPhase->deltaphiLM;
-    }
-    // MRD range, f > fPhaseIntMax
-    if (IMRPhenomX_StepFuncBool(f, pPhase->fPhaseMatchIM))
-    {
-      double PhiMRD = carg(SpheroidalToSphericalRecycle(f, powers_of_f, wf22, pAmp, pPhase, pWF));
-      return PhiMRD + pPhase->C1RD*f + pPhase->CRD + pPhase->deltaphiLM;
-    }
-    //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
-    double PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(f, powers_of_f, pWF, pPhase);
-    return PhiInt + pPhase->deltaphiLM;
+      REAL8 PhiIns = IMRPhenomXHM_Inspiral_Phase_AnsatzInt(Mf, powers_of_Mf, pPhase);
+      return PhiIns + pPhase->C1INSP*Mf + pPhase->CINSP + pPhase->deltaphiLM;
   }
+  // MRD range, f > fPhaseIntMax
+  if (IMRPhenomX_StepFuncBool(Mf, pPhase->fPhaseMatchIM))
+  {
+      REAL8 PhiMRD = carg(SpheroidalToSphericalRecycle(powers_of_Mf, wf22, pAmp, pPhase, pWF));
+      return PhiMRD + pPhase->C1RD*Mf + pPhase->CRD + pPhase->deltaphiLM;
+  }
+  //Intermediate range, fPhaseInsMax < f < fPhaseIntMax
+  REAL8 PhiInt = IMRPhenomXHM_Inter_Phase_AnsatzInt(Mf, powers_of_Mf, pWF, pPhase);
+  return PhiInt + pPhase->deltaphiLM;
+}
 
 
   /*****************/

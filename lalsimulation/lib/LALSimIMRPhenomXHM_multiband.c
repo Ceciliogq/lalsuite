@@ -2349,7 +2349,7 @@ static int IMRPhenomXHM_Amplitude(
         }
         else
         {
-          amp = IMRPhenomXHM_Amplitude_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+          amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
           /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
           ((*amplm)->data->data)[idx+offset] = pWFHM->Amp0 * amp;
         }
@@ -2367,7 +2367,7 @@ static int IMRPhenomXHM_Amplitude(
         }
         else
         {
-          amp = IMRPhenomXHM_Amplitude_noModeMixing(Mf, &powers_of_Mf, pAmp, pWFHM);
+          amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf, pAmp, pWFHM);
           /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
           ((*amplm)->data->data)[idx+offset] = pWFHM->Amp0 * amp;
         }
@@ -2499,7 +2499,7 @@ static int IMRPhenomXHM_Phase(
           }
           else
           {
-            phi = IMRPhenomXHM_Phase_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+            phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
             /* Only the first coarse point in the RD needs the unwrapping.
             If we remove the enter condition we would get a nice and smooth coarse phase up to pAmp->fAmpMatchIM. */
             if(Mf > pPhase->fPhaseMatchIM && idx>0 && enter == 1){
@@ -2531,7 +2531,7 @@ static int IMRPhenomXHM_Phase(
         }
         else
         {
-          phi = IMRPhenomXHM_Phase_noModeMixing(Mf, &powers_of_Mf, pPhase, pWFHM, pWF);
+          phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf, pPhase, pWFHM, pWF);
           /* Reconstruct waveform: h(f) = A(f) * Exp[I phi(f)] */
           ((*phaselm)->data->data)[idx+offset] = phi;
         }

@@ -2496,7 +2496,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
                 pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = IMRPhenomXHM_RD_Amp_Ansatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
             }
             else{
-                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(powers_of_fRD.itself, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(&powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
             }
             tmpnCollocPts++;
             break;
@@ -2507,7 +2507,7 @@ static void IMRPhenomXHM_Intermediate_Amp_CollocationPoints(IMRPhenomXHMAmpCoeff
                 pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_DAnsatz(&powers_of_fRD, pWFHM, pAmp);//pAmp->CollocationPointsValuesAmplitudeRD[0];
             }
             else{
-                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(powers_of_fRD.itself, &powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+                pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts] = cabs(SpheroidalToSpherical(&powers_of_fRD, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
                 pAmp->CollocationPointsValuesAmplitudeInter[tmpnCollocPts + 1] = IMRPhenomXHM_RD_Amp_NDAnsatz(&powers_of_fRD, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF22);
             }
             tmpnCollocPts += 2;

@@ -902,16 +902,16 @@ static double IMRPhenomXHM_RD_Amp_NDAnsatz(IMRPhenomX_UsefulPowers *powers_of_Mf
     IMRPhenomX_UsefulPowers powers_of_fun;
 
     IMRPhenomX_Initialize_Powers(&powers_of_fun,fun2R);
-    fun2R = cabs(SpheroidalToSpherical(fun2R, &powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    fun2R = cabs(SpheroidalToSpherical(&powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
 
     IMRPhenomX_Initialize_Powers(&powers_of_fun,funR);
-    funR  = cabs(SpheroidalToSpherical(funR, &powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    funR  = cabs(SpheroidalToSpherical(&powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
 
     IMRPhenomX_Initialize_Powers(&powers_of_fun,funL);
-    funL  = cabs(SpheroidalToSpherical(funL, &powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    funL  = cabs(SpheroidalToSpherical(&powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
 
     IMRPhenomX_Initialize_Powers(&powers_of_fun,fun2L);
-    fun2L = cabs(SpheroidalToSpherical(fun2L, &powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
+    fun2L = cabs(SpheroidalToSpherical(&powers_of_fun, pAmp22, pPhase22, pAmp, pPhase, pWFHM, pWF22));
 
     Nder = (-fun2R + 8*funR - 8*funL + fun2L )/(12*df);
 
