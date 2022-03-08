@@ -407,6 +407,8 @@ static GSParams *parse_args(ssize_t argc, char **argv) {
             XLALSimInspiralWaveformParamsInsertPhenomXPrecVersion(params->params, atoi(argv[++i]));
         }else if(strcmp(argv[i], "--phenomXPFinalSpinMod") == 0){
             XLALSimInspiralWaveformParamsInsertPhenomXPFinalSpinMod(params->params, atoi(argv[++i]));
+        }else if(strcmp(argv[i], "--phenomXHMReleaseVersion") == 0){
+            XLALSimInspiralWaveformParamsInsertPhenomXHMReleaseVersion(params->params, atoi(argv[++i]));
         }else {
             XLALPrintError("Error: invalid option: %s\n", argv[i]);
             goto fail;
@@ -559,12 +561,6 @@ int main (int argc , char **argv) {
 
     /* parse commandline */
     params = parse_args(argc, argv);
-
-    XLALSimInspiralWaveformParamsInsertPhenomXHMInspiralAmpFitsVersion(params->params, 102021);
-    XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFitsVersion(params->params, 102021);
-    XLALSimInspiralWaveformParamsInsertPhenomXHMInspiralAmpFreqsVersion(params->params, 102021);
-    XLALSimInspiralWaveformParamsInsertPhenomXHMRingdownAmpFreqsVersion(params->params, 102021);
-    XLALSimInspiralWaveformParamsInsertPhenomXHMIntermediateAmpVersion(params->params, 211112);
 
     /* generate waveform */
     start_time = time(NULL);

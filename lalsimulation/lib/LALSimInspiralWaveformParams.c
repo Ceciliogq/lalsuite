@@ -177,7 +177,7 @@ DEFINE_INSERT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
 DEFINE_INSERT_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
-DEFINE_INSERT_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 102021)
+DEFINE_INSERT_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 122019)
 DEFINE_INSERT_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
 DEFINE_INSERT_FUNC(PhenomXHMIntermediatePhaseVersion, INT4, "IntPhaseHMVersion", 122019)
 DEFINE_INSERT_FUNC(PhenomXHMRingdownPhaseVersion, INT4, "RDPhaseHMVersion", 122019)
@@ -345,7 +345,7 @@ DEFINE_LOOKUP_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
 DEFINE_LOOKUP_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
-DEFINE_LOOKUP_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 102021)
+DEFINE_LOOKUP_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 122019)
 DEFINE_LOOKUP_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
 DEFINE_LOOKUP_FUNC(PhenomXHMIntermediatePhaseVersion, INT4, "IntPhaseHMVersion", 122019)
 DEFINE_LOOKUP_FUNC(PhenomXHMRingdownPhaseVersion, INT4, "RDPhaseHMVersion", 122019)
@@ -488,7 +488,7 @@ DEFINE_ISDEFAULT_FUNC(PhenomXPFinalSpinMod, INT4, "FinalSpinMod", 4)
 DEFINE_ISDEFAULT_FUNC(PhenomXPTransPrecessionMethod, INT4, "TransPrecessionMethod", 1)
 
 /* IMRPhenomXHM Parameters */
-DEFINE_ISDEFAULT_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 102021)
+DEFINE_ISDEFAULT_FUNC(PhenomXHMReleaseVersion, INT4, "XHMReleaseVersion", 122019)
 DEFINE_ISDEFAULT_FUNC(PhenomXHMInspiralPhaseVersion, INT4, "InsPhaseHMVersion", 122019)
 DEFINE_ISDEFAULT_FUNC(PhenomXHMIntermediatePhaseVersion, INT4, "IntPhaseHMVersion", 122019)
 DEFINE_ISDEFAULT_FUNC(PhenomXHMRingdownPhaseVersion, INT4, "RDPhaseHMVersion", 122019)

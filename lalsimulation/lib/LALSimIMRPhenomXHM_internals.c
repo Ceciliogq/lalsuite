@@ -197,44 +197,44 @@ void IMRPhenomXHM_SetHMWaveformVariables(
       switch(wf->modeTag)
       {
           case 21:{
-            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
-            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
-            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
                 wf->IMRPhenomXHMIntermediateAmpVersion = 111112;
             break;
           }
           case 33:{
-            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211004;
-            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211004;
-            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211004;
             if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
                 wf->IMRPhenomXHMIntermediateAmpVersion = 211112;
             break;
           }
           case 32:{
-            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMInspiralAmpFitsVersion = 202109302;
-            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMIntermediateAmpFitsVersion = 202109302;
-            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMRingdownAmpFitsVersion = 202109302;
             if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
                 wf->IMRPhenomXHMIntermediateAmpVersion = 111111;
             break;
           }
           case 44:{
-            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMInspiralAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMInspiralAmpFitsVersion = 20211005;
-            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMIntermediateAmpFitsVersion = 20211005;
-            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpVersionIsDefault(LALParams))
+            if(XLALSimInspiralWaveformParamsPhenomXHMRingdownAmpFitsVersionIsDefault(LALParams))
                 wf->IMRPhenomXHMRingdownAmpFitsVersion = 20211005;
             if(XLALSimInspiralWaveformParamsPhenomXHMIntermediateAmpVersionIsDefault(LALParams))    
                 wf->IMRPhenomXHMIntermediateAmpVersion = 111111;
@@ -946,13 +946,14 @@ void IMRPhenomXHM_GetAmplitudeCoefficients(IMRPhenomXHMAmpCoefficients *pAmp, IM
     pAmp->nCoefficientsInter = 0;
 
     /*** Proceed region by region ***/
-    if(pWFHM->IMRPhenomXHMReleaseVersion != 122018){ 
+    if(pWFHM->IMRPhenomXHMReleaseVersion != 122019){ 
         pAmp->InspRescaleFactor = 2;
         pAmp->RDRescaleFactor = 2;
         pAmp->InterRescaleFactor = 0;
                     
         UINT4 InputnCollPointsInter = snprintf(NULL, 0, "%i", pWFHM->IMRPhenomXHMIntermediateAmpVersion);
-
+        printf("InputnCollPointsInter = %i\n", InputnCollPointsInter);
+        
         /* Transform IMRPhenomXHMIntermediateAmpVersion number to int array defining what to do for each collocation point */
         /* 0: don't use coll point, 1: use point, 2: use point and derivative (this only applies for boundaries) */
         // e.g. pAmp->VersionCollocPtsInter = {1, 1, 1, 1, 0, 2} -> use the two boundaries, add derivative to the right one
