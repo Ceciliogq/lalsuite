@@ -626,21 +626,14 @@ static double IMRPhenomXHM_Inspiral_Amp_rho3(double v1, double v2, double v3, IM
 //Return the Fourier Domain Post-Newtonian ansatz up to 3PN without the pseudoPN terms for a particular frequency
 static double IMRPhenomXHM_Inspiral_PNAmp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp){
 
-  // The 21 mode is special, is not a power series
-  if(pWFHM->useFAmpPN==1){
+    // The 21 mode is special, is not a power series
+    if(pWFHM->useFAmpPN==1){
     return IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(powers_of_Mf, pWFHM, pAmp);
-  }
+    }
 
-   //This returns the amplitude strain rescaled with the prefactor of the 22 mode: divided by sqrt(2*eta/3.)/pi^(1/6)
-  double complex CpnAmp;
-  double pnAmp;
-  /*int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
-  switch(InsAmpFlag)
-  {
-    case 122018:
-    case 102021://FIXME
-    {*/
-      CpnAmp = (pAmp->pnInitial
+    //This returns the amplitude strain rescaled with the prefactor of the 22 mode: divided by sqrt(2*eta/3.)/pi^(1/6)*Mf^(-7/6)
+    double pnAmp;
+    pnAmp = cabs(pAmp->pnInitial
         + powers_of_Mf->one_third    * pAmp->pnOneThird
         + powers_of_Mf->two_thirds   * pAmp->pnTwoThirds
         + powers_of_Mf->itself       * pAmp->pnThreeThirds
@@ -648,20 +641,14 @@ static double IMRPhenomXHM_Inspiral_PNAmp_Ansatz(IMRPhenomX_UsefulPowers *powers
         + powers_of_Mf->five_thirds  * pAmp->pnFiveThirds
         + powers_of_Mf->two          * pAmp->pnSixThirds
     );
-      pnAmp = (pAmp->PNglobalfactor)*cabs(CpnAmp);
-      pnAmp *= powers_of_Mf->m_seven_sixths;
-      //if(pAmp->InspRescaleFactor>=0){
-      pnAmp/= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
-      //}
-    /*  break;
+    if (pAmp->InspRescaleFactor == 0){
+        pnAmp *= pAmp->PNglobalfactor * powers_of_Mf->m_seven_sixths * pWFHM->ampNorm;
     }
-    default :
-    {
-        XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomXHM_Inspiral_PNAmp_Ansatz: IMRPhenomXInspiralAmpVersion is not valid. Recommended version is 122018.\n");
+    else if (pAmp->InspRescaleFactor == 1){
+        pnAmp *= pAmp->PNglobalfactor;
     }
-}*/
 
-  return pnAmp;
+    return pnAmp;
 }
 
 //Return the 21 mode Fourier Domain Post-Newtonian ansatz up to 3PN without the pseudoPN terms for a particular frequency
@@ -674,7 +661,6 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
   switch(InsAmpFlag)
   {
     case 122018:
-    case 102021://FIXME
     {
       // Complex time-domain Post-Newtonina amplitude, power series
       CpnAmpTD = (
@@ -699,10 +685,9 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
 
       // Perform the SPA, multiply time-domain by the phasing factor
       pnAmp = 2. * powers_of_lalpiHM.sqrt * three_to_m_one_second  * cabs(CpnAmpTD) * x_to_m_one_four / sqrt(XdotT4);// /powers_of_Mf->m_seven_sixths/pWFHM->ampNorm;
-      //pnAmp *= powers_of_Mf->m_seven_sixths;
-      //if(pAmp->InspRescaleFactor>=0){
-      pnAmp/= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
-      //}
+      if (pAmp->InspRescaleFactor != 0){
+          pnAmp /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
+      }
 
      break;
     }
@@ -716,32 +701,25 @@ static double IMRPhenomXHM_Inspiral_PNAmp_21Ansatz(IMRPhenomX_UsefulPowers *powe
 static double IMRPhenomXHM_Inspiral_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXHMWaveformStruct *pWFHM, IMRPhenomXHMAmpCoefficients *pAmp)
 {
     double InspAmp; //This is the amplitude strain rescaled with the prefactor of the 22 mode: divided by [sqrt(2*eta/3.)/pi^(1/6) * f^(-7/6)]
-    // int InsAmpFlag = pWFHM->IMRPhenomXHMInspiralAmpFitsVersion;
-    // if(InsAmpFlag == 122018){
-        InspAmp = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(powers_of_Mf, pWFHM, pAmp);
-        double pseudoterms = 0.;
-        if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 122018){
-            pseudoterms = powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
-                    + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
-                    + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3;
+    InspAmp = IMRPhenomXHM_Inspiral_PNAmp_Ansatz(powers_of_Mf, pWFHM, pAmp);
+    double pseudoterms = 0.;
+    if(pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 122018){
+        pseudoterms = powers_of_Mf->seven_thirds / pAmp->fcutInsp_seven_thirds * pAmp->rho1
+                + powers_of_Mf->eight_thirds / pAmp->fcutInsp_eight_thirds * pAmp->rho2
+                + powers_of_Mf->three        / pAmp->fcutInsp_three * pAmp->rho3;
+        if (pAmp->InspRescaleFactor == 0){
+            pseudoterms *= powers_of_Mf->m_seven_sixths * pWFHM->ampNorm;
         }
-        else{
-            //for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
-            //pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two;
-            pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds / pAmp->fcutInsp_seven_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds / pAmp->fcutInsp_eight_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two / pAmp->fcutInsp_three;
-            //}
+        InspAmp += pseudoterms;
+    }
+    else{
+        /* New release. FIXME: improve how the ansatz is built */
+        pseudoterms = pAmp->InspiralCoefficient[0] * powers_of_Mf->four_thirds / pAmp->fcutInsp_seven_thirds + pAmp->InspiralCoefficient[1] * powers_of_Mf->five_thirds / pAmp->fcutInsp_eight_thirds + pAmp->InspiralCoefficient[2] * powers_of_Mf->two / pAmp->fcutInsp_three;
+        InspAmp += pseudoterms;
+        if (pAmp->InspRescaleFactor != 0){
+            InspAmp /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
         }
-        // if (pWFHM->IMRPhenomXHMInspiralAmpFreqsVersion == 102021){
-        //     pseudoterms /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InspRescaleFactor);
-        // } Change1
-        if(pAmp->InspRescaleFactor<0){
-            pseudoterms *= RescaleFactor(powers_of_Mf, pAmp, -pAmp->InspRescaleFactor);
-        }
-        InspAmp+=pseudoterms;
-        if(pAmp->InterRescaleFactor>0){
-            InspAmp /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
-        }
-    //}
+    }        
 
     return InspAmp ;
 }
@@ -856,9 +834,6 @@ static void IMRPhenomXHM_Inspiral_Amp_CollocationPoints(IMRPhenomXHMAmpCoefficie
     }
     for(UINT2 i = 0; i < pWFHM->nCollocPtsInspAmp; i++){
         pAmp->CollocationPointsValuesAmplitudeInsp[i] = fabs(pAmp->InspiralAmpFits[pWFHM->modeInt * pWFHM->nCollocPtsInspAmp + i](pWF22->eta, pWF22->chi1L, pWF22->chi2L, pWFHM->IMRPhenomXHMInspiralAmpFitsVersion));
-        // int status = IMRPhenomX_Initialize_Powers(&(powers_of_Mf_inspcollpoints[i]),  pAmp->CollocationPointsFreqsAmplitudeInsp[i]);
-        // if(status != XLAL_SUCCESS)
-        //     XLALPrintError("IMRPhenomXHM_Inspiral_Amp_CollocationPoints failed for Mf, initial_status=%d",status);
     }
 }
 
@@ -895,39 +870,6 @@ static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *
         }
     }
 }
-// static void IMRPhenomXHM_Inspiral_Amp_Coefficients(IMRPhenomXHMAmpCoefficients *pAmp, IMRPhenomX_UsefulPowers *powers_of_Mf_inspcollpoints, IMRPhenomXHMWaveformStruct *pWFHM){
-//
-//     for (UINT2 i = 0; i < N_MAX_COEFFICIENTS_AMPLITUDE_INS; i++){
-//         pAmp->InspiralCoefficient[i] = 0;
-//     }
-//
-// 	IMRPhenomX_UsefulPowers *powers_of_f1 = &(powers_of_Mf_inspcollpoints[0]);
-//     IMRPhenomX_UsefulPowers *powers_of_f2 = &(powers_of_Mf_inspcollpoints[1]);
-//     IMRPhenomX_UsefulPowers *powers_of_f3 = &(powers_of_Mf_inspcollpoints[2]);
-//
-//     REAL8 v1 = pAmp->CollocationPointsValuesAmplitudeInsp[0] - pAmp->PNAmplitudeInsp[0];
-//     REAL8 v2 = pAmp->CollocationPointsValuesAmplitudeInsp[1] - pAmp->PNAmplitudeInsp[1];
-//     REAL8 v3 = pAmp->CollocationPointsValuesAmplitudeInsp[2] - pAmp->PNAmplitudeInsp[2];
-//
-//     switch(pWFHM->IMRPhenomXHMInspiralAmpVersion){
-//         case 1:{
-// 			pAmp->InspiralCoefficient[0] = v1/powers_of_f1->four_thirds;
-//             break;
-//         }
-//         case 2:{
-//             pAmp->InspiralCoefficient[0] = (-(powers_of_f2->five_thirds*v1) + powers_of_f1->five_thirds*v2)/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third));
-//             pAmp->InspiralCoefficient[1] = (powers_of_f1->m_four_thirds*v1 - powers_of_f2->m_four_thirds*v2)/(powers_of_f1->one_third - powers_of_f2->one_third);
-//             break;
-//         }
-//         case 3:{
-//             pAmp->InspiralCoefficient[0] = (-(powers_of_f1->two*powers_of_f3->five_thirds*v2) + powers_of_f1->five_thirds*powers_of_f3->two*v2 + powers_of_f2->two*(powers_of_f3->five_thirds*v1 - powers_of_f1->five_thirds*v3) + powers_of_f2->five_thirds*(-(powers_of_f3->two*v1) + powers_of_f1->two*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
-//             pAmp->InspiralCoefficient[1] = (powers_of_f1->two*powers_of_f3->four_thirds*v2 - powers_of_f1->four_thirds*powers_of_f3->two*v2 + powers_of_f2->two*(-(powers_of_f3->four_thirds*v1) + powers_of_f1->four_thirds*v3) + powers_of_f2->four_thirds*(powers_of_f3->two*v1 - powers_of_f1->two*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
-//             pAmp->InspiralCoefficient[2] = (powers_of_f1->four_thirds*powers_of_f3->four_thirds*(-powers_of_f1->one_third + powers_of_f3->one_third)*v2 + powers_of_f2->four_thirds*(-(powers_of_f3->five_thirds*v1) + powers_of_f1->five_thirds*v3) + powers_of_f2->five_thirds*(powers_of_f3->four_thirds*v1 - powers_of_f1->four_thirds*v3))/(powers_of_f1->four_thirds*powers_of_f2->four_thirds*(powers_of_f1->one_third - powers_of_f2->one_third)*powers_of_f3->four_thirds*(powers_of_f1->one_third - powers_of_f3->one_third)*(powers_of_f2->one_third - powers_of_f3->one_third));
-//             break;
-//         }
-//     }
-//     printf("Leaving IMRPhenomXHM_Inspiral_Amp_Coefficients\n");
-// }
 
 /*************************************/
 /*                                   */

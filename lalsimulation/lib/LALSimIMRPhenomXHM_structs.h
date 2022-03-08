@@ -83,7 +83,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
         REAL8 chi_s, chi_a;  // (chi1 +/- chi2)/2
 
         /* MECO, Ringdown and Damping Frequencies */
-				REAL8 fMECOlm;  // = wf22->fMECO*m/2
+		REAL8 fMECOlm;  // = wf22->fMECO*m/2
         REAL8 fRING;
         REAL8 fDAMP;
 
@@ -231,7 +231,7 @@ typedef struct tagIMRPhenomXHMWaveformStruct
             // Amp0 = wf22->ampNorm * wf22->amp0. Multiplying by this gives the amp factor of the 22 and transforms to "physical" units
             REAL8 Amp0;
 
-            INT4 InspRescaleFactor, InterRescaleFactor, RDRescaleFactor;
+            UINT2 InspRescaleFactor, InterRescaleFactor, RDRescaleFactor;
 
     } IMRPhenomXHMAmpCoefficients;
 

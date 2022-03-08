@@ -673,15 +673,15 @@ static void IMRPhenomXHM_RD_Amp_Coefficients(IMRPhenomXWaveformStruct *pWF22, IM
             IMRPhenomX_Initialize_Powers(&powers_of_RDCP2, pAmp->CollocationPointsFreqsAmplitudeRD[1]);
             IMRPhenomX_Initialize_Powers(&powers_of_RDCP3, pAmp->CollocationPointsFreqsAmplitudeRD[2]);
             double rescale_factor_lm;
-            rescale_factor_lm = RescaleFactor(&powers_of_RDCP1, pAmp, 3);
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP1, pAmp, 2);
             if ( rdcp1 / rescale_factor_lm < rdveto ){
                 rdcp1 = 0.9 * rdcp2; printf("Update rdcp1\n");
             }
-            rescale_factor_lm = RescaleFactor(&powers_of_RDCP2, pAmp, 3);
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP2, pAmp, 2);
             if ( rdcp2 / rescale_factor_lm < rdveto ){
                 rdcp2 = 0.9 * rdcp1; printf("Update rdcp2\n");
             }
-            rescale_factor_lm = RescaleFactor(&powers_of_RDCP3, pAmp, 3);
+            rescale_factor_lm = RescaleFactor(&powers_of_RDCP3, pAmp, 2);
             if ( rdcp3 / rescale_factor_lm < rdveto ){
                 rdcp3 = 0.9 * rdcp2; printf("Update rdcp3\n");
             }
@@ -807,7 +807,7 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
             double lc  = pAmp->lc;
             ampRD = (fda *fabs(pAmp->alambda) * pAmp->sigma)*exp(- dfr * pAmp->lambda / dfd )/ (dfr*dfr + dfd*dfd)*pow(ff,-lc);
             // The line below returns the strain amplitude
-            if (pAmp->RDRescaleFactor < 0){
+            if (pAmp->RDRescaleFactor == 0){
                  ampRD *= (pWF->ampNorm * powers_of_Mf->m_seven_sixths);
                  //printf("%.10f %.16e\n", ff, ampRD);
              }
@@ -827,7 +827,9 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
                 double dfd = fda * pAmp->RDCoefficient[2];
                 ampRD = pAmp->RDCoefficient[0] * fda / ( exp(pAmp->RDCoefficient[1] / dfd * dfr) * (dfr * dfr + dfd * dfd)); // * pWF->ampNorm * factor;
             }
-            ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            if (pAmp->RDRescaleFactor !=0){
+                ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->RDRescaleFactor);
+            }
             break;
         }
         default:
@@ -835,9 +837,7 @@ static double IMRPhenomXHM_RD_Amp_Ansatz(IMRPhenomX_UsefulPowers *powers_of_Mf, 
             XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Amp_Ansatz: IMRPhenomXHMRingdownAmpVersion is not valid. Use version 0 or 1. \n");
         }
     }
-    if(pAmp->InterRescaleFactor>0){
-        ampRD /= RescaleFactor(powers_of_Mf, pAmp, pAmp->InterRescaleFactor);
-    }
+    
     return ampRD;
 }
 
