@@ -690,6 +690,13 @@ int LALSimIMRPhenomTHM_Modes_v2(
     REAL8 tt;
     status = IMRPhenomTv2_times_x_phase(&phiorb, &xorb, &times, pWF, pPhase);
 
+    // Check time monotonicity
+    for(UINT4 idx = 0; idx < (times)->length - 1; idx++){
+      if ((times)->data[idx+1] < (times)->data[idx]) status = XLAL_FAILURE;
+    }
+    XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Times are not monotonic! Pathological reconstruction. Aborting.");
+
+
     //interpolate phase
 
     gsl_interp_accel *accel_phiorb;

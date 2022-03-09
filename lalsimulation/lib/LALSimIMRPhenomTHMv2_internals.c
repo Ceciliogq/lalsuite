@@ -97,14 +97,15 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 
 	REAL8 xCutInsp = 0.06 + 0.04*pow(1.0-4.0*eta,3);
 	REAL8 xCutMerger = IMRPhenomTv2_xCutMergerFit(eta, S, dchi, delta);
+	REAL8 xCutMerger2 = xCutMerger - 0.003;
   REAL8 xpeak = IMRPhenomTv2_xPeak(eta, S, dchi, delta);
 
 	pPhase->xCutInsp = xCutInsp;
-	pPhase->xCutMerger = xCutMerger;
+	pPhase->xCutMerger = xCutMerger2;
 	pPhase->xpeak = xpeak;
-	/*printf("---------------\n");
+	printf("---------------\n");
 	printf("CASE: eta: %f chi1L: %f chi2L: %f\n", eta, chi1L, chi2L);
-	printf("xmeco: %.8f xpeak: %.8f\n", xmeco, xpeak);*/
+	printf("xcutI: %.8f xcutM: %.8f xpeak: %.8f\n", xCutInsp, xCutMerger, xpeak);
 
 	/* Ringdown and damping frequency of final BH for the 22 mode (defined on LALSimIMRPhenomTHM_fits.c) */
 	REAL8 fRING     = evaluate_QNMfit_fring22(wf->afinal) / (wf->Mfinal); // 22 mode ringdown frequency
@@ -345,7 +346,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
  xx13over2 = pow(xx,6.5);
  xx7 = pow(xx,7);
  xx15over2 = pow(xx,7.5);
- 
+
  dT2offset = IMRPhenomTInspiral_dtdx_TaylorT2(xCutInsp, pPhase);
  gsl_vector_set(b,7,(tinsppoints[7] - dT2offset));
  gsl_matrix_set(A,7,0,0);
@@ -371,6 +372,8 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
  pPhase->tLateC7 = gsl_vector_get(sol,6);
  pPhase->tLateC8 = gsl_vector_get(sol,7);
 
+ printf("Int coefs: %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->tLateC1, pPhase->tLateC2, pPhase->tLateC3, pPhase->tLateC4, pPhase->tLateC5, pPhase->tLateC6, pPhase->tLateC7, pPhase->tLateC8);
+
  /* Tidy up in preparation for next GSL solve ... */
  gsl_vector_free(b);
  gsl_vector_free(sol);
@@ -381,10 +384,10 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 	/* *** MERGER COEFFICIENTS ********** */
 	/* ********************************** */
 	REAL8 invx;
-  REAL8 xpoints3[5] = {xCutMerger, xCutMerger + (xpeak - xCutMerger)/4, xCutMerger + 2*(xpeak - xCutMerger)/4, xCutMerger + 3*(xpeak - xCutMerger)/4, xpeak};
+  REAL8 xpoints3[5] = {xCutMerger2, xCutMerger + (xpeak - xCutMerger)/4, xCutMerger + 2*(xpeak - xCutMerger)/4, xCutMerger + 3*(xpeak - xCutMerger)/4, xpeak};
 
   REAL8 tmergerpoints[5];
-	tmergerpoints[0] = -100.0;
+	tmergerpoints[0] = IMRPhenomTInspiral_TofX_Calibrated_Late(xCutMerger2, wf, pPhase);
  	tmergerpoints[1] = IMRPhenomTv2_Merger_CP1(eta, S, dchi, delta);
  	tmergerpoints[2] = IMRPhenomTv2_Merger_CP2(eta, S, dchi, delta);
   tmergerpoints[3] = IMRPhenomTv2_Merger_CP3(eta, S, dchi, delta);
@@ -411,8 +414,8 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 		gsl_matrix_set(A,idx,5,invx*invx*invx*invx*invx);
 
 	}
-	invx = 1./xCutMerger;
-	gsl_vector_set(b,5,IMRPhenomTInspiral_dtdx_Calibrated_Late(xCutMerger, pPhase)/facNT4(xCutMerger,eta));
+	invx = 1./xCutMerger2;
+	gsl_vector_set(b,5,IMRPhenomTInspiral_dtdx_Calibrated_Late(xCutMerger2, pPhase)/facNT4(xCutMerger2,eta));
 
 	gsl_matrix_set(A,5,0,0);
 	gsl_matrix_set(A,5,1,-invx*invx);
@@ -431,7 +434,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
   pPhase->cc4M = gsl_vector_get(sol,4);
 	pPhase->cc5M = gsl_vector_get(sol,5);
 
-	printf("Int coefs: %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->cc0M, pPhase->cc1M, pPhase->cc2M, pPhase->cc3M, pPhase->cc4M, pPhase->cc5M);
+	printf("Merger coefs: %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->cc0M, pPhase->cc1M, pPhase->cc2M, pPhase->cc3M, pPhase->cc4M, pPhase->cc5M);
 
 	// Free the gsl objects employed in solving the coefficient system
 	gsl_vector_free(b);
@@ -457,8 +460,8 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 
 	pPhase->phOffInt = phCutInsp - phCutInt;
 
-  REAL8 phCut2Int = IMRPhenomTInspiral_PhiofX_Calibrated_Late(xCutMerger, wf, pPhase); //Value of inspiral phase at inspiral-merger boundary
-	REAL8 phCut2Merger = IMRPhenomTMerger_PhiofX_Calibrated(xCutMerger, pPhase); //Value of merger phase at merger-ringdown boundary
+  REAL8 phCut2Int = IMRPhenomTInspiral_PhiofX_Calibrated_Late(xCutMerger2, wf, pPhase); //Value of inspiral phase at inspiral-merger boundary
+	REAL8 phCut2Merger = IMRPhenomTMerger_PhiofX_Calibrated(xCutMerger2, pPhase); //Value of merger phase at merger-ringdown boundary
 
 	// Needed offset for merger ansatz in order to match inspiral phase value at the boundary
   pPhase->phOffMerger = phCut2Int - phCut2Merger;
@@ -477,7 +480,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
   if(pPhase->xmin <= xCutInsp){
     pPhase->tmin = IMRPhenomTInspiral_TofX_Calibrated_Early(pPhase->xmin, wf, pPhase);
   }
-  else if(pPhase->xmin > xCutMerger){
+  else if(pPhase->xmin > xCutMerger2){
     pPhase->tmin = IMRPhenomTMerger_TofX_Calibrated(pPhase->xmin, pPhase);
   }
   else{
@@ -485,7 +488,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
   }
 
 
-		printf("pPhase->tmin: %.8f\n", pPhase->tmin);
+		//printf("pPhase->tmin: %.8f\n", pPhase->tmin);
 
     /* Now we repeat the same procedure for determining the time at which the specified reference frequency occurs. This is needed to set the reference phase */
 
@@ -500,7 +503,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
       if(pPhase->xRef <= xCutInsp){
         pPhase->tRef = IMRPhenomTInspiral_TofX_Calibrated_Early(pPhase->xRef, wf, pPhase);
       }
-      else if(pPhase->tRef > xCutMerger){
+      else if(pPhase->tRef > xCutMerger2){
         pPhase->tRef = IMRPhenomTMerger_TofX_Calibrated(pPhase->xRef, pPhase);
       }
       else{
@@ -515,7 +518,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
     in both regimes with the two different TaylorT3 implementations. If default reconstruction, it is harmless. */
 
     pPhase->wflength = floor((tEnd - pPhase->tmin)/wf->dtM);
-		printf("pPhase->wflength: %zu\n", pPhase->wflength);
+		//printf("pPhase->wflength: %zu\n", pPhase->wflength);
 
 	return XLAL_SUCCESS;
 }
@@ -881,7 +884,7 @@ int IMRPhenomTv2_times_x_phase(
 		tt = jdx*dt;
 		(*times)->data[insp_length +jdx] = tt;
 
-    (*xorb)->data[insp_length + jdx] = (*xorb)->data[insp_length - 1]+0.0001*jdx;
+    (*xorb)->data[insp_length + jdx] = (*xorb)->data[insp_length - 1]+0.00001*jdx;
     ph22 = IMRPhenomTRDPhaseAnsatz22(tt, pPhase);
     (*phaseorb)->data[insp_length + jdx] = 0.5*ph22;
 	}
