@@ -103,9 +103,9 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 	pPhase->xCutInsp = xCutInsp;
 	pPhase->xCutMerger = xCutMerger2;
 	pPhase->xpeak = xpeak;
-	printf("---------------\n");
+	/*printf("---------------\n");
 	printf("CASE: eta: %f chi1L: %f chi2L: %f\n", eta, chi1L, chi2L);
-	printf("xcutI: %.8f xcutM: %.8f xpeak: %.8f\n", xCutInsp, xCutMerger, xpeak);
+	printf("xcutI: %.8f xcutM: %.8f xpeak: %.8f\n", xCutInsp, xCutMerger, xpeak);*/
 
 	/* Ringdown and damping frequency of final BH for the 22 mode (defined on LALSimIMRPhenomTHM_fits.c) */
 	REAL8 fRING     = evaluate_QNMfit_fring22(wf->afinal) / (wf->Mfinal); // 22 mode ringdown frequency
@@ -255,7 +255,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
 	pPhase->dtInspC2 = gsl_vector_get(sol,1);
 	pPhase->dtInspC3 = gsl_vector_get(sol,2);
 
-	printf("Insp coefs: %.8f %.8f %.8f\n", pPhase->dtInspC1, pPhase->dtInspC2, pPhase->dtInspC3);
+	//printf("Insp coefs: %.8f %.8f %.8f\n", pPhase->dtInspC1, pPhase->dtInspC2, pPhase->dtInspC3);
 
 	/* Boundary time between late inspiral and merger regions.
 	This is selected to correspond to theta=0.81, earlier than the last collocation point at theta=0.82, because in this way
@@ -372,7 +372,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
  pPhase->tLateC7 = gsl_vector_get(sol,6);
  pPhase->tLateC8 = gsl_vector_get(sol,7);
 
- printf("Int coefs: %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->tLateC1, pPhase->tLateC2, pPhase->tLateC3, pPhase->tLateC4, pPhase->tLateC5, pPhase->tLateC6, pPhase->tLateC7, pPhase->tLateC8);
+ //printf("Int coefs: %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->tLateC1, pPhase->tLateC2, pPhase->tLateC3, pPhase->tLateC4, pPhase->tLateC5, pPhase->tLateC6, pPhase->tLateC7, pPhase->tLateC8);
 
  /* Tidy up in preparation for next GSL solve ... */
  gsl_vector_free(b);
@@ -434,7 +434,7 @@ int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPheno
   pPhase->cc4M = gsl_vector_get(sol,4);
 	pPhase->cc5M = gsl_vector_get(sol,5);
 
-	printf("Merger coefs: %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->cc0M, pPhase->cc1M, pPhase->cc2M, pPhase->cc3M, pPhase->cc4M, pPhase->cc5M);
+	//printf("Merger coefs: %.8f %.8f %.8f %.8f %.8f %.8f\n", pPhase->cc0M, pPhase->cc1M, pPhase->cc2M, pPhase->cc3M, pPhase->cc4M, pPhase->cc5M);
 
 	// Free the gsl objects employed in solving the coefficient system
 	gsl_vector_free(b);

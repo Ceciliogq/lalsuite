@@ -157,6 +157,9 @@ typedef struct tagIMRPhenomTPhase22Struct
 	REAL8 tLateC1, tLateC2, tLateC3, tLateC4, tLateC5, tLateC6, tLateC7, tLateC8;
 	REAL8 cc0M, cc1M, cc2M, cc3M, cc4M,cc5M;
 
+	REAL8 x1amp, x2amp, x3amp, xdAmp1, xdAmp2;
+	REAL8 xCutPhaseHM, domegaCutHM, phOffHM;
+
 } IMRPhenomTPhase22Struct;
 
 /* Struct for storing the coefficient values of the frequency and phase merger-ringdown ansatz for the lm mode. */

@@ -634,6 +634,7 @@ int IMRPhenomTSetHMAmplitudeCoefficients(int l, int m, IMRPhenomTHMAmpStruct *pA
 	REAL8 dchi  = wf->dchi;  // Dimensionless spin difference chi1 - chi2
 	REAL8 delta = wf->delta; // Mass asymmetry parameter
 	REAL8 tCut  = tCUT_Amp;  // tCUT_Amp = -150
+	INT4 inspVersion = wf->inspVersion;
 
 	pAmp->fac0 = 2*eta*sqrt(16*LAL_PI/5); // Precomputed amplitude global factor (see eq. 12-14 of PhenomTHM paper https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf)
 
@@ -944,40 +945,63 @@ int IMRPhenomTSetHMAmplitudeCoefficients(int l, int m, IMRPhenomTHMAmpStruct *pA
 	pAmp->inspC2 = 0.0;
 	pAmp->inspC3 = 0.0;
 
-	REAL8 tinsppoints[3]     = {-2000., -250., -150.0}; // Collocation point times as defined in Eq. 16 of PhenomTHM paper (https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf)
-
 	/* We allocate a rank three linear system to solve the coefficients */
 	p = gsl_permutation_alloc(3);
 	b = gsl_vector_alloc(3);
 	x = gsl_vector_alloc(3);
 	A = gsl_matrix_alloc(3,3);
 
-	REAL8 theta, omega, xx, x4, x4half, x5; // Needed powers of PN parameter x=v^2=(\omega_orb)^(2/3)=(0.5\omega_22)^(2/3)
+	REAL8 xx, x4, x4half, x5; // Needed powers of PN parameter x=v^2=(\omega_orb)^(2/3)=(0.5\omega_22)^(2/3)
 	REAL8 ampoffset; // Known PN part of the amplitude
 	REAL8 bi; // CP value - known PN amplitude vector
 
-	/* In this loop over collocation points, the components of the solution vector b and the basis matrix A are established.
-	See equation 15 of THM paper: https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf */
-	for (UINT4 idx=0; idx<3; idx++)
-	{
-		theta = pow(-eta*tinsppoints[idx]/5,-1./8);
-		omega = IMRPhenomTomega22(tinsppoints[idx],theta, wf, pPhase); // Twice the orbital frequency at the collocation point time
-		xx = pow(0.5*omega,2./3); // PN expansion parameter of the amplitude
-		x4 = xx*xx*xx*xx; // Needed powers
-		x4half = x4*sqrt(xx);
-		x5 = x4*xx;
+	if(inspVersion<2){
+		REAL8 theta, omega;
+		REAL8 tinsppoints[3]     = {-2000., -250., -150.0}; // Collocation point times as defined in Eq. 16 of PhenomTHM paper (https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf)
 
-		ampoffset = creal(IMRPhenomTInspiralAmpAnsatzHM(xx, pAmp)); // Real part of the known PN contribution
-		bi = (1./pAmp->fac0/xx)*(ampInspCP[idx] - ampoffset); // Solution vector: collocation point value minus the know PN part of the ansatz, factored by the amplitude factor to not include it in each basis function (the powers of x)
+		/* In this loop over collocation points, the components of the solution vector b and the basis matrix A are established.
+		See equation 15 of THM paper: https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf */
+		for (UINT4 idx=0; idx<3; idx++)
+		{
+			theta = pow(-eta*tinsppoints[idx]/5,-1./8);
+			omega = IMRPhenomTomega22(tinsppoints[idx],theta, wf, pPhase); // Twice the orbital frequency at the collocation point time
+			xx = pow(0.5*omega,2./3); // PN expansion parameter of the amplitude
+			x4 = xx*xx*xx*xx; // Needed powers
+			x4half = x4*sqrt(xx);
+			x5 = x4*xx;
 
-		gsl_vector_set(b,idx,bi); // Set b vector
+			ampoffset = creal(IMRPhenomTInspiralAmpAnsatzHM(xx, pAmp)); // Real part of the known PN contribution
+			bi = (1./pAmp->fac0/xx)*(ampInspCP[idx] - ampoffset); // Solution vector: collocation point value minus the know PN part of the ansatz, factored by the amplitude factor to not include it in each basis function (the powers of x)
 
-		/*Set basis matrix elements, Basis functions are the higher order powers of x that we add to the PN ansatz */
-		gsl_matrix_set(A,idx,0,x4);
-		gsl_matrix_set(A,idx,1,x4half);
-		gsl_matrix_set(A,idx,2,x5);
+			gsl_vector_set(b,idx,bi); // Set b vector
+
+			/*Set basis matrix elements, Basis functions are the higher order powers of x that we add to the PN ansatz */
+			gsl_matrix_set(A,idx,0,x4);
+			gsl_matrix_set(A,idx,1,x4half);
+			gsl_matrix_set(A,idx,2,x5);
+		}
+
+	}else{
+		REAL8 xinsppoints[3]     = {pPhase->x1amp, pPhase->x2amp, pPhase->x3amp};
+		for (UINT4 idx=0; idx<3; idx++)
+		{
+
+			xx = xinsppoints[idx]; // PN expansion parameter of the amplitude
+			x4 = xx*xx*xx*xx; // Needed powers
+			x4half = x4*sqrt(xx);
+			x5 = x4*xx;
+
+			ampoffset = creal(IMRPhenomTInspiralAmpAnsatzHM(xx, pAmp)); // Real part of the known PN contribution
+			bi = (1./pAmp->fac0/xx)*(ampInspCP[idx] - ampoffset); // Solution vector: collocation point value minus the know PN part of the ansatz, factored by the amplitude factor to not include it in each basis function (the powers of x)
+
+			gsl_vector_set(b,idx,bi); // Set b vector
+
+			/*Set basis matrix elements, Basis functions are the higher order powers of x that we add to the PN ansatz */
+			gsl_matrix_set(A,idx,0,x4);
+			gsl_matrix_set(A,idx,1,x4half);
+			gsl_matrix_set(A,idx,2,x5);
+		}
 	}
-
 	/* We now solve the system A x = b via an LU decomposition */
 	gsl_linalg_LU_decomp(A,p,&s);
 	gsl_linalg_LU_solve(A,p,b,x);
@@ -1015,8 +1039,14 @@ int IMRPhenomTSetHMAmplitudeCoefficients(int l, int m, IMRPhenomTHMAmpStruct *pA
 	/* Set A_{0,i} and b_{0}: here we impose continuity with the inspiral region, essentially equating the value of the merger ansatz at the inspiral boundary time tCut
 	with the value of the inspiral amplitude at that time. */
 
-	theta = pow(-eta*tCut/5,-1./8);
-	xx = pow(0.5*IMRPhenomTomega22(tCut,theta, wf, pPhase),2./3); // PN expansion parameter at tCut
+	if(inspVersion < 2){
+		REAL8 theta = pow(-eta*tCut/5,-1./8);
+		xx = pow(0.5*IMRPhenomTomega22(tCut,theta, wf, pPhase),2./3); // PN expansion parameter at tCut
+	}
+	else{
+		xx = pPhase->x3amp;
+	}
+
 	REAL8 ampinsp = copysign(1.0,creal(IMRPhenomTInspiralAmpAnsatzHM(xx, pAmp)))*cabs(IMRPhenomTInspiralAmpAnsatzHM(xx, pAmp)); // Value of the absolute inspiral amplitude, carrying the sign
 	gsl_vector_set(b,0,ampinsp); // Set solution vector: Continuity with the inspiral region
 
@@ -1073,13 +1103,21 @@ int IMRPhenomTSetHMAmplitudeCoefficients(int l, int m, IMRPhenomTHMAmpStruct *pA
 	For this, first we compute the values of theta at two differentially close points in the boundary, from that we compute twice the orbital frequency at those points
 	and then the value of the PN expansion parameter x at those points. Derivative is the amplitude difference between these two points weighted by the differential step.
 	We carry the sign of the inspiral amplitude derivative. */
-	REAL8 theta2 = pow(-eta*tCut/5.,-1./8);
-	REAL8 theta1 = pow(-eta*(tCut-0.000001)/5,-1./8);
-	REAL8 omega2 = IMRPhenomTomega22(tCut, theta2, wf, pPhase);
-	REAL8 omega1 = IMRPhenomTomega22(tCut-0.000001, theta1, wf, pPhase);
-	REAL8 x1 = pow(0.5*omega1,2./3);
-	REAL8 x2 = pow(0.5*omega2,2./3);
-	REAL8 dampMECO = copysign(1.0,creal(IMRPhenomTInspiralAmpAnsatzHM(x2, pAmp)))*(cabs(IMRPhenomTInspiralAmpAnsatzHM(x2, pAmp)) - cabs(IMRPhenomTInspiralAmpAnsatzHM(x1, pAmp)))/0.000001; // Value of inspiral derivative at boundary time.
+	REAL8 x1, x2, dampMECO;
+
+	if(inspVersion < 2){
+		REAL8 theta2 = pow(-eta*tCut/5.,-1./8);
+		REAL8 theta1 = pow(-eta*(tCut-0.000001)/5,-1./8);
+		REAL8 omega2 = IMRPhenomTomega22(tCut, theta2, wf, pPhase);
+		REAL8 omega1 = IMRPhenomTomega22(tCut-0.000001, theta1, wf, pPhase);
+		x1 = pow(0.5*omega1,2./3);
+		x2 = pow(0.5*omega2,2./3);
+	}
+	else{
+		x1 = pPhase->xdAmp1;
+		x2 = pPhase->x3amp;
+	}
+	dampMECO = copysign(1.0,creal(IMRPhenomTInspiralAmpAnsatzHM(x2, pAmp)))*(cabs(IMRPhenomTInspiralAmpAnsatzHM(x2, pAmp)) - cabs(IMRPhenomTInspiralAmpAnsatzHM(x1, pAmp)))/0.000001; // Value of inspiral derivative at boundary time.
 
 	gsl_vector_set(b,3,dampMECO); // We set this value to the solution vector
 
@@ -1159,10 +1197,22 @@ int IMRPhenomTSetHMPhaseCoefficients(int l, int m, IMRPhenomTHMPhaseStruct *pPha
 	REAL8 dchi = wf->dchi; // Dimensionless spin difference chi1L - chi2L
 	REAL8 delta = wf->delta; // PN Asymmetry parameter
 	REAL8 tCut = tCUT_Freq;  // Inspiral ending time (t=-150M)
+	INT4 inspVersion = wf->inspVersion;
 
 	/*Store twice orbital frequency at t=-150, for higher mode reconstruction*/
-	REAL8 thetaCut = pow(-eta*tCut/5,-1./8);
-	REAL8 omegaCut =  IMRPhenomTomega22(tCut, thetaCut, wf, pPhase);
+	REAL8 omegaCut, domegaCut;
+	if(inspVersion<2){
+		REAL8 thetaCut = pow(-eta*tCut/5,-1./8);
+		omegaCut =  IMRPhenomTomega22(tCut, thetaCut, wf, pPhase);
+
+		REAL8 theta2 = pow(-eta*tCut/5.,-1./8);
+		REAL8 theta1 = pow(-eta*(tCut-0.0000001)/5,-1./8);
+		domegaCut = (IMRPhenomTomega22(tCut, theta2, wf, pPhase) - IMRPhenomTomega22(tCut-0.0000001, theta1, wf, pPhase))/(0.0000001); // Insoiral frequency derivative at the boundary time.
+	}else{
+		omegaCut = 2.0*pow(pPhase->xCutPhaseHM,3./2);
+		domegaCut = pPhase->domegaCutHM;
+	}
+
 
 	REAL8 omegaCutPNAMP = pAmplm->omegaCutPNAMP; // Value of the phase derivative coming from complex inspiral amplitude at the boundary time.
 
@@ -1177,10 +1227,6 @@ int IMRPhenomTSetHMPhaseCoefficients(int l, int m, IMRPhenomTHMPhaseStruct *pPha
 	REAL8 fRING, fDAMP, fDAMPn2; // Ringdown and damping frequencies of each mode
 	REAL8 omegaCutBar, omegaMergerCP; // Rescaled frequencies at the inspiral boundary time tCut and collocation point time.
 	REAL8 domegaPeak; // Rescaled frequency derivative at the ringdown boundary
-
-	REAL8 theta2 = pow(-eta*tCut/5.,-1./8);
-	REAL8 theta1 = pow(-eta*(tCut-0.0000001)/5,-1./8);
-	REAL8 domegaCut = (IMRPhenomTomega22(tCut, theta2, wf, pPhase) - IMRPhenomTomega22(tCut-0.0000001, theta1, wf, pPhase))/(0.0000001); // Insoiral frequency derivative at the boundary time.
 
 	/* Set quantities for each mode.
 	Essentially, we compute the needed ringdown and damping frequencies of each mode for the ringdown ansatz:
@@ -1438,9 +1484,14 @@ int IMRPhenomTSetHMPhaseCoefficients(int l, int m, IMRPhenomTHMPhaseStruct *pPha
 	pPhaseHM->phOffMerger = 0.;
 	pPhaseHM->phOffRD = 0.;
 
-	REAL8 thetabarCut = pow(-eta*tCut,-1./8);
-	REAL8 phMECOinsp = (m/2.)*IMRPhenomTPhase22(tCut, thetabarCut, wf, pPhase);
-	REAL8 phMECOmerger = IMRPhenomTMergerPhaseAnsatzHM(tCut, pPhaseHM);
+	REAL8 phMECOinsp, phMECOmerger;
+	if(inspVersion<2){
+		REAL8 thetabarCut = pow(-eta*tCut,-1./8);
+		phMECOinsp = (m/2.)*IMRPhenomTPhase22(tCut, thetabarCut, wf, pPhase);
+		}else{
+			phMECOinsp = (m/2.)*pPhase->phOffHM;
+		}
+		phMECOmerger = IMRPhenomTMergerPhaseAnsatzHM(tCut, pPhaseHM);
 
 	pPhaseHM->phOffMerger = phMECOinsp - phMECOmerger;
 
