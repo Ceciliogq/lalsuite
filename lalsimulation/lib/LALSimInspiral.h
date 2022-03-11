@@ -437,6 +437,8 @@ typedef enum tagApproximant {
    IMRPhenomTHM,      /** Time domain, non-precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). */
    IMRPhenomTP,      /** Time domain, precessing phenomenological IMR waveform model for L=2 sector ([arXiv: 20XY.ZZZZZ]). */
    IMRPhenomTPHM,      /** Time domain, precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). */
+   IMRPhenomTHMv2,      /** Time domain, non-precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). Version 2 */
+   IMRPhenomTPHMv2,      /** Time domain, precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). Version 2 */
    NumApproximants,	/**< Number of elements in enum, useful for checking bounds */
  } Approximant;
 
@@ -790,7 +792,7 @@ typedef struct tagXLALSimInspiralSpinTaylorTxCoeffs
   REAL8 S2dot6S1Avg,S2dot6S1OAvg,S2dot6S2OAvg,S2dot6QMS2OAvg; // 6PN S2dot avged-coefficients
   REAL8 S1dot7S2;// Coefficient of S1 x S2 in S1dot
   REAL8 S2dot7S1;// Coefficient of S1 x S2 in S2dot
-  REAL8 omegashiftS1,omegashiftS2;// non-dynamical coefficients of \omega shift wrt \dot\phi, see eq. (34) of https://dcc.ligo.org/LIGO-T1500554 
+  REAL8 omegashiftS1,omegashiftS2;// non-dynamical coefficients of \omega shift wrt \dot\phi, see eq. (34) of https://dcc.ligo.org/LIGO-T1500554
   REAL8 fStart; ///< starting GW frequency of integration
   REAL8 fEnd; ///< ending GW frequency of integration
   INT4 phaseO; ///< Twice PN order of GW-phase

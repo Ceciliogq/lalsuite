@@ -188,7 +188,9 @@ static const char *lalSimulationApproximantNames[] = {
     INITIALIZE_NAME(IMRPhenomT),
     INITIALIZE_NAME(IMRPhenomTHM),
     INITIALIZE_NAME(IMRPhenomTP),
-    INITIALIZE_NAME(IMRPhenomTPHM)
+    INITIALIZE_NAME(IMRPhenomTPHM),
+		INITIALIZE_NAME(IMRPhenomTHMv2),
+		INITIALIZE_NAME(IMRPhenomTPHMv2),
 };
 #undef INITIALIZE_NAME
 
@@ -310,6 +312,8 @@ static double fixReferenceFrequency(const double f_ref, const double f_min, cons
         case IMRPhenomTHM:
         case IMRPhenomTP:
         case IMRPhenomTPHM:
+				case IMRPhenomTHMv2:
+				case IMRPhenomTPHMv2:
 	case TEOBResumS:
             return f_min;
         default:
@@ -1190,6 +1194,18 @@ int XLALSimInspiralChooseTDWaveform(
             ret = XLALSimIMRPhenomTHM(hplus, hcross, m1, m2, S1z, S2z, distance, inclination, deltaT, f_min, f_ref, phiRef, LALparams);
             break;
 
+				case IMRPhenomTHMv2:
+            /* Waveform-specific sanity checks */
+            if( !XLALSimInspiralWaveformParamsFlagsAreDefault(LALparams) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-default flags given, but this approximant does not support this case.");
+            if( !checkTransverseSpinsZero(S1x, S1y, S2x, S2y) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero transverse spins were given, but this is a non-precessing approximant.");
+            if( !checkTidesZero(lambda1, lambda2) )
+                XLAL_ERROR(XLAL_EINVAL, "Non-zero tidal parameters were given, but this is approximant doe not have tidal corrections.");
+						XLALSimInspiralWaveformParamsInsertPhenomTHMInspiralVersion(LALparams,2);
+            ret = XLALSimIMRPhenomTHM(hplus, hcross, m1, m2, S1z, S2z, distance, inclination, deltaT, f_min, f_ref, phiRef, LALparams);
+            break;
+
         case IMRPhenomTP:
             /* Waveform-specific sanity checks */
         /* FIXME: CHECK ADDITIONAL CHECKS OF XP */
@@ -1211,6 +1227,17 @@ int XLALSimInspiralChooseTDWaveform(
 
             ret = XLALSimIMRPhenomTPHM(hplus, hcross, m1, m2, S1x, S1y, S1z, S2x, S2y, S2z, distance, inclination, deltaT, f_min, f_ref, phiRef, LALparams);
             break;
+
+				case IMRPhenomTPHMv2:
+						/* Waveform-specific sanity checks */
+						/* FIXME: CHECK ADDITIONAL CHECKS OF XPHM */
+						if( !XLALSimInspiralWaveformParamsFlagsAreDefault(LALparams) )
+								XLAL_ERROR(XLAL_EINVAL, "Non-default flags given, but this approximant does not support this case.");
+						if( !checkTidesZero(lambda1, lambda2) )
+								XLAL_ERROR(XLAL_EINVAL, "Non-zero tidal parameters were given, but this is approximant doe not have tidal corrections.");
+						XLALSimInspiralWaveformParamsInsertPhenomTHMInspiralVersion(LALparams,2);
+						ret = XLALSimIMRPhenomTPHM(hplus, hcross, m1, m2, S1x, S1y, S1z, S2x, S2y, S2z, distance, inclination, deltaT, f_min, f_ref, phiRef, LALparams);
+						break;
 
         default:
             XLALPrintError("TD version of approximant not implemented in lalsimulation\n");
@@ -1828,7 +1855,7 @@ int XLALSimInspiralChooseFDWaveform(
 
             ret = XLALSimIMRSEOBNRv4HMROM(hptilde, hctilde,
                     phiRef, deltaF, f_min, f_max, f_ref, distance, inclination, m1, m2, S1z, S2z, -1, 5, true, LALparams);
-            break;   
+            break;
 
 	case SEOBNRv4_ROM_NRTidal:
 
@@ -3438,7 +3465,7 @@ SphHarmTimeSeries *XLALSimInspiralChooseTDModes(
  * In the Fourier domain the modes span over the whole frequency regime (positive and negative frequencies).
  * However, in the aligned spin case, the modes have support only in one half of the frequency regime.
  * The LAL conventions establish that the negative modes (m<0) have support for positive frequencies while
- * the positive modes (m>0) have support for negative frequencies (this is based in the right hand rule and 
+ * the positive modes (m>0) have support for negative frequencies (this is based in the right hand rule and
  * Fourier transform definition in LAL).
  * Due to the equatorial symmetry of non-precessng systems, there exist a relation between them: h_{lm}(f) = (-1)^l h*_{l-m}(-f).
  * In the precessing case this symmetry is broken and all the modes have support for both positive and negative frequencies.
@@ -3450,26 +3477,26 @@ SphHarmTimeSeries *XLALSimInspiralChooseTDModes(
  * It is relevant to mention why the arguments inclination and phiRef are needed for computing the h_lm.
  * For AS models the argument inclination is irrelevant and will not be use since it only enters in the Ylm. However, for the precessing model,
  * since the modes are returned in the J-frame, we need the inclination argument to carry out the Euler transformation from the co-precessing L-frame
- * to the inertial J-frame. Regarding the argument phiRef, this affects the output of the precessing model due to the same reason as before, while for the AS models 
+ * to the inertial J-frame. Regarding the argument phiRef, this affects the output of the precessing model due to the same reason as before, while for the AS models
  * it would not affect the output of SEOBNRv4HM_ROM but will change the output of IMRPhenomHM and IMRPhenomXHM (this is due to the internals workings of the models).
- * If one wants to built the polarizations from the individual modes of ChooseFDModes must be aware of this behaviour. 
+ * If one wants to built the polarizations from the individual modes of ChooseFDModes must be aware of this behaviour.
  * Ideally, one would call ChooseFDModes with phiRef=0 to obtain the h_lms, then build the Fourier domain polarizations as
  *
- * h_+ (f) = 1/2 sum_{l=2} sum_{m=-l}^{m=l}  (  h_lm(f) * Y_lm(theta, vphi)  +  h*_lm(-f) * Y*_lm(theta, vphi)  )  
- * h_x (f) = i/2 sum_{l=2} sum_{m=-l}^{m=l}  (  h_lm(f) * Y_lm(theta, vphi)  -  h*_lm(-f) * Y*_lm(theta, vphi)  )  
+ * h_+ (f) = 1/2 sum_{l=2} sum_{m=-l}^{m=l}  (  h_lm(f) * Y_lm(theta, vphi)  +  h*_lm(-f) * Y*_lm(theta, vphi)  )
+ * h_x (f) = i/2 sum_{l=2} sum_{m=-l}^{m=l}  (  h_lm(f) * Y_lm(theta, vphi)  -  h*_lm(-f) * Y*_lm(theta, vphi)  )
  *
- * where theta is the inclination and vphi is pi/2 - phiRef. 
+ * where theta is the inclination and vphi is pi/2 - phiRef.
  *
  * If one does this, one will find generally a very close result to ChooseFDWaveform with very small mismatches (~10^-9 for IMRPhenomXHM),
  * and this is what is found if one uses the XLALSimInspiralPolarizationsFromSphHarmFrequencySeries function, however this is not close to machine precision.
- * The reason is that IMRPhenomHM and IMRPhenomXHM use internally the phiRef argument to compute the h_lms because at that time phiRef was considered to be also a reference 
- * phase for the h_lms and not just the argument for the azimuthal angle in the Y_lms. 
+ * The reason is that IMRPhenomHM and IMRPhenomXHM use internally the phiRef argument to compute the h_lms because at that time phiRef was considered to be also a reference
+ * phase for the h_lms and not just the argument for the azimuthal angle in the Y_lms.
  * To take this into account we provide also the function XLALSimInspiralPolarizationsFromChooseFDModes which build the polarizations in the proper way for each
  * model returning a result close to machine precision with ChooseFDWaveform.
  *
- * For the precessing model IMRPhenomXPHM, since the h_lms are returned in the J-frame one must build the polarizations using theta = theta_JN and vphi = 0. 
- * The parameter theta_JN is computed internally when using XLALSimInspiralPolarizationsFromChooseFDModes and again here the result is close to machine precision to ChooseFDWaveform. 
- * However, one would have to compute theta_JN personally when using XLALSimInspiralPolarizationsFromSphHarmFrequencySeries. 
+ * For the precessing model IMRPhenomXPHM, since the h_lms are returned in the J-frame one must build the polarizations using theta = theta_JN and vphi = 0.
+ * The parameter theta_JN is computed internally when using XLALSimInspiralPolarizationsFromChooseFDModes and again here the result is close to machine precision to ChooseFDWaveform.
+ * However, one would have to compute theta_JN personally when using XLALSimInspiralPolarizationsFromSphHarmFrequencySeries.
  * For IMRPhenomXPHM this parameter can be computed using XLALSimIMRPhenomXPCalculateModelParametersFromSourceFrame. Eventhough one would still have to correct with the polarization angle.
  *
  * By default all the modes available in the model will be returned, both positive and negative modes.
@@ -4615,7 +4642,7 @@ int XLALSimInspiralPolarizationsFromSphHarmTimeSeries(
   Function returning the Fourier domain polarizations for positive frequencies built from the individual modes computed with ChooseFDModes.
 	The output should be equivalent to that from ChooseFDWaveform, close to machine precision.
 	Some of the AS models use the argument phiRef internally to build the hlms and build the polarizations with an azimuthal angle different from Pi/2 - phiRef.
-	In this function we take into account those differences among models. 
+	In this function we take into account those differences among models.
 	For the precessing model IMRPhenomXPHM, since the modes are returned in the J-frame, the polarizations are built using theta_JN instead of the inclination and azimuthal angle = 0.
 */
 int XLALSimInspiralPolarizationsFromChooseFDModes(
@@ -4662,7 +4689,7 @@ int XLALSimInspiralPolarizationsFromChooseFDModes(
         phiRef_modes = phiRef;
         azimuthal = LAL_PI_2;
         break;
-        
+
         case IMRPhenomXPHM:
         phiRef_modes = phiRef;
         REAL8 d1=0, d2=0, d3=0, d4=0, d5=0;
@@ -4776,7 +4803,7 @@ tmpC=(*hctilde)->data->data[idx];
 	Return polarizations for positive frequencies built by summing the individual modes present
 	in the input array SphHarmFrequencySeries *hlms	computed with ChooseFDModes.
 	Notice that in general the output may not be close to machine precision with ChooseFDWaveform due to differences in
-	computing the h_lms and in the use of the azimuthal angle. 
+	computing the h_lms and in the use of the azimuthal angle.
 	For IMRPhenomXPHM, the argument theta should not be the inclination but theta_JN and phiRef should be 0.
 */
 int XLALSimInspiralPolarizationsFromSphHarmFrequencySeries(
@@ -6292,6 +6319,8 @@ int XLALSimInspiralImplementedTDApproximants(
         case IMRPhenomTHM:
         case IMRPhenomTP:
         case IMRPhenomTPHM:
+				case IMRPhenomTHMv2:
+				case IMRPhenomTPHMv2:
             return 1;
 
         default:
@@ -6761,6 +6790,7 @@ int XLALSimInspiralGetSpinSupportFromApproximant(Approximant approx){
     case NRSur7dq4:
     case IMRPhenomTP:
     case IMRPhenomTPHM:
+		case IMRPhenomTPHMv2:
       spin_support=LAL_SIM_INSPIRAL_PRECESSINGSPIN;
       break;
     case SpinTaylorF2:
@@ -6809,6 +6839,7 @@ int XLALSimInspiralGetSpinSupportFromApproximant(Approximant approx){
     case NRHybSur3dq8:
     case IMRPhenomT:
     case IMRPhenomTHM:
+		case IMRPhenomTHMv2:
       spin_support=LAL_SIM_INSPIRAL_ALIGNEDSPIN;
       break;
     case TaylorEt:
@@ -6877,6 +6908,7 @@ int XLALSimInspiralGetSpinFreqFromApproximant(Approximant approx){
     case SpinTaylorF2:
     case IMRPhenomTP:
     case IMRPhenomTPHM:
+		case IMRPhenomTPHMv2:
       spin_freq=LAL_SIM_INSPIRAL_SPINS_F_REF;
       break;
     case FindChirpPTF:
@@ -6939,6 +6971,7 @@ int XLALSimInspiralGetSpinFreqFromApproximant(Approximant approx){
     case IMRPhenomT:
     case IMRPhenomTHM:
 		case TEOBResumS:
+		case IMRPhenomTHMv2:
       spin_freq=LAL_SIM_INSPIRAL_SPINS_NONPRECESSING;
       break;
     case NR_hdf5:
@@ -7043,6 +7076,8 @@ int XLALSimInspiralApproximantAcceptTestGRParams(Approximant approx){
     case IMRPhenomTHM:
     case IMRPhenomTP:
     case IMRPhenomTPHM:
+		case IMRPhenomTHMv2:
+		case IMRPhenomTPHMv2:
     case NumApproximants:
       testGR_accept=LAL_SIM_INSPIRAL_NO_TESTGR_PARAMS;
       break;
