@@ -1929,6 +1929,30 @@ double IMRPhenomTHMPhase(
   return ph;
 }
 
+COMPLEX16 IMRPhenomTHMPhasev2(
+  	REAL8 t,
+		COMPLEX16 expphi,
+  	IMRPhenomTHMPhaseStruct *pPhaseHM,
+  	UNUSED IMRPhenomTHMAmpStruct *pAmpHM
+)
+{
+  COMPLEX16 ph;
+				if(t <= tCUT_Freq)
+				{
+					ph = expphi;
+				}
+  			else if(t > 0)
+        {
+        	ph = cexp(-I*(IMRPhenomTRDPhaseAnsatzHM(t, pPhaseHM) - pAmpHM->phiCutPNAMP));
+        }
+        else
+        {
+        	ph = cexp(-I*(IMRPhenomTMergerPhaseAnsatzHM(t, pPhaseHM) - pAmpHM->phiCutPNAMP));
+        }
+
+  return ph;
+}
+
 COMPLEX16 IMRPhenomTHMAmp(
   REAL8 t,
   UNUSED REAL8 x,
@@ -1949,6 +1973,34 @@ COMPLEX16 IMRPhenomTHMAmp(
         {
           amp = IMRPhenomTMergerAmpAnsatzHM(t, pAmp);
         }
+
+    return amp;
+}
+
+COMPLEX16 IMRPhenomTHMAmpTest(
+  REAL8 t,
+  UNUSED REAL8 x,
+	REAL8 dtM,
+  IMRPhenomTHMAmpStruct *pAmp
+)
+{
+    COMPLEX16 amp;
+
+    if(t < tCUT_Amp + 0*dtM)
+        {
+          amp = IMRPhenomTInspiralAmpAnsatzHM(x, pAmp);
+        }
+        else if(t > pAmp->tshift)
+        {
+          amp = IMRPhenomTRDAmpAnsatzHM(t, pAmp);
+        }
+        /*else if(tCUT_Amp <= t < tCUT_Amp + 1)
+        {
+          amp = IMRPhenomTMergerAmpAnsatzHM(t, pAmp) + I*cimag(IMRPhenomTInspiralAmpAnsatzHM(x, pAmp));
+        }*/
+				else{
+					amp = IMRPhenomTMergerAmpAnsatzHM(t, pAmp);
+				}
 
     return amp;
 }

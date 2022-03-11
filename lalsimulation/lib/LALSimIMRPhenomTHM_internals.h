@@ -332,8 +332,21 @@ double IMRPhenomTHMPhase(
   	IMRPhenomTHMPhaseStruct *pPhaseHM,
   	IMRPhenomTHMAmpStruct *pAmpHM
 );
+COMPLEX16 IMRPhenomTHMPhasev2(
+  	REAL8 t,
+		COMPLEX16 expphi,
+  	IMRPhenomTHMPhaseStruct *pPhaseHM,
+  	IMRPhenomTHMAmpStruct *pAmpHM
+);
 
 COMPLEX16 IMRPhenomTHMAmp(REAL8 t, REAL8 w, IMRPhenomTHMAmpStruct *pAmpHM);
+
+COMPLEX16 IMRPhenomTHMAmpTest(
+  REAL8 t,
+  REAL8 x,
+	REAL8 dtM,
+  IMRPhenomTHMAmpStruct *pAmp
+);
 
 REAL8 GetEulerSlope(REAL8 af, REAL8 mf);
 

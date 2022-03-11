@@ -705,6 +705,13 @@ int LALSimIMRPhenomTHM_Modes_v2(
 
     //interpolate phase
 
+    gsl_interp_accel *accel_xorb;
+  	gsl_spline *spline_xorb;
+
+  	accel_xorb = gsl_interp_accel_alloc();
+  	spline_xorb = gsl_spline_alloc(gsl_interp_cspline, (xorb)->length);
+ 	  gsl_spline_init(spline_xorb, (times)->data, (xorb)->data, (xorb)->length);
+
     gsl_interp_accel *accel_phiorb;
   	gsl_spline *spline_phiorb;
 
@@ -712,25 +719,7 @@ int LALSimIMRPhenomTHM_Modes_v2(
   	spline_phiorb = gsl_spline_alloc(gsl_interp_cspline, (phiorb)->length);
  	  gsl_spline_init(spline_phiorb, (times)->data, (phiorb)->data, (phiorb)->length);
 
-    gsl_interp_accel *accel_xorb;
-  	gsl_spline *spline_xorb;
-
-  	accel_xorb = gsl_interp_accel_alloc();
-  	spline_xorb = gsl_spline_alloc(gsl_interp_cspline, (phiorb)->length);
- 	  gsl_spline_init(spline_xorb, (times)->data, (xorb)->data, (phiorb)->length);
-
     REAL8 phiref0 = IMRPhenomTv2_PhiofX_Calibrated(pPhase->xRef, pWF, pPhase);
-
-    pPhase->xCutPhaseHM = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
-    REAL8 dxcutHM = gsl_spline_eval_deriv( spline_xorb, -150.0, accel_xorb );
-    pPhase->domegaCutHM = 3.0*sqrt(pPhase->xCutPhaseHM)*dxcutHM;
-
-    pPhase->x1amp = gsl_spline_eval( spline_xorb, -2000.0, accel_xorb );
-    pPhase->x2amp = gsl_spline_eval( spline_xorb, -250.0, accel_xorb );
-    pPhase->x3amp = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
-    pPhase->xdAmp1 = gsl_spline_eval( spline_xorb, -150.0-0.000001, accel_xorb );
-
-
     pPhase->phOffHM = 2.0*(gsl_spline_eval( spline_phiorb, -150.0, accel_phiorb ) - phiref0);
     REAL8 ph;
 
@@ -743,8 +732,6 @@ int LALSimIMRPhenomTHM_Modes_v2(
 
     gsl_spline_free(spline_phiorb);
     gsl_interp_accel_free(accel_phiorb);
-    gsl_spline_free(spline_xorb);
-    gsl_interp_accel_free(accel_xorb);
 
   /***** Loop over modes ******/
 
@@ -765,7 +752,7 @@ int LALSimIMRPhenomTHM_Modes_v2(
       COMPLEX16TimeSeries *tmp_mode = NULL;
 
 
-      status = LALSimIMRPhenomTHM_OneMode_v2(&tmp_mode, pWF, pPhase, times, expPhiorb, xorb, ell, emm);
+      status = LALSimIMRPhenomTHM_OneMode_v2(&tmp_mode, pWF, pPhase, times, expPhiorb, spline_xorb, accel_xorb, ell, emm);
 
 
       if(posMode==1) /* Modes are generated only for positive m. If positive m is requested, simply add to the SphHarmTimeSeries structure */
@@ -786,6 +773,9 @@ int LALSimIMRPhenomTHM_Modes_v2(
     }
 
   }
+
+  gsl_spline_free(spline_xorb);
+  gsl_interp_accel_free(accel_xorb);
 
   /*Free structures and destroy sequences and dict */
   XLALDestroyValue(ModeArray);
@@ -934,7 +924,8 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 	IMRPhenomTPhase22Struct *pPhase,
 	REAL8Sequence *times,
 	COMPLEX16Sequence *expPhiorb,
-	REAL8Sequence *xorb,
+  gsl_spline *spline_xorb,
+  gsl_interp_accel *accel_xorb,
 	UINT4 ell,
 	UINT4 emm)
 {
@@ -948,7 +939,7 @@ int LALSimIMRPhenomTHM_OneMode_v2(
     size_t length_insp_late = pPhase->wflength_insp_late;
     size_t length_insp = length_insp_early + length_insp_late;*/
 
-    size_t length_insp_hm = floor((-150.0 - pPhase->tmin)/pWF->dtM)+1;
+    //size_t length_insp_hm = floor((-150.0 - pPhase->tmin)/pWF->dtM) +1;
 
     /*Declare time, amplitude and phase */
     REAL8 t, x;
@@ -963,7 +954,7 @@ int LALSimIMRPhenomTHM_OneMode_v2(
     *hlm = XLALCreateCOMPLEX16TimeSeries("hlm: TD waveform",&ligotimegps_zero,0.0,pWF->deltaT,&lalStrainUnit,length);
 
     /* Initialize variables for 22 phase and frequency */
-    COMPLEX16 amphm, philm;
+    COMPLEX16 amphm, expphi;
     COMPLEX16 wf;
     COMPLEX16 expPhoff; // Constant phase offset employed for rotating PN amplitudes so much of the content is real.
     COMPLEX16 expPhiHM;
@@ -976,9 +967,18 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 
     // Interpolate amplitudes
 
-    REAL8Sequence *ampREHM = NULL;
-    REAL8Sequence *ampIMHM = NULL;
+    //REAL8Sequence *ampREHM = NULL;
+    //REAL8Sequence *ampIMHM = NULL;
     REAL8Sequence *ampAbsHM = NULL;
+
+    pPhase->xCutPhaseHM = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
+    REAL8 dxcutHM = gsl_spline_eval_deriv( spline_xorb, -150.0, accel_xorb );
+    pPhase->domegaCutHM = 3.0*sqrt(pPhase->xCutPhaseHM)*dxcutHM;
+
+    pPhase->x1amp = gsl_spline_eval( spline_xorb, -2000.0, accel_xorb );
+    pPhase->x2amp = gsl_spline_eval( spline_xorb, -250.0, accel_xorb );
+    pPhase->x3amp = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
+    pPhase->xdAmp1 = gsl_spline_eval( spline_xorb, -150.0-0.000001, accel_xorb );
 
     if(emm%2 != 0 && pWF->delta<1E-10 && fabs(pWF->chi1L-pWF->chi2L)<1E-10) // This is for not computing odd modes in the equal BH limit. Instead, they are set to 0 directly.
     {
@@ -992,17 +992,17 @@ int LALSimIMRPhenomTHM_OneMode_v2(
       gsl_interp_accel *accel_amp_abs;
       gsl_spline *spline_amp_abs;
 
-      ampAbsHM = XLALCreateREAL8Sequence(xorb->length);
-      for(UINT4 jdx = 0; jdx < xorb->length; jdx++){
+      ampAbsHM = XLALCreateREAL8Sequence(times->length);
+      for(UINT4 jdx = 0; jdx < times->length; jdx++){
         t = times->data[jdx];
-        x = xorb->data[jdx];
+        x = gsl_spline_eval( spline_xorb, t, accel_xorb );
         amphm = IMRPhenomTHMAmpv2(t, x, pAmplm);
         ampAbsHM->data[jdx] = creal(amphm);
       }
 
     	accel_amp_abs = gsl_interp_accel_alloc();
-    	spline_amp_abs = gsl_spline_alloc(gsl_interp_cspline, xorb->length);
-   	  gsl_spline_init(spline_amp_abs, times->data, ampAbsHM->data, xorb->length);
+    	spline_amp_abs = gsl_spline_alloc(gsl_interp_cspline, times->length);
+   	  gsl_spline_init(spline_amp_abs, times->data, ampAbsHM->data, times->length);
 
       expPhoff = 1.0;
 
@@ -1021,7 +1021,7 @@ int LALSimIMRPhenomTHM_OneMode_v2(
       status   = IMRPhenomTSetHMAmplitudeCoefficients(ell,emm,pAmplm, pPhase, pWF);
       XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMAmplitudeCoefficients failed for %d,%d.\n",ell,emm);
 
-      gsl_interp_accel *accel_amp_real;
+      /*gsl_interp_accel *accel_amp_real;
     	gsl_spline *spline_amp_real;
       gsl_interp_accel *accel_amp_imag;
     	gsl_spline *spline_amp_imag;
@@ -1032,45 +1032,37 @@ int LALSimIMRPhenomTHM_OneMode_v2(
       for(UINT4 jdx = 0; jdx < xorb->length; jdx++){
         t = times->data[jdx];
         x = xorb->data[jdx];
-        amphm = IMRPhenomTHMAmp(t, x, pAmplm);
+        amphm = IMRPhenomTHMAmpTest(t, x, pWF->dtM, pAmplm);
         ampREHM->data[jdx] = creal(amphm);
         ampIMHM->data[jdx] = cimag(amphm);
-      }
+      }*/
 
-    	accel_amp_real = gsl_interp_accel_alloc();
+    	/*accel_amp_real = gsl_interp_accel_alloc();
     	spline_amp_real = gsl_spline_alloc(gsl_interp_cspline, xorb->length);
    	  gsl_spline_init(spline_amp_real, times->data, ampREHM->data, xorb->length);
 
       accel_amp_imag = gsl_interp_accel_alloc();
     	spline_amp_imag = gsl_spline_alloc(gsl_interp_cspline, xorb->length);
-   	  gsl_spline_init(spline_amp_imag, times->data, ampIMHM->data, xorb->length);
+   	  gsl_spline_init(spline_amp_imag, times->data, ampIMHM->data, xorb->length);*/
+
+      status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
+      XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
 
       if(ell==2 && emm==1)
       {
-        status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
-        XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
 
         expPhoff = cexp(I*(0.5*LAL_PI));
 
-        for(UINT4 jdx = 0; jdx < length_insp_hm; jdx++){
+        for(UINT4 jdx = 0; jdx < length; jdx++){
           t = pPhase->tmin + jdx*pWF->dtM;
-          expPhiHM = (expPhiorb->data[jdx])*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
           wf = amplm*expPhiHM;
           ((*hlm)->data->data)[jdx] = wf;
         }
-        for(UINT4 jdx = length_insp_hm; jdx < length; jdx++){
-          t = pPhase->tmin + jdx*pWF->dtM;
-          philm = IMRPhenomTHMPhase(t, 0.0, pPhaselm,pAmplm);
-          expPhiHM = cexp(-I*philm)*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
-          wf = amplm*expPhiHM;
-          ((*hlm)->data->data)[jdx] = wf;
-        }
-        gsl_spline_free(spline_amp_real);
-        gsl_interp_accel_free(accel_amp_real);
-        gsl_spline_free(spline_amp_imag);
-        gsl_interp_accel_free(accel_amp_imag);
+
       }
       else if(ell==3 && emm==3)
       {
@@ -1079,25 +1071,15 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 
         expPhoff = cexp(-I*(0.5*LAL_PI));
 
-        for(UINT4 jdx = 0; jdx < length_insp_hm; jdx++){
+        for(UINT4 jdx = 0; jdx < length; jdx++){
           t = pPhase->tmin + jdx*pWF->dtM;
-          expPhiHM = (expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
           wf = amplm*expPhiHM;
           ((*hlm)->data->data)[jdx] = wf;
         }
-        for(UINT4 jdx = length_insp_hm; jdx < length; jdx++){
-          t = pPhase->tmin + jdx*pWF->dtM;
-          philm = IMRPhenomTHMPhase(t, 0.0, pPhaselm,pAmplm);
-          expPhiHM = cexp(-I*philm)*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
-          wf = amplm*expPhiHM;
-          ((*hlm)->data->data)[jdx] = wf;
-        }
-        gsl_spline_free(spline_amp_real);
-        gsl_interp_accel_free(accel_amp_real);
-        gsl_spline_free(spline_amp_imag);
-        gsl_interp_accel_free(accel_amp_imag);
 
       }
       else if(ell==5 && emm==5)
@@ -1107,25 +1089,15 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 
         expPhoff = cexp(I*(0.5*LAL_PI));
 
-        for(UINT4 jdx = 0; jdx < length_insp_hm; jdx++){
+        for(UINT4 jdx = 0; jdx < length; jdx++){
           t = pPhase->tmin + jdx*pWF->dtM;
-          expPhiHM = (expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
           wf = amplm*expPhiHM;
           ((*hlm)->data->data)[jdx] = wf;
         }
-        for(UINT4 jdx = length_insp_hm; jdx < length; jdx++){
-          t = pPhase->tmin + jdx*pWF->dtM;
-          philm = IMRPhenomTHMPhase(t, 0.0, pPhaselm,pAmplm);
-          expPhiHM = cexp(-I*philm)*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
-          wf = amplm*expPhiHM;
-          ((*hlm)->data->data)[jdx] = wf;
-        }
-        gsl_spline_free(spline_amp_real);
-        gsl_interp_accel_free(accel_amp_real);
-        gsl_spline_free(spline_amp_imag);
-        gsl_interp_accel_free(accel_amp_imag);
       }
       else if(ell==4 && emm==4)
       {
@@ -1134,26 +1106,21 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 
         expPhoff = cexp(I*(LAL_PI));
 
-        for(UINT4 jdx = 0; jdx < length_insp_hm; jdx++){
+        for(UINT4 jdx = 0; jdx < length; jdx++){
           t = pPhase->tmin + jdx*pWF->dtM;
-          expPhiHM = (expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*(expPhiorb->data[jdx])*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
           wf = amplm*expPhiHM;
           ((*hlm)->data->data)[jdx] = wf;
         }
-        for(UINT4 jdx = length_insp_hm; jdx < length; jdx++){
-          t = pPhase->tmin + jdx*pWF->dtM;
-          philm = IMRPhenomTHMPhase(t, 0.0, pPhaselm,pAmplm);
-          expPhiHM = cexp(-I*philm)*expPhoff ;
-          amplm = pWF->ampfac*(gsl_spline_eval( spline_amp_real, t, accel_amp_real ) + I*gsl_spline_eval( spline_amp_imag, t, accel_amp_imag ));
-          wf = amplm*expPhiHM;
-          ((*hlm)->data->data)[jdx] = wf;
-        }
-        gsl_spline_free(spline_amp_real);
-        gsl_interp_accel_free(accel_amp_real);
-        gsl_spline_free(spline_amp_imag);
-        gsl_interp_accel_free(accel_amp_imag);
       }
+
+      /*gsl_spline_free(spline_amp_real);
+      gsl_interp_accel_free(accel_amp_real);
+      gsl_spline_free(spline_amp_imag);
+      gsl_interp_accel_free(accel_amp_imag);*/
     }
 
     /* Phase offset, as explained in eq 13 of PhenomTHM paper (https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf). */
@@ -1161,8 +1128,8 @@ int LALSimIMRPhenomTHM_OneMode_v2(
     LALFree(pAmplm);
     LALFree(pPhaselm);
 
-    XLALDestroyREAL8Sequence(ampREHM);
-    XLALDestroyREAL8Sequence(ampIMHM);
+    //XLALDestroyREAL8Sequence(ampREHM);
+    //XLALDestroyREAL8Sequence(ampIMHM);
     XLALDestroyREAL8Sequence(ampAbsHM);
 
     return status;
@@ -1333,3 +1300,9 @@ int XLALSimIMRPhenomT_time_phase_x(
 
   return status;
 }
+
+typedef struct tagInterpXOrb
+{
+   gsl_spline *spline_xorb;
+   gsl_interp_accel *accel_xorb;
+}tagInterpXOrb;

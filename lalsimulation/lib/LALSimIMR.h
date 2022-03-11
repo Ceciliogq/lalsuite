@@ -1054,6 +1054,30 @@ int XLALSimIMRPhenomTPHM_CoprecModes(
   UINT4 only22              /**< Flag for calling only IMRPhenomTP (dominant 22 coprec mode only) */
   );
 
+int XLALSimIMRPhenomTPHM_CoprecModes_v2(
+    SphHarmTimeSeries **hlmJ,   /**< [out] Modes in the intertial J0=z frame*/
+    REAL8TimeSeries **alphaTS,  /**< [out] Precessing Euler angle alpha */
+    REAL8TimeSeries **cosbetaTS,   /**< [out] Precessing Euler angle beta */
+    REAL8TimeSeries **gammaTS,  /**< [out] Precessing Euler angle gamma */
+    REAL8 *af,                  /**< [out] Final spin */
+    REAL8 m1_SI,                /**< Mass of companion 1 (kg) */
+    REAL8 m2_SI,                /**< Mass of companion 2 (kg) */
+    REAL8 chi1x,                /**< x component of primary spin*/
+    REAL8 chi1y,                /**< y component of primary spin*/
+    REAL8 chi1z,                /**< z component of primary spin */
+    REAL8 chi2x,                /**< x component of secondary spin*/
+    REAL8 chi2y,                /**< y component of secondary spin*/
+    REAL8 chi2z,                /**< z component of secondary spin */
+    REAL8 distance,             /**< Luminosity distance (m) */
+    REAL8 inclination,          /**< inclination (in rad) */
+    REAL8 deltaT,               /**< sampling interval (s) */
+    REAL8 fmin,               /**< starting GW frequency (Hz) */
+    REAL8 fRef,               /**< reference GW frequency (Hz) */
+    REAL8 phiRef,               /**< reference orbital phase (rad) */
+    LALDict *lalParams,       /**< LAL dictionary containing accessory parameters */
+    UINT4 only22              /**< Flag for calling only IMRPhenomTP (dominant 22 coprec mode only) */
+    );
+
 /* in module LALSimIMRTEOBResumS.c */
 
 int XLALSimIMRTEOBResumS(

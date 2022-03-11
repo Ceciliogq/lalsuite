@@ -26,6 +26,7 @@
 
 #include "LALSimIMRPhenomXUtilities.h"
 #include "LALSimIMRPhenomTHMv2_fits.c"
+#include "LALSimIMRPhenomTHMv2_internals.h"
 
 /* LAL Header Files */
 #include <lal/LALSimIMR.h>
@@ -38,46 +39,6 @@
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_roots.h>
-
-/* Functions definition */
-/* Function for computing orbital phase coefficients */
-
-int IMRPhenomTSetPhase22v2Coefficients(IMRPhenomTPhase22Struct *pPhase, IMRPhenomTWaveformStruct *wf);
-int IMRPhenomTSetHMAmplitudev2Coefficients(IMRPhenomTHMAmpStruct *pAmp, IMRPhenomTPhase22Struct *pPhase, IMRPhenomTWaveformStruct *wf);
-
-/* Inspiral ansatz */
-
-double IMRPhenomTInspiral_dtdx_TaylorT2(REAL8 x, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTInspiral_dtdx_Calibrated_Early(REAL8 x, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTInspiral_TofX_Calibrated_Early(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTInspiral_PhiofX_Calibrated_Early(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-
-double IMRPhenomTInspiral_dtdx_Calibrated_Late(REAL8 x, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTInspiral_TofX_Calibrated_Late(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTInspiral_PhiofX_Calibrated_Late(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-double facNT4(REAL8 x, REAL8 eta);
-double facT2(REAL8 x, REAL8 eta);
-
-/* Merger ansatz */
-double IMRPhenomTMerger_TofX_Calibrated(REAL8 x, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTMerger_PhiofX_Calibrated(REAL8 x, IMRPhenomTPhase22Struct *pPhase);
-
-double IMRPhenomTv2_TofX_Calibrated(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-double IMRPhenomTv2_PhiofX_Calibrated(REAL8 x, IMRPhenomTWaveformStruct *wf, IMRPhenomTPhase22Struct *pPhase);
-int IMRPhenomTv2_times_x_phase(
-	REAL8Sequence **phaseorb,       /**< Values of the 22 phase for the waveform time array */
-	REAL8Sequence **xorb,				/**< Values of the 22 frequency for the waveform time array */
-	REAL8Sequence **times,
-	IMRPhenomTWaveformStruct *wf,
-	IMRPhenomTPhase22Struct *pPhase
-);
-COMPLEX16 IMRPhenomTInspiralAmpAnsatzHMv2(REAL8 x, IMRPhenomTHMAmpStruct *pAmp);
-COMPLEX16 IMRPhenomTHMAmpv2(
-  REAL8 t,
-  UNUSED REAL8 x,
-  IMRPhenomTHMAmpStruct *pAmp
-);
-
 
 /* ************************************* */
 /* ******* STRUCTS INITIALIZATION ****** */
@@ -858,11 +819,14 @@ int IMRPhenomTv2_times_x_phase(
 	IMRPhenomTWaveformStruct *wf,
 	IMRPhenomTPhase22Struct *pPhase
 ){
-	REAL8 dx = 0.00005;
+	REAL8 dx = 0.0001;
 	REAL8 dt = 1.0;
-	REAL8 xx, tt, ph22;
+	REAL8 xx, tt, ph22, w22;
 
-	size_t insp_length = floor((pPhase->xpeak - pPhase->xmin)/dx)+1;
+	REAL8 xminInt = pPhase->xmin;
+	if(xminInt > 0.07){ xminInt=0.07;}
+
+	size_t insp_length = floor((pPhase->xpeak - xminInt)/dx)+1;
   size_t rd_length = floor((tEnd)/dt)+3;
 	size_t length_coarse = insp_length + rd_length;
 
@@ -873,7 +837,7 @@ int IMRPhenomTv2_times_x_phase(
 	// INSPIRAL
 	for(UINT4 jdx = 0; jdx < insp_length; jdx++){
 
-		xx = pPhase->xmin + jdx*dx;
+		xx = xminInt + jdx*dx;
 		(*xorb)->data[jdx] = xx;
 		(*times)->data[jdx] = IMRPhenomTv2_TofX_Calibrated(xx, wf, pPhase);
 		(*phaseorb)->data[jdx] = IMRPhenomTv2_PhiofX_Calibrated(xx, wf, pPhase);
@@ -883,8 +847,8 @@ int IMRPhenomTv2_times_x_phase(
 
 		tt = jdx*dt;
 		(*times)->data[insp_length +jdx] = tt;
-
-    (*xorb)->data[insp_length + jdx] = (*xorb)->data[insp_length - 1]+0.00001*jdx;
+		w22 = IMRPhenomTRDOmegaAnsatz22(tt, pPhase);
+		(*xorb)->data[insp_length +jdx] = pow(0.5*w22,2./3);
     ph22 = IMRPhenomTRDPhaseAnsatz22(tt, pPhase);
     (*phaseorb)->data[insp_length + jdx] = 0.5*ph22;
 	}
@@ -917,11 +881,7 @@ COMPLEX16 IMRPhenomTInspiralAmpAnsatzHMv2(REAL8 x, IMRPhenomTHMAmpStruct *pAmp)
 	return fac*amp;
 }
 
-COMPLEX16 IMRPhenomTHMAmpv2(
-  REAL8 t,
-  UNUSED REAL8 x,
-  IMRPhenomTHMAmpStruct *pAmp
-)
+COMPLEX16 IMRPhenomTHMAmpv2(REAL8 t,REAL8 x,IMRPhenomTHMAmpStruct *pAmp)
 {
     COMPLEX16 amp;
 
@@ -931,6 +891,7 @@ COMPLEX16 IMRPhenomTHMAmpv2(
         }
         else
         {
+					x = 0.0;
           amp = IMRPhenomTRDAmpAnsatzHM(t, pAmp);
         }
 

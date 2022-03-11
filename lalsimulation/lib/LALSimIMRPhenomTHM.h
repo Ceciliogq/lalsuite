@@ -49,7 +49,8 @@ int LALSimIMRPhenomTHM_OneMode_v2(
 					IMRPhenomTPhase22Struct *pPhase,
 					REAL8Sequence *times,
 					COMPLEX16Sequence *expPhiorb,
-					REAL8Sequence *xorb,
+					gsl_spline *spline_xorb,
+				  gsl_interp_accel *accel_xorb,
 					UINT4 ell,
 					UINT4 emm);
 
