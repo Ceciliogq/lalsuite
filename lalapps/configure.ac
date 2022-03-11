@@ -1,5 +1,5 @@
 XAC_PREREQ([2.63])
-AC_INIT([LALApps],[8.0.0.1],[lal-discuss@ligo.org])
+AC_INIT([LALApps],[8.1.0.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_SRCDIR([src/lalapps/tconvert.c])
 AC_CONFIG_AUX_DIR([gnuscripts])
@@ -18,6 +18,7 @@ AC_CONFIG_FILES([\
   src/Makefile \
   src/findchirp/Makefile \
   src/frametools/Makefile \
+  src/hwinjection/Makefile \
   src/inspiral/Makefile \
   src/lalapps/LALAppsVCSInfo.c \
   src/lalapps/LALAppsVCSInfo.h \
@@ -31,7 +32,6 @@ AC_CONFIG_FILES([\
   src/pulsar/Fstatistic/Makefile \
   src/pulsar/GCT/Makefile \
   src/pulsar/HeterodyneSearch/Makefile \
-  src/pulsar/HWInjection/Makefile \
   src/pulsar/Hough/Makefile \
   src/pulsar/HoughFstat/Makefile \
   src/pulsar/MakeData/Makefile \
@@ -59,12 +59,12 @@ AM_INIT_AUTOMAKE([ \
 # version requirements
 MIN_FRAMEL_VERSION="8.39.2"
 MIN_LAL_VERSION="7.1.0"
-MIN_LALFRAME_VERSION="1.6.0"
+MIN_LALFRAME_VERSION="2.0.0"
 MIN_LALMETAIO_VERSION="2.1.0"
 MIN_LALSIMULATION_VERSION="3.1.0"
 MIN_LALBURST_VERSION="1.5.3"
 MIN_LALINSPIRAL_VERSION="2.0.0"
-MIN_LALPULSAR_VERSION="3.1.0"
+MIN_LALPULSAR_VERSION="4.0.0"
 MIN_LALINFERENCE_VERSION="3.0.0"
 MIN_PYTHON_LIGO_LW_VERSION="1.7.0"
 AC_SUBST([MIN_FRAMEL_VERSION])

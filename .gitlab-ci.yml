@@ -443,6 +443,7 @@ default:
     # copy local packages from conda-bld dir to a new channel
     - if [ -d "${CONDA_BLD_PATH}" ]; then
           LOCAL_CHANNEL="${CI_PROJECT_DIR}/local-builds";
+          rm -rf "${LOCAL_CHANNEL}";
           cp -rv "${CONDA_BLD_PATH}" "${LOCAL_CHANNEL}";
           conda index "${LOCAL_CHANNEL}" --no-progress;
           conda config --file ${CONDARC} --add channels "${LOCAL_CHANNEL}";
@@ -987,6 +988,9 @@ lalapps:conda:py310:
   - source test/bin/activate
   - python -m pip install --upgrade pip
   - python -m pip install wheelhouse/*
+  # check metadata
+  - python -m pip show lalsuite
+  - python -m pip check lalsuite
   # test loading Python modules and finding data files
   - |
     env LAL_DEBUG_LEVEL=info python3 - <<EOF
@@ -1471,6 +1475,8 @@ platform:conda:macos-arm64:
   # fail with permissions errors, reset the permissions
   after_script:
     - chmod -R +w $CI_PROJECT_DIR
+  # https://git.ligo.org/lscsoft/lalsuite/-/issues/514
+  allow_failure: true
 
 # -- docker -------------------------------------
 #
