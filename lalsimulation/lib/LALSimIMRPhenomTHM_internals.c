@@ -127,9 +127,24 @@ int IMRPhenomTSetWaveformVariables(
 	wf->distance    = distance;
 
 	/* Impose fRef=fmin if fRef=0 */
-	wf->fRef = fRef;
-	if(fRef==0.0){wf->fRef = fmin;}
 	wf->fmin = fmin;
+	if(fRef == -1)
+	{
+		REAL8 MfRef = XLALSimIMRPhenomXfISCO(wf->afinal);
+		wf->fRef = MfRef/wf->M_sec;
+		if(wf->fmin > wf->fRef)
+		{
+			wf->fmin = wf->fRef;
+		}
+
+	}
+	else
+	{
+	 	wf->fRef = fRef;
+	}
+
+	if(fRef==0.0){wf->fRef = fmin;}
+
 
 	/*Dimensionless minimum and reference frequency */
 	wf->MfRef = wf->M_sec*wf->fRef;

@@ -439,6 +439,7 @@ typedef enum tagApproximant {
    IMRPhenomTPHM,      /** Time domain, precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). */
    IMRPhenomTHMv2,      /** Time domain, non-precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). Version 2 */
    IMRPhenomTPHMv2,      /** Time domain, precessing phenomenological IMR waveform model with subdominant modes ([arXiv: 20XY.ZZZZZ]). Version 2 */
+   NRSur7dq4FD,   /** Custom wrapper */
    NumApproximants,	/**< Number of elements in enum, useful for checking bounds */
  } Approximant;
 

@@ -501,13 +501,13 @@ int XLALSimIMRPhenomTPHM_CoprecModes(
 {
 
   /* Sanity checks */
-  if(fRef  <  0.0) { XLAL_ERROR(XLAL_EDOM, "fRef_In must be positive or set to 0 to ignore.\n");  }
+  //if(fRef  <  0.0) { XLAL_ERROR(XLAL_EDOM, "fRef_In must be positive or set to 0 to ignore.\n");  }
   if(deltaT   <= 0.0) { XLAL_ERROR(XLAL_EDOM, "deltaT must be positive.\n");                         }
   if(m1_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m1 must be positive.\n");                             }
   if(m2_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m2 must be positive.\n");                             }
   if(fmin    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "f_min must be positive.\n");                          }
   if(distance <= 0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
-  if(fRef > 0.0 && fRef < fmin){ XLAL_ERROR(XLAL_EDOM, "fRef must be >= f_min or =0 to use f_min.\n"); }
+  if(fRef > 0.0 && fRef < fmin){ fmin = fRef; }
 
   /* Swap components if m2>m1 */
   if(m1_SI < m2_SI)
@@ -652,6 +652,8 @@ int XLALSimIMRPhenomTPHM_CoprecModes(
   pWF    = XLALMalloc(sizeof(IMRPhenomTWaveformStruct));
   status = IMRPhenomTSetWaveformVariables(pWF, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams_aux);
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetWaveformVariables has failed.");
+  fRef = pWF->fRef;
+  fmin = pWF->fmin;
 
   /* Initialize IMR PhenomX Waveform struct and check that it initialized correctly */
   IMRPhenomXWaveformStruct *pWFX;
@@ -909,13 +911,13 @@ int XLALSimIMRPhenomTPHM_CoprecModes_v2(
 {
 
   /* Sanity checks */
-  if(fRef  <  0.0) { XLAL_ERROR(XLAL_EDOM, "fRef_In must be positive or set to 0 to ignore.\n");  }
+  //if(fRef  <  0.0) { XLAL_ERROR(XLAL_EDOM, "fRef_In must be positive or set to 0 to ignore.\n");  }
   if(deltaT   <= 0.0) { XLAL_ERROR(XLAL_EDOM, "deltaT must be positive.\n");                         }
   if(m1_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m1 must be positive.\n");                             }
   if(m2_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m2 must be positive.\n");                             }
   if(fmin    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "f_min must be positive.\n");                          }
   if(distance <= 0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
-  if(fRef > 0.0 && fRef < fmin){ XLAL_ERROR(XLAL_EDOM, "fRef must be >= f_min or =0 to use f_min.\n"); }
+  if(fRef > 0.0 && fRef < fmin){ fmin = fRef; }
 
   /* Swap components if m2>m1 */
   if(m1_SI < m2_SI)
@@ -1060,6 +1062,8 @@ int XLALSimIMRPhenomTPHM_CoprecModes_v2(
   pWF    = XLALMalloc(sizeof(IMRPhenomTWaveformStruct));
   status = IMRPhenomTSetWaveformVariables(pWF, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams_aux);
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetWaveformVariables has failed.");
+  fRef = pWF->fRef;
+  fmin = pWF->fmin;
 
   /* Initialize IMR PhenomX Waveform struct and check that it initialized correctly */
   IMRPhenomXWaveformStruct *pWFX;

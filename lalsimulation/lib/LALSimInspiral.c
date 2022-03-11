@@ -189,8 +189,9 @@ static const char *lalSimulationApproximantNames[] = {
     INITIALIZE_NAME(IMRPhenomTHM),
     INITIALIZE_NAME(IMRPhenomTP),
     INITIALIZE_NAME(IMRPhenomTPHM),
+		INITIALIZE_NAME(NRSur7dq4FD),
 		INITIALIZE_NAME(IMRPhenomTHMv2),
-		INITIALIZE_NAME(IMRPhenomTPHMv2),
+		INITIALIZE_NAME(IMRPhenomTPHMv2)
 };
 #undef INITIALIZE_NAME
 
@@ -2364,6 +2365,17 @@ int XLALSimInspiralChooseFDWaveform(
 			}
 
 			break;
+
+		case NRSur7dq4FD:
+		/* Waveform-specific sanity checks */
+			if( !XLALSimInspiralWaveformParamsFrameAxisIsDefault(LALparams) )
+			{
+				/* Default is LAL_SIM_INSPIRAL_FRAME_AXIS_ORBITAL_L : z-axis along direction of orbital angular momentum. */
+				XLAL_ERROR(XLAL_EINVAL, "Non-default LALSimInspiralFrameAxis provided, but this approximant does not use that flag.");
+			}
+			ret = XLALSimInspiralFD(hptilde, hctilde, m1, m2, S1x, S1y, S1z, S2x, S2y, S2z, distance, inclination, phiRef, longAscNodes, eccentricity, meanPerAno, deltaF, f_min, f_max, f_ref, LALparams, NRSur7dq4);
+			break;
+
 
         default:
             XLALPrintError("FD version of approximant not implemented in lalsimulation\n");
@@ -6402,6 +6414,7 @@ int XLALSimInspiralImplementedFDApproximants(
         case NRSur4d2s:
         case IMRPhenomPv3:
         case IMRPhenomPv3HM:
+				case NRSur7dq4FD:
             return 1;
 
         default:
@@ -6810,6 +6823,7 @@ int XLALSimInspiralGetSpinSupportFromApproximant(Approximant approx){
     case IMRPhenomTP:
     case IMRPhenomTPHM:
 		case IMRPhenomTPHMv2:
+		case NRSur7dq4FD:
       spin_support=LAL_SIM_INSPIRAL_PRECESSINGSPIN;
       break;
     case SpinTaylorF2:
@@ -6928,6 +6942,7 @@ int XLALSimInspiralGetSpinFreqFromApproximant(Approximant approx){
     case IMRPhenomTP:
     case IMRPhenomTPHM:
 		case IMRPhenomTPHMv2:
+		case NRSur7dq4FD:
       spin_freq=LAL_SIM_INSPIRAL_SPINS_F_REF;
       break;
     case FindChirpPTF:
@@ -7097,6 +7112,7 @@ int XLALSimInspiralApproximantAcceptTestGRParams(Approximant approx){
     case IMRPhenomTPHM:
 		case IMRPhenomTHMv2:
 		case IMRPhenomTPHMv2:
+		case NRSur7dq4FD:
     case NumApproximants:
       testGR_accept=LAL_SIM_INSPIRAL_NO_TESTGR_PARAMS;
       break;
@@ -7805,7 +7821,13 @@ REAL8 XLALSimInspiralfLow2fStart(REAL8 fLow, INT4 ampOrder, INT4 approximant)
   }
 
     REAL8 fStart;
-    fStart = fLow * 2./(ampOrder+2);
+		if(ampOrder == 9){
+			fStart = 0.0;
+		}
+		else{
+			fStart = fLow * 2./(ampOrder+2);
+		}
+
     return fStart;
 }
 
