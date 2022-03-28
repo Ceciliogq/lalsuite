@@ -1917,7 +1917,6 @@ int IMRPhenomXHMMultiBandOneModeMixing(
     for(UINT4 idx = RDcutMin; idx < count; idx++){
       freqs->data[idx-RDcutMin] = finefreqs[idx]/pWF->M_sec;
     }
-    //XLALSimIMRPhenomXASFrequencySequence(&htilde22tmp, freqs, pWF->m1_SI, pWF->m2_SI, pWF->chi1L, pWF->chi2L, pWF->distance, pWF->phi0, pWF->fRef, lalParams);
     int return_code = IMRPhenomXASGenerateFD(
       &htilde22tmp,
       freqs,
