@@ -2220,8 +2220,15 @@ int XLALSimInspiralChooseFDWaveform(
 		    REAL8 resTest  = XLALSimInspiralWaveformParamsLookupPhenomXHMThresholdMband(LALparams);
 
 			/* If total mass is very high (>500 solar masses), we only have a few points in the ringdown, interpolation is not efficient, do not use Multibanding */
+			
+			/* We switch off multibanding if the model is actually evaluated in very few points (<1000). 
+			   In this case, the coarse and fine grid will not be very different and the interpolation is inefficient. */
 			REAL8 Mtot = (m1 + m2)/LAL_MSUN_SI;
-			if(resTest!=0 && Mtot > 500){
+			REAL8 f_cut = 0.3 / (LAL_MTSUN_SI * Mtot); // The model is evaluated until Mf = 0.3
+			if (f_max < f_cut){
+				f_cut = f_max;
+			}
+			if(resTest!=0 && (f_cut - f_min)/deltaF < 1e3){
 				resTest = 0.;
 			}
 
