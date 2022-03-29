@@ -953,12 +953,9 @@ int IMRPhenomXGetAndSetPrecessionVariables(
     /* User requested multibanding */
     pPrec->MBandPrecVersion = 1;
 
-    /* Switch off multiband for very high mass as in IMRPhenomXHM. */
-    if(pWF->Mtot > 500)
-    {
-      XLAL_PRINT_WARNING("Very high mass, only merger in frequency band, multibanding not efficient, switching off for non-precessing modes and Euler angles.");
-      pPrec->MBandPrecVersion = 0;
-      XLALSimInspiralWaveformParamsInsertPhenomXHMThresholdMband(lalParams, 0.);
+    /* Switch off multiband for cases with very few points as in IMRPhenomXHM. */
+    if((pWF->f_max_prime - pWF->fMin)/pWF->deltaF < 1e3){
+        pPrec->MBandPrecVersion = 0;
     }
 
     if(pPrec->IMRPhenomXPrecVersion < 200)
