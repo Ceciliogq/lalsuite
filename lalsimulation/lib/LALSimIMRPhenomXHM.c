@@ -2445,72 +2445,73 @@ int XLALSimIMRPhenomXHMAmplitude(
     
     if(ell ==2 && abs(emm) == 2){
         IMRPhenomXGetAmplitudeCoefficients(pWF, pAmp22);
-      }
-      IMRPhenomXHM_GetAmplitudeCoefficients(pAmp, pPhase, pAmp22, pPhase22, pWFHM, pWF);
-
-      REAL8 Amp0 = pWF->amp0, amp; //pWFHM->Amp0, amp;
-      IMRPhenomX_UsefulPowers powers_of_Mf;
-      /* Loop over frequencies to generate waveform */
-      /* Modes with mixing */
-      if(pWFHM->MixingOn==1){
-
-        REAL8 Mf;
-        for (UINT4 idx = 0; idx < freqs->length; idx++)
+        Amp0 = pWF->amp0;
+    }
+    else{        
+        // allocate qnm struct
+        QNMFits *qnms = (QNMFits *) XLALMalloc(sizeof(QNMFits));
+        IMRPhenomXHM_Initialize_QNMs(qnms);
+        
+        IMRPhenomXHM_SetHMWaveformVariables(ell, abs(emm), pWFHM, pWF, qnms, lalParams_aux);
+        LALFree(qnms);
+        
+        Amp0 = pWFHM->Amp0;
+        
+        /* Allocate and initialize the PhenomXHM lm phase and amp coefficients struct */
+        IMRPhenomXHM_FillAmpFitsArray(pAmp);
+        
+        /* Get coefficients for Amplitude and phase */
+        if (pWFHM->MixingOn == 1)  {
+            IMRPhenomXHM_FillPhaseFitsArray(pPhase);
+            IMRPhenomXGetPhaseCoefficients(pWF, pPhase22);
+            GetSpheroidalCoefficients(pPhase, pPhase22, pWFHM, pWF);
+            IMRPhenomXGetAmplitudeCoefficients(pWF, pAmp22);
+        }
+        IMRPhenomXHM_GetAmplitudeCoefficients(pAmp, pPhase, pAmp22, pPhase22, pWFHM, pWF);
+    }
+        
+    *amplitude = XLALCreateREAL8Sequence(freqs->length);     
+    
+    /* Loop over frequencies to generate waveform */
+    for (UINT4 idx = 0; idx < freqs->length; idx++)
+    {
+        Mf    = pWF->M_sec * freqs->data[idx];
+        INT4 initial_status     = IMRPhenomX_Initialize_Powers(&powers_of_Mf, Mf);
+        if(initial_status != XLAL_SUCCESS)
         {
             status = initial_status;
             XLALPrintError("IMRPhenomX_Initialize_Powers failed for Mf, initial_status=%d",initial_status);
-          }
-          else
-          {
-            amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
-            ((*amplitude)->data->data)[idx+offset] = Amp0 * amp;
-          }
         }
         else
         {
-          REAL8 Mf    = pWF->M_sec * freqs->data[idx];
-          INT4 initial_status     = IMRPhenomX_Initialize_Powers(&powers_of_Mf,Mf);
-          if(initial_status != XLAL_SUCCESS)
-          {
-            status = initial_status;
-            XLALPrintError("IMRPhenomX_Initialize_Powers failed for Mf, initial_status=%d",initial_status);
-          }
-          else
-          {
-            amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf, pAmp, pWFHM);
-            ((*amplitude)->data->data)[idx+offset] = Amp0 * amp;
-          }
+            if(ell == 2 && abs(emm) == 2){
+                amp = IMRPhenomX_Amplitude_22(Mf, &powers_of_Mf, pAmp22, pWF);
+            }
+            else{
+                if(pWFHM->MixingOn==1){
+                    amp = IMRPhenomXHM_Amplitude_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+                }
+                else{
+                    amp = IMRPhenomXHM_Amplitude_noModeMixing(&powers_of_Mf, pAmp, pWFHM);
+                }
+            }            
+            ((*amplitude)->data)[idx] = Amp0 * amp;
         }
-      }
+    }
+    
+    
+    LALFree(pWFHM);
+    LALFree(pWF);
+    LALFree(pAmp22);
+    LALFree(pAmp);
+    LALFree(pPhase22);
+    LALFree(pPhase);
+    XLALDestroyDict(lalParams_aux);
+    
+    return XLAL_SUCCESS;
+}
 
-      /* Resize amplitude if needed */
-      if (pWF->f_max_prime < pWF->fMax)
-      {
-        /*
-        The user has requested a higher f_max than Mf = fCut.
-        Resize the frequency series to fill with zeros beyond the cutoff frequency.
-        */
-        size_t n = (*amplitude)->data->length;
-        XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
 
-        // We want to have the length be a power of 2 + 1
-        size_t n_full = NextPow2(pWF->fMax / pWF->deltaF) + 1;
-
-        /* Resize the COMPLEX16 frequency series */
-        *amplitude = XLALResizeREAL8FrequencySeries(*amplitude, 0, n_full);
-        XLAL_CHECK (*amplitude, XLAL_ENOMEM, "Failed to resize waveform REAL8FrequencySeries of length %zu (for internal fCut=%f) to new length %zu (for user-requested f_max=%f).", n, pWF->fCut, n_full, pWF->fMax );
-      }
-
-      LALFree(pWFHM);
-      LALFree(pWF);
-      LALFree(pAmp22);
-      LALFree(pAmp);
-      LALFree(pPhase22);
-      LALFree(pPhase);
-      XLALDestroyDict(lalParams_aux);
-
-      return XLAL_SUCCESS;
-  }
 
 /** Returns phase of one single mode in a custom frequency array.
     If the in-plane spin components are non-zero, this is the phase of the modified co-precessing mode,
@@ -2682,50 +2683,17 @@ int XLALSimIMRPhenomXHMPhase(
     
     *phase = XLALCreateREAL8Sequence(freqs->length);
 
-        IMRPhenomX_UsefulPowers powers_of_Mf;
-        REAL8 addpi = 0;   // Add pi to the phase if (-1)^l is negative
-
-        /* Multiply by (-1)^l to get the true negative mode */
-        if(ell%2 != 0){
-          addpi = LAL_PI;
-        }
-        /* Loop over frequencies to generate waveform */
-        /* Modes with mixing */
-        if(pWFHM->MixingOn==1){
-
-          REAL8 Mf;
-          for (UINT4 idx = 0; idx < freqs->length; idx++)
-          {
-            Mf    = pWF->M_sec * freqs->data[idx];
-            INT4 initial_status     = IMRPhenomX_Initialize_Powers(&powers_of_Mf,Mf);
-            if(initial_status != XLAL_SUCCESS)
-            {
-              status = initial_status;
-              XLALPrintError("IMRPhenomX_Initialize_Powers failed for Mf, initial_status=%d",initial_status);
-            }
-            else
-            {
-              REAL8 phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
-              ((*phase)->data->data)[idx+offset] = phi + addpi;
-            }
-          }
-        }  /* Modes without mixing */
-        else{
-          for (UINT4 idx = 0; idx < freqs->length; idx++)
-          {
-            REAL8 Mf    = pWF->M_sec * freqs->data[idx];
-            INT4 initial_status     = IMRPhenomX_Initialize_Powers(&powers_of_Mf,Mf);
-            if(initial_status != XLAL_SUCCESS)
-            {
-              status = initial_status;
-              XLALPrintError("IMRPhenomX_Initialize_Powers failed for Mf, initial_status=%d", initial_status);
-            }
-            else
-            {
-              REAL8 phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf, pPhase, pWFHM, pWF);
-              ((*phase)->data->data)[idx+offset] = phi + addpi;
-            }
-          }
+    REAL8 Mf, phi;
+    
+    /* Loop over frequencies to generate waveform */
+    for (UINT4 idx = 0; idx < freqs->length; idx++)
+    {
+        Mf    = pWF->M_sec * freqs->data[idx];
+        INT4 initial_status     = IMRPhenomX_Initialize_Powers(&powers_of_Mf,Mf);
+        if(initial_status != XLAL_SUCCESS)
+        {
+            status = initial_status;
+            XLALPrintError("IMRPhenomX_Initialize_Powers failed for Mf, initial_status=%d",initial_status);
         }
         else
         {
@@ -2736,10 +2704,10 @@ int XLALSimIMRPhenomXHMPhase(
             }
             else{
                 if(pWFHM->MixingOn==1){
-                    phi = IMRPhenomXHM_Phase_ModeMixing(Mf, &powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
+                    phi = IMRPhenomXHM_Phase_ModeMixing(&powers_of_Mf, pAmp, pPhase, pWFHM, pAmp22, pPhase22, pWF);
                 }
                 else{
-                    phi = IMRPhenomXHM_Phase_noModeMixing(Mf, &powers_of_Mf, pPhase, pWFHM, pWF);
+                    phi = IMRPhenomXHM_Phase_noModeMixing(&powers_of_Mf, pPhase, pWFHM, pWF);
                 }
             }            
             ((*phase)->data)[idx] = phi + addpi;
@@ -2751,19 +2719,7 @@ int XLALSimIMRPhenomXHMPhase(
     if(emm > 0){
         for (UINT4 idx = 0; idx < freqs->length; idx++)
         {
-          /*
-          The user has requested a higher f_max than Mf = fCut.
-          Resize the frequency series to fill with zeros beyond the cutoff frequency.
-          */
-          size_t n = (*phase)->data->length;
-          XLAL_PRINT_WARNING("The input f_max = %.2f Hz is larger than the internal cutoff of Mf=0.3 (%.2f Hz). Array will be filled with zeroes between these two frequencies.\n", pWF->fMax, pWF->f_max_prime);
-
-          // We want to have the length be a power of 2 + 1
-          size_t n_full = NextPow2(pWF->fMax / pWF->deltaF) + 1;
-
-          /* Resize the COMPLEX16 frequency series */
-          *phase = XLALResizeREAL8FrequencySeries(*phase, 0, n_full);
-          XLAL_CHECK (*phase, XLAL_ENOMEM, "Failed to resize waveform REAL8FrequencySeries of length %zu (for internal fCut=%f) to new length %zu (for user-requested f_max=%f).", n, pWF->fCut, n_full, pWF->fMax );
+            ((*phase)->data)[idx] = addpi - ((*phase)->data)[idx];
         }
     }
     
