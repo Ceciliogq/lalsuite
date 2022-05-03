@@ -42,6 +42,8 @@ stages:
 include:
   - project: computing/gitlab-ci-templates
     file:
+      # helpers for codequality jobs
+      - codequality.yml
       # helpers for debian builds
       - debian.yml
       # helpers for RHEL builds
@@ -217,8 +219,7 @@ default:
       if [ -d rpmbuild ]; then
           yum install -y -q createrepo
           LOCAL_REPO="${CI_PROJECT_DIR}/local-builds"
-          _ARCH=$(rpm --eval '%{_arch}')
-          cp -r rpmbuild/RPMS/$(rpm --eval '%{_arch}') ${LOCAL_REPO}
+          cp -r rpmbuild/RPMS ${LOCAL_REPO}
           createrepo --quiet --workers "${CPU_COUNT}" "${LOCAL_REPO}"
           cat > /etc/yum.repos.d/local-builds.repo <<EOF
       [local-builds]
@@ -272,9 +273,9 @@ default:
     expire_in: 18h
     paths:
       # build packages
-      - "rpmbuild/RPMS/x86_64/${CI_JOB_NAME%%:*}-*.rpm"
-      - "rpmbuild/RPMS/x86_64/lib${CI_JOB_NAME%%:*}-*.rpm"
-      - "rpmbuild/RPMS/x86_64/python*-${CI_JOB_NAME%%:*}-*.rpm"
+      - "rpmbuild/RPMS/*/${CI_JOB_NAME%%:*}-*.rpm"
+      - "rpmbuild/RPMS/*/lib${CI_JOB_NAME%%:*}-*.rpm"
+      - "rpmbuild/RPMS/*/python*-${CI_JOB_NAME%%:*}-*.rpm"
       # log files
       - "rpmbuild/BUILD/**/config.log"
       - "rpmbuild/BUILD/**/test-suite.log"
@@ -1142,9 +1143,23 @@ lalinference_testjob:
     - !reference [".rhel:base", before_script]
     # install our packages
     - yum -y -q install
+          createrepo
           git
           git-lfs
-    - yum -y -q install rpmbuild/RPMS/x86_64/*.rpm
+    # create local repo
+    - LOCAL_REPO="${CI_PROJECT_DIR}/local-builds"
+    - cp -r rpmbuild/RPMS ${LOCAL_REPO}
+    - createrepo --quiet --workers "${CPU_COUNT}" "${LOCAL_REPO}"
+    - |
+      cat > /etc/yum.repos.d/local-builds.repo <<EOF
+      [local-builds]
+      name=Local builds
+      baseurl=file://${LOCAL_REPO}
+      enabled=1
+      gpgcheck=0
+      EOF
+    # install require packages
+    - yum -y -q install lal* python*-lal* --exclude lalsuite*
   script:
     - git lfs clone https://git.ligo.org/lscsoft/ROQ_data --include "**/params.dat,*/4s/**"
     - bash lalinference/test/lalinference_nestedSampling_integration_test.sh
@@ -1313,9 +1328,22 @@ upgrade:rpm:el7:
     - lalapps:rpm
   script:
     # install latest release
-    - yum -y -q install lalapps
+    - yum -y -q install lal* python*-lal* --exclude lalsuite*
+    # create local repo
+    - yum -y -q install createrepo
+    - LOCAL_REPO="${CI_PROJECT_DIR}/local-builds"
+    - cp -r rpmbuild/RPMS ${LOCAL_REPO}
+    - createrepo --quiet --workers "${CPU_COUNT}" "${LOCAL_REPO}"
+    - |
+      cat > /etc/yum.repos.d/local-builds.repo <<EOF
+      [local-builds]
+      name=Local builds
+      baseurl=file://${LOCAL_REPO}
+      enabled=1
+      gpgcheck=0
+      EOF
     # install new packages
-    - yum -y install rpmbuild/RPMS/x86_64/*.rpm
+    - yum -y upgrade
 
 upgrade:debian:buster:
   extends:
@@ -1333,12 +1361,19 @@ upgrade:debian:buster:
     - lalapps:deb
   script:
     - apt-get -y -q -q update
-    # install latest lalsuite release
-    - apt-get -y -q install lscsoft-lalsuite
+    - apt-get -y -q -q upgrade
     # setup local apt repository
     - apt-get -y -q install local-apt-repository
     - mkdir /srv/local-apt-repository
-    - cp *.deb /srv/local-apt-repository
+    - mv *.deb /srv/local-apt-repository
+    # cleanup
+    - rm *.changes *.dsc *.orig.tar.xz
+    - ls | grep -P "lal.*-\d+(\.\d+)+" | xargs -d"\n" rm -rf
+    # install latest lalsuite release
+    - apt-get -y -q install lalsuite lalsuite-dev lalsuite-octave
+    # remove lalsuite meta-packages
+    - dpkg -r lalsuite lalsuite-dev lalsuite-octave
+    # generate local apt repository metadata
     - /usr/lib/local-apt-repository/rebuild
     # install new packages
     - apt-get -y -q update
@@ -1486,6 +1521,7 @@ platform:conda:macos-arm64:
 
 # job template for docker builds
 .docker:
+  image: docker:latest
   variables:
     DOCKER_DRIVER: overlay
   stage: docker
@@ -1530,7 +1566,7 @@ platform:conda:macos-arm64:
   before_script:
     - set -x
     # add RPMs to directory to pass to docker
-    - mkdir rpms && mv rpmbuild/RPMS/x86_64/*.rpm rpms
+    - mkdir rpms && mv rpmbuild/RPMS/*/*.rpm rpms
     - rm -rf rpmbuild*
   needs:
     - lal:rpm
@@ -1602,7 +1638,10 @@ coverage:
   before_script:
     - *init-build-job
     - apt-get -y install --no-install-recommends python3-pip
-    - python3 -m pip install coverage gcovr pycobertura
+    - python3 -m pip install
+          coverage
+          "gcovr!=5.1"
+          pycobertura
   script:
     - ./00boot
     # Configure for C code coverage measurement with gcc
@@ -1659,9 +1698,16 @@ coverage:
     - pycobertura show coverage.xml | tail -n 1
   coverage: '/TOTAL\s+.*\s+([\d\.]+)%/'
   artifacts:
+    expose_as: coverage
     paths:
+      # report
       - coverage.html
-      - "*.xml"
+      # combined coverage
+      - coverage.xml
+      # C coverage
+      - c-coverage.xml
+      # Python coverage
+      - py-coverage.xml
     reports:
       cobertura: coverage.xml
   only:
@@ -1725,6 +1771,13 @@ lint:python:
     - .lint
   variables:
     FLAKE8_PLUGINS: "flake8-executable"
+  artifacts:
+    paths:
+      - flake8*.json
+    reports:
+      # don't upload report, see lint:combine-reports
+      codequality: null
+    when: always
 
 lint:coala:
   extends:
@@ -1770,8 +1823,21 @@ lint:coala:
       - coala.json
       - codequality.json
     reports:
-      codequality: codequality.json
+      # don't upload report, see lint:combine-reports
+      codequality: null
     when: always
+
+lint:combine-reports:
+  extends:
+    - .codequality:combine
+    - .lint
+  stage: .post
+  needs:
+    - lint:coala
+    - lint:python
+  before_script:
+    # don't need this file
+    - rm -f coala.json
 
 # -- documentation ------------------------------
 #
@@ -1791,8 +1857,9 @@ documentation:
     - cp lalsuite/index.html index.html
     - sed -i 's/..\/lal/lal/g' index.html
   artifacts:
-    expire_in: 18h
+    expose_as: html
     paths:
+      - html/index.html
       - html
   only:
     refs:

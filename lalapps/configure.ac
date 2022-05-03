@@ -1,5 +1,5 @@
 XAC_PREREQ([2.63])
-AC_INIT([LALApps],[8.1.0.1],[lal-discuss@ligo.org])
+AC_INIT([LALApps],[8.1.1.1],[lal-discuss@ligo.org])
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_SRCDIR([src/lalapps/tconvert.c])
 AC_CONFIG_AUX_DIR([gnuscripts])
@@ -20,6 +20,7 @@ AC_CONFIG_FILES([\
   src/frametools/Makefile \
   src/hwinjection/Makefile \
   src/inspiral/Makefile \
+  src/lalapps/__init__.py \
   src/lalapps/LALAppsVCSInfo.c \
   src/lalapps/LALAppsVCSInfo.h \
   src/lalapps/Makefile \
