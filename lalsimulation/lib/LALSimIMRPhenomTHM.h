@@ -43,6 +43,17 @@ int LALSimIMRPhenomTHM_OneMode(
 	UINT4 emm                          /**< UNDOCUMENTED */
         );
 
+int LALSimIMRPhenomTHM_OneMode_v2(
+					COMPLEX16TimeSeries **hlm,
+					IMRPhenomTWaveformStruct *pWF,
+					IMRPhenomTPhase22Struct *pPhase,
+					REAL8Sequence *times,
+					COMPLEX16Sequence *expPhiorb,
+					gsl_spline *spline_xorb,
+				  gsl_interp_accel *accel_xorb,
+					UINT4 ell,
+					UINT4 emm);
+
 /* Function for generating all modes in a requested modelist */
 int LALSimIMRPhenomTHM_Modes(
   SphHarmTimeSeries **hlms,   /**< [out] Time domain modes */
@@ -58,6 +69,21 @@ int LALSimIMRPhenomTHM_Modes(
   LALDict *lalParams,            /**< LAL dictionary containing accessory parameters */
   UINT4 only22              /**< Internal flag for mode array check */
   );
+
+	int LALSimIMRPhenomTHM_Modes_v2(
+	  SphHarmTimeSeries **hlms,   /**< [out] Time domain modes */
+	  REAL8 m1_SI,                /**< Mass of companion 1 (kg) */
+	  REAL8 m2_SI,                /**< Mass of companion 2 (kg) */
+	  REAL8 chi1L,                /**< Dimensionless aligned spin of companion 1 */
+	  REAL8 chi2L,                /**< Dimensionless aligned spin of companion 2 */
+	  REAL8 distance,             /**< Luminosity distance (m) */
+	  REAL8 deltaT,               /**< sampling interval (s) */
+	  REAL8 fmin,               /**< starting GW frequency (Hz) */
+	  REAL8 fRef,               /**< reference GW frequency (Hz) */
+	  REAL8 phiRef,               /**< reference orbital phase (rad) */
+	  LALDict *lalParams,            /**< LAL dictionary containing accessory parameters */
+	  UINT4 only22              /**< Internal flag for mode array check */
+	  );
 
 /* Function to adapt user requested mode list to modes included in the model */
 LALDict *IMRPhenomTHM_setup_mode_array(LALDict *lalParams);

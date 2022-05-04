@@ -41,6 +41,7 @@
 #include <lal/LALInferenceTemplate.h>
 #include <lal/LALInferenceMultibanding.h>
 #include <lal/LALSimNeutronStar.h>
+#include "../../lalsimulation/lib/LALSimIMRPhenomXUtilities.h"
 
 /* LIB imports*/
 #include <lal/LALInferenceBurstRoutines.h>
@@ -85,7 +86,7 @@ const UINT4 N_extra_params = 38;
 static REAL8 dquadmon_from_lambda(REAL8 lambdav);
 static REAL8 dquadmon_from_lambda(REAL8 lambdav)
 {
-    
+
     double ll = log(lambdav);
     double ai = .194, bi = .0936, ci = 0.0474, di = -4.21e-3, ei = 1.23e-4;
     double ln_quad_moment = ai + bi*ll + ci*ll*ll + di*pow(ll,3.0) + ei*pow(ll,4.0);
@@ -807,6 +808,18 @@ void LALInferenceTemplateXLALSimInspiralChooseWaveform(LALInferenceModel *model)
   if(LALInferenceCheckVariable(model->params, "phi12"))
       phi12 = LALInferenceGetREAL8Variable(model->params, "phi12");
 
+  /* HECTOR: hack to use fISCO for reference frequency */
+  if (f_ref==-1){
+    REAL8 eta = m1*m2/pow(m1+m2,2);
+    REAL8 chi1L = a_spin1*cos(tilt1);
+    REAL8 chi2L = a_spin2*cos(tilt1);
+    REAL8 afinal = XLALSimIMRPhenomXFinalSpin2017(eta,chi1L,chi2L);
+    REAL8 MfISCO = XLALSimIMRPhenomXfISCO(afinal);
+    f_ref = MfISCO/(m1+m2)/LAL_MTSUN_SI;
+    fTemp = f_ref;
+    //printf("eta=%f, chi1L=%f, chi2L=%f, afinal=%f, MfISCO=%f, fref=%f\n",eta,chi1L,chi2L,afinal,MfISCO,f_ref);
+  }
+
   /* If we have tilt angles zero, then the spins are aligned and we just set the z component */
   /* However, if the waveform supports precession then we still need to get the right coordinate components */
   if(tilt1==0.0 && tilt2==0.0)
@@ -873,7 +886,7 @@ void LALInferenceTemplateXLALSimInspiralChooseWaveform(LALInferenceModel *model)
       {
          r2 = XLALSimNeutronStarRadius(m2*LAL_MSUN_SI, eos_fam);
          k2_2 = XLALSimNeutronStarLoveNumberK2(m2*LAL_MSUN_SI, eos_fam);
-         lambda2 = (2./3.)*k2_2 * pow(r2/(m2*LAL_MRSUN_SI), 5.0);          
+         lambda2 = (2./3.)*k2_2 * pow(r2/(m2*LAL_MRSUN_SI), 5.0);
       }
       /* Set waveform params */
       XLALSimInspiralWaveformParamsInsertTidalLambda1(model->LALpars, lambda1);
@@ -902,7 +915,7 @@ void LALInferenceTemplateXLALSimInspiralChooseWaveform(LALInferenceModel *model)
           f_max = fmax_eos;
         }
       }
-    
+
       /* Add derived quantities for output */
       LALInferenceAddVariable(model->params, "radius1", &r1, LALINFERENCE_REAL8_t, LALINFERENCE_PARAM_OUTPUT);
       LALInferenceAddVariable(model->params, "radius2", &r2, LALINFERENCE_REAL8_t, LALINFERENCE_PARAM_OUTPUT);

@@ -131,7 +131,7 @@ typedef struct tagIMRPhenomTPhase22Struct
 	REAL8 omegaRING_prec;
 
 	REAL8 MfRef;  // Dimensionless reference frequency
-	REAL8 Mfmin;  // Dimensionless minimum frequency	
+	REAL8 Mfmin;  // Dimensionless minimum frequency
 
 	REAL8 tRef;		// Reference time
 	REAL8 tmin;		// Minimum time
@@ -143,13 +143,22 @@ typedef struct tagIMRPhenomTPhase22Struct
 	REAL8 phOffInsp;	// phase offset of inspiral phase (needed if 4 regions are requested)
 	REAL8 phOffMerger; // phase offset of merger phase
 	REAL8 phOffRD;     // phase offset of ringdown phase
-
+	REAL8 phOffInt;
 	REAL8 tCut22;  // Inspiral-merger boundary time for the 22 mode phase/frequency
 	REAL8 tEarly;  // Early inspiral-late inspiral boundary time for the 22 mode phase/frequency (needed if 4 regions are requested)
 	REAL8 tt0;     // Calibrated t0 parameter of TaylorT3, needed for theta=0.33 collocation point and for early inspiral region if requested.
 
 	REAL8 dtM;     // Dimensionless time step
 	REAL8 EulerRDslope; // Slope of the analytical ringdown approximation for the precessing alpha angle. FIXME: check if its needed.
+
+	REAL8 xpeak, xCutInsp, xCutMerger, xmin, xRef, tshiftT2;
+	REAL8 dT2_1PN, dT2_1halfPN, dT2_2PN, dT2_2halfPN, dT2_3PN, dT2_3halfPN, dT2_3PNlog;
+	REAL8 dtInspC1, dtInspC2, dtInspC3;
+	REAL8 tLateC1, tLateC2, tLateC3, tLateC4, tLateC5, tLateC6, tLateC7, tLateC8;
+	REAL8 cc0M, cc1M, cc2M, cc3M, cc4M,cc5M;
+
+	REAL8 x1amp, x2amp, x3amp, xdAmp1, xdAmp2;
+	REAL8 xCutPhaseHM, domegaCutHM, phOffHM;
 
 } IMRPhenomTPhase22Struct;
 
@@ -175,14 +184,14 @@ typedef struct tagIMRPhenomTHMPhaseStruct
 	REAL8 alpha1RD_prec;
 	REAL8 alpha2RD; // Angular damping frequency of the nlm = 2lm QNM
 	REAL8 alpha21RD; // Damping frequency difference between n=2 and n=1 QNM
-	
+
 	REAL8 domegaPeak;	// Frequency derivative at the peak amplitude time
 	REAL8 omegaRING;	// Angular ringdown frequency
 	REAL8 omegaRING_prec;
 
 	REAL8 phOffMerger;	// phase offset of merger phase
 	REAL8 phOffRD;		// phase offset of ringdown phase
-	
+
 } IMRPhenomTHMPhaseStruct;
 
 /* Struct for storing the coefficient values of the amplitude ansatz for the lm mode. */
@@ -213,6 +222,9 @@ typedef struct tahIMRPhenomTHMAmpStruct
 	REAL8 inspC1;
 	REAL8 inspC2;
 	REAL8 inspC3;
+	REAL8 inspC4;
+	REAL8 inspC5;
+	REAL8 inspC6;
 
 	/* Phenomenological coefficients of merger ansatz */
 	REAL8 mergerC1;
@@ -320,8 +332,21 @@ double IMRPhenomTHMPhase(
   	IMRPhenomTHMPhaseStruct *pPhaseHM,
   	IMRPhenomTHMAmpStruct *pAmpHM
 );
+COMPLEX16 IMRPhenomTHMPhasev2(
+  	REAL8 t,
+		COMPLEX16 expphi,
+  	IMRPhenomTHMPhaseStruct *pPhaseHM,
+  	IMRPhenomTHMAmpStruct *pAmpHM
+);
 
 COMPLEX16 IMRPhenomTHMAmp(REAL8 t, REAL8 w, IMRPhenomTHMAmpStruct *pAmpHM);
+
+COMPLEX16 IMRPhenomTHMAmpTest(
+  REAL8 t,
+  REAL8 x,
+	REAL8 dtM,
+  IMRPhenomTHMAmpStruct *pAmp
+);
 
 REAL8 GetEulerSlope(REAL8 af, REAL8 mf);
 

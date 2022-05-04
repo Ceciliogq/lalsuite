@@ -43,10 +43,12 @@
 #include <math.h>
 #include <complex.h>
 #include <stdbool.h>
+#include <gsl/gsl_spline.h>
 
 /* Link IMRPhenomTHM routines */
 #include "LALSimIMRPhenomTHM_internals.h"
 #include "LALSimIMRPhenomTHM_internals.c"
+#include "LALSimIMRPhenomTHMv2_internals.c"
 #include "LALSimIMRPhenomTHM.h"
 
 /* *********** ALIGNED SPIN IMR MULTIMODE PHENOMENOLOGICAL TIME DOMAIN WAVEFORM MODEL: IMRPhenomTHM *********** */
@@ -58,8 +60,8 @@
  * @brief Routines to produce IMRPhenomT-family of phenomenological inspiral-merger-ringdown waveforms.
  * These are time-domain models for compact binaries at comparable and extreme mass ratios, tuned to numerical-relativity simulations.
  *
- * - IMRPhenomT: model for the 22 mode of non-precessing binaries. Model concept together with precession was published in https://arxiv.org/abs/2004.08302. 
- * Although an updated version together with the higher mode extension is under the DCC: https://dcc.ligo.org/LIGO-P2000524.  
+ * - IMRPhenomT: model for the 22 mode of non-precessing binaries. Model concept together with precession was published in https://arxiv.org/abs/2004.08302.
+ * Although an updated version together with the higher mode extension is under the DCC: https://dcc.ligo.org/LIGO-P2000524.
  * - IMRPhenomTHM: model with subdominant harmonics for non-precessing binaries. DCC link: https://dcc.ligo.org/LIGO-P2000524.
  * - IMRPhenomTP: model for precessing binaries. Twisted-up version of IMRPhenomT. Original concept: https://arxiv.org/abs/2004.08302.
  * - IMRPhenomTPHM: model for precessing binaries including higher harmonics. Twisted-up version of IMRPhenomTHM.
@@ -85,7 +87,7 @@
   *
   *
   */
-  
+
 /**
  * Routine to compute time domain polarisations for IMRPhenomT model. It returns two real time series for the plus and the cross polarisations,
  * constructed with the modes (l,m)=(2,2), (2,-2).
@@ -121,7 +123,7 @@ int XLALSimIMRPhenomT(
        lalParams_aux = XLALDictDuplicate(lalParams);
    }
   LALValue *ModeArray = XLALSimInspiralWaveformParamsLookupModeArray(lalParams_aux);
-  
+
   /* Check if an mode array is NULL and then populate it with the (2,2) and (2,-2) modes. */
   if(ModeArray==NULL)
   {
@@ -136,9 +138,15 @@ int XLALSimIMRPhenomT(
 
   UINT4 only22 = 1; /* Internal flag for mode array check */
 
+  INT4 inspVersion = XLALSimInspiralWaveformParamsLookupPhenomTHMInspiralVersion(lalParams);
   /* Compute modes dominant modes */
   SphHarmTimeSeries *hlms = NULL;
-  status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams_aux, only22);
+  if(inspVersion==2){
+    status = LALSimIMRPhenomTHM_Modes_v2(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
+  else{
+    status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function LALSimIMRPhenomTHM_Modes has failed producing the modes.");
 
   /* Obtain length and epoch from modes (they are the same for all the modes) */
@@ -171,7 +179,7 @@ int XLALSimIMRPhenomT(
 
   /* Destroy lalParams_aux. */
   XLALDestroyDict(lalParams_aux);
-  
+
 
   return status;
 }
@@ -202,7 +210,7 @@ int XLALSimIMRPhenomT(
 * across parameter space. Both options maintained for code historical reasons, but not clear benefit from non-default option was found.
 *
 * Model has been calibrated to 531 BBH non-precessing NR simulations from the
-* last release of the SXS Catalog (https://iopscience.iop.org/article/10.1088/1361-6382/ab34e2), additional BAM NR simulations at q=4, q=8 and q=18, and numerical Teukolsky waveforms placed at q=200 and q=1000. Calibration procedure has followed the 
+* last release of the SXS Catalog (https://iopscience.iop.org/article/10.1088/1361-6382/ab34e2), additional BAM NR simulations at q=4, q=8 and q=18, and numerical Teukolsky waveforms placed at q=200 and q=1000. Calibration procedure has followed the
 * hierarchical data-driven fitting approach (Xisco Jimenez-Forteza et al https://arxiv.org/abs/1611.00332) using the symmetric mass ratio eta, dimensionless effective spin Shat=(m1^2*chi1+m2^2*chi2)/(m1^2+m2^2)
 * and spin difference dchi=chi1-chi2. Supplementary material for the fits of the various collocation points
 * and phenomenological coefficients is available at https://git.ligo.org/waveforms/reviews/phenomt/-/tree/master/SupplementaryMaterial/Fits3DPhenomTHM.
@@ -244,7 +252,13 @@ int XLALSimIMRPhenomTHM(
 
   /* Compute modes (if a subset of modes is desired, it should be passed through lalParams) */
   SphHarmTimeSeries *hlms = NULL;
-  status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  INT4 inspVersion = XLALSimInspiralWaveformParamsLookupPhenomTHMInspiralVersion(lalParams);
+  if(inspVersion==2){
+    status = LALSimIMRPhenomTHM_Modes_v2(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
+  else{
+    status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function LALSimIMRPhenomTHM_Modes has failed producing the modes.");
 
   /* Obtain length and epoch from modes (they are the same for all the modes) */
@@ -300,9 +314,16 @@ SphHarmTimeSeries *XLALSimIMRPhenomTHM_Modes(
 
   UINT4 only22 = 0; /* Internal flag for mode array check */
 
+  INT4 inspVersion = XLALSimInspiralWaveformParamsLookupPhenomTHMInspiralVersion(lalParams);
+
   /* Compute modes (if a subset of modes is desired, it should be passed through lalParams */
   SphHarmTimeSeries *hlms = NULL;
-  status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  if(inspVersion==2){
+    status = LALSimIMRPhenomTHM_Modes_v2(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
+  else{
+    status = LALSimIMRPhenomTHM_Modes(&hlms, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams, only22);
+  }
   XLAL_CHECK_NULL(status != XLAL_FAILURE, XLAL_EFUNC, "Error: Internal function LALSimIMRPhenomTHM_Modes has failed producing the modes.");
 
   return hlms;
@@ -314,8 +335,240 @@ SphHarmTimeSeries *XLALSimIMRPhenomTHM_Modes(
 /*
  * Internal routine to compute time domain Spin-Weighted Spherical Harmonic modes for IMRPhenomTHM model. It returns a SphHarmTimeSeries structure, with complex time series for each mode generated.
  */
-
 int LALSimIMRPhenomTHM_Modes(
+   SphHarmTimeSeries **hlms,   /**< [out] Time domain modes */
+   REAL8 m1_SI,                /**< Mass of companion 1 (kg) */
+   REAL8 m2_SI,                /**< Mass of companion 2 (kg) */
+   REAL8 chi1L,                /**< Dimensionless aligned spin of companion 1 */
+   REAL8 chi2L,                /**< Dimensionless aligned spin of companion 2 */
+   REAL8 distance,             /**< Luminosity distance (m) */
+   REAL8 deltaT,               /**< sampling interval (s) */
+   REAL8 fmin,               /**< starting GW frequency (Hz) */
+   REAL8 fRef,               /**< reference GW frequency (Hz) */
+   REAL8 phiRef,               /**< reference orbital phase (rad) */
+   LALDict *lalParams,            /**< LAL dictionary containing accessory parameters */
+   UINT4 only22              /** Internal flag for mode array check */
+   )
+{
+
+   /* Pointers sanity check */
+   XLAL_CHECK(NULL != hlms, XLAL_EFAULT);
+   XLAL_CHECK(*hlms == NULL, XLAL_EFAULT);
+
+   /* Sanity checks */
+   if(fRef  <  0.0) { XLAL_ERROR(XLAL_EDOM, "fRef_In must be positive or set to 0 to ignore.\n");  }
+   if(deltaT   <= 0.0) { XLAL_ERROR(XLAL_EDOM, "deltaF must be positive.\n");                         }
+   if(m1_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m1 must be positive.\n");                             }
+   if(m2_SI    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "m2 must be positive.\n");                             }
+   if(fmin    <= 0.0) { XLAL_ERROR(XLAL_EDOM, "f_min must be positive.\n");                          }
+   if(distance <= 0.0) { XLAL_ERROR(XLAL_EDOM, "Distance must be positive and greater than 0.\n");    }
+
+   /* Check that the modes chosen are available for the model. Included ones are (2,2), (2,1), (3,3), (4,4) and (5,5) and corresponding negative m ones.
+   If only22=1, then checks that only (2,2) (2,-2) are included for dominant mode approximant */
+
+   if(only22==0)
+   {
+     XLAL_CHECK(check_input_mode_array_THM(lalParams) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+   }
+   else if(only22==1)
+   {
+     XLAL_CHECK(check_input_mode_array_22_THM(lalParams) == XLAL_SUCCESS, XLAL_EFAULT, "Not available mode chosen.\n");
+   }
+
+   /*
+     Perform a basic sanity check on the region of the parameter space in which model is evaluated. Behaviour is as follows:
+       - For mass ratios <= 20.0 and spins <= 0.99: no warning messages.
+       - For 200 > mass ratio > 20 and spins <= 0.9: print a warning message that model can be pathological.
+       - For mass ratios > 200: throw a hard error that model is not valid.
+       - For spins > 0.99: throw a warning that we are extrapolating the model to extremal
+
+   */
+   REAL8 mass_ratio;
+   if(m1_SI > m2_SI)
+   {
+    mass_ratio = m1_SI / m2_SI;
+   }
+   else
+   {
+    mass_ratio = m2_SI / m1_SI;
+   }
+   if(mass_ratio > 20.0 && chi1L < 0.9 && m2_SI/LAL_MSUN_SI >= 0.5  ) { XLAL_PRINT_INFO("Warning: Extrapolating outside of Numerical Relativity calibration domain."); }
+   if(mass_ratio > 20.0 && (chi1L >= 0.9 || m2_SI/LAL_MSUN_SI < 0.5) ) { XLAL_PRINT_INFO("Warning: Model can be pathological at these parameters."); }
+   if(mass_ratio > 200. && fabs(mass_ratio - 200) > 1e-12) { XLAL_ERROR(XLAL_EDOM, "ERROR: Model not valid at mass ratios beyond 200."); } // The 1e-12 is to avoid rounding errors
+   if(fabs(chi1L) > 0.99 || fabs(chi2L) > 0.99) { XLAL_PRINT_INFO("Warning: Extrapolating to extremal spins, model is not trusted."); }
+
+   INT4 status;
+
+   /* Use an auxiliar laldict to not overwrite the input argument */
+   LALDict *lalParams_aux;
+   /* setup mode array */
+   if (lalParams == NULL)
+   {
+       lalParams_aux = XLALCreateDict();
+   }
+   else{
+       lalParams_aux = XLALDictDuplicate(lalParams);
+   }
+   lalParams_aux = IMRPhenomTHM_setup_mode_array(lalParams_aux);
+   LALValue *ModeArray = XLALSimInspiralWaveformParamsLookupModeArray(lalParams_aux);
+
+   /* Initialise waveform struct and phase/frequency struct for the 22, needed for any mode */
+
+   IMRPhenomTWaveformStruct *pWF;
+   pWF    = XLALMalloc(sizeof(IMRPhenomTWaveformStruct));
+   status = IMRPhenomTSetWaveformVariables(pWF, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams_aux);
+   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetWaveformVariables has failed.");
+
+
+   IMRPhenomTPhase22Struct *pPhase;
+   pPhase = XLALMalloc(sizeof(IMRPhenomTPhase22Struct));
+   status   = IMRPhenomTSetPhase22Coefficients(pPhase, pWF);
+   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetPhase22Coefficients has failed.");
+
+   /* Length of the required sequence and length of the different inspiral regions of the 22 phase. */
+   size_t length = pPhase->wflength;
+   size_t length_insp_early = pPhase->wflength_insp_early;
+   size_t length_insp_late = pPhase->wflength_insp_late;
+   size_t length_insp = length_insp_early + length_insp_late;
+
+   /*Initialize time */
+   REAL8 t, thetabar, theta, w22, ph22;
+   REAL8 factheta = pow(5.0,1./8);
+
+   /* Initialize REAL8 sequences for storing the phase, frequency and PN expansion parameter x of the 22 */
+   REAL8Sequence *phi22 = NULL;
+   REAL8Sequence *xorb = NULL;
+   xorb = XLALCreateREAL8Sequence(length);
+   phi22 = XLALCreateREAL8Sequence(length);
+
+
+   /* Compute 22 phase and x=(0.5*omega_22)^(2/3), needed for all modes.
+   Depending on the inspiral region, theta is defined with a fitted t0 parameter or with t0=0. */
+
+   if(pWF->inspVersion!=0) // If reconstruction is non-default, this will compute frequency, phase and PN expansion parameter x from TaylorT3 with fitted t0 for the early inspiral region-
+   {
+     for(UINT4 jdx = 0; jdx < length_insp_early; jdx++)
+     {
+       t = pPhase->tmin + jdx*pWF->dtM;
+
+       thetabar = pow(pWF->eta*(pPhase->tt0-t),-1./8);
+
+       theta = factheta*thetabar;
+
+       w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
+       xorb->data[jdx] = pow(0.5*w22,2./3);
+
+       ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
+
+       phi22->data[jdx] = ph22;
+     }
+
+     for(UINT4 jdx = length_insp_early; jdx < length_insp; jdx++) // For times later than the early-late inspiral boundary, it computes phase, frequency and x with the extended TaylorT3 (with tt0=0)
+     {
+       t = pPhase->tmin + jdx*pWF->dtM;
+
+       thetabar = pow(-pWF->eta*t,-1./8);
+
+       theta = factheta*thetabar;
+
+       w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
+       xorb->data[jdx] = pow(0.5*w22,2./3);
+
+       ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
+
+       phi22->data[jdx] = ph22;
+     }
+   }
+
+   else // If default reconstruction, only one inspiral region with extended TaylorT3 (with tt0=0) is employed up to the inspiral-merger boundary time
+   {
+       for(UINT4 jdx = 0; jdx < length_insp; jdx++)
+       {
+         t = pPhase->tmin + jdx*pWF->dtM;
+
+         thetabar = pow(-pWF->eta*t,-1./8);
+
+         theta = factheta*thetabar;
+
+         w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
+         xorb->data[jdx] = pow(0.5*w22,2./3);
+
+         ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
+
+         phi22->data[jdx] = ph22;
+       }
+
+   }
+
+   /* During the 22 phase merger region, phase and x are also computed because the higher modes end the inspiral at a fixed time,
+   which can occur later than the end of the 22 inspiral. */
+   for(UINT4 jdx = length_insp; jdx < length; jdx++)
+   {
+     t = pPhase->tmin + jdx*pWF->dtM;
+
+     w22 = IMRPhenomTomega22(t, 0.0, pWF, pPhase);
+     xorb->data[jdx] = pow(0.5*w22,2./3);
+
+     ph22 = IMRPhenomTPhase22(t, 0.0, pWF, pPhase);
+
+     phi22->data[jdx] = ph22;
+   }
+
+   /***** Loop over modes ******/
+
+   INT4 posMode, negMode;
+
+   for (UINT4 ell = 2; ell <= 5; ell++)
+   {
+     for (UINT4 emm = 1; emm <= ell; emm++)
+     { /* Loop over only positive m is intentional.*/
+
+       posMode = XLALSimInspiralModeArrayIsModeActive(ModeArray, ell, emm);
+       negMode = XLALSimInspiralModeArrayIsModeActive(ModeArray, ell, -emm);
+       if ( posMode != 1 && negMode != 1)
+       { /* skip mode */
+         continue;
+       } /* else: generate mode */
+
+       COMPLEX16TimeSeries *tmp_mode = NULL;
+
+       status = LALSimIMRPhenomTHM_OneMode(&tmp_mode, pWF, pPhase, phi22, xorb, ell, emm);
+
+       if(posMode==1) /* Modes are generated only for positive m. If positive m is requested, simply add to the SphHarmTimeSeries structure */
+       {
+         *hlms = XLALSphHarmTimeSeriesAddMode(*hlms, tmp_mode, ell, emm);
+       }
+
+       if(negMode==1) /* If negative m is requested, transform from positive m mode using symmetry property for aligned spin systems */
+       {
+         for(UINT4 jdx = 0; jdx < length; jdx++)
+         {
+           ((*tmp_mode).data)->data[jdx] = pow(-1,ell)*conj(((*tmp_mode).data)->data[jdx]);
+         }
+         *hlms = XLALSphHarmTimeSeriesAddMode(*hlms, tmp_mode, ell, -emm);
+       }
+
+       XLALDestroyCOMPLEX16TimeSeries(tmp_mode); /* Destroy temporary structure once the desired mode is added */
+     }
+
+   }
+
+   /*Free structures and destroy sequences and dict */
+   XLALDestroyValue(ModeArray);
+   LALFree(pPhase);
+   LALFree(pWF);
+
+   XLALDestroyREAL8Sequence(phi22);
+
+   XLALDestroyREAL8Sequence(xorb);
+
+   XLALDestroyDict(lalParams_aux);
+
+   return status;
+ }
+
+
+int LALSimIMRPhenomTHM_Modes_v2(
   SphHarmTimeSeries **hlms,   /**< [out] Time domain modes */
   REAL8 m1_SI,                /**< Mass of companion 1 (kg) */
   REAL8 m2_SI,                /**< Mass of companion 2 (kg) */
@@ -402,97 +655,83 @@ int LALSimIMRPhenomTHM_Modes(
 
   IMRPhenomTPhase22Struct *pPhase;
   pPhase = XLALMalloc(sizeof(IMRPhenomTPhase22Struct));
-  status   = IMRPhenomTSetPhase22Coefficients(pPhase, pWF);
+
+  if(pWF->inspVersion==2){
+    status   = IMRPhenomTSetPhase22v2Coefficients(pPhase, pWF);
+  }
+  else{
+    status   = IMRPhenomTSetPhase22Coefficients(pPhase, pWF);
+  }
+
   XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetPhase22Coefficients has failed.");
 
   /* Length of the required sequence and length of the different inspiral regions of the 22 phase. */
   size_t length = pPhase->wflength;
-  size_t length_insp_early = pPhase->wflength_insp_early;
-  size_t length_insp_late = pPhase->wflength_insp_late;
-  size_t length_insp = length_insp_early + length_insp_late;
 
-  /*Initialize time */
-  REAL8 t, thetabar, theta, w22, ph22;
-  REAL8 factheta = pow(5.0,1./8);
-
-  /* Initialize REAL8 sequences for storing the phase, frequency and PN expansion parameter x of the 22 */
-  REAL8Sequence *phi22 = NULL;
-  REAL8Sequence *xorb = NULL;
-  xorb = XLALCreateREAL8Sequence(length);
-  phi22 = XLALCreateREAL8Sequence(length);
-  
-
-  /* Compute 22 phase and x=(0.5*omega_22)^(2/3), needed for all modes. 
+  /* Compute 22 phase and x=(0.5*omega_22)^(2/3), needed for all modes.
   Depending on the inspiral region, theta is defined with a fitted t0 parameter or with t0=0. */
 
-  if(pWF->inspVersion!=0) // If reconstruction is non-default, this will compute frequency, phase and PN expansion parameter x from TaylorT3 with fitted t0 for the early inspiral region-
-  {
-    for(UINT4 jdx = 0; jdx < length_insp_early; jdx++)
-    {
-      t = pPhase->tmin + jdx*pWF->dtM;
+  REAL8Sequence *xorb = NULL;
+  REAL8Sequence *phiorb = NULL;
+  COMPLEX16Sequence *expPhiorb = NULL;
+  REAL8Sequence *times = NULL;
 
-      thetabar = pow(pWF->eta*(pPhase->tt0-t),-1./8);
-    
-      theta = factheta*thetabar;
+  // sizes
+	/*REAL8 dx = 0.0001;
+	REAL8 dt = 2.0;
+	REAL8 tt;
 
-      w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
-      xorb->data[jdx] = pow(0.5*w22,2./3);
+  size_t insp_length = floor((pPhase->xpeak - pPhase->xmin)/dx);
+  size_t rd_length = floor((tEnd)/dt);
 
-      ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
-    
-      phi22->data[jdx] = ph22;
+	size_t length_coarse = insp_length + rd_length;*/
+
+	// create sequences
+
+    /* Initialize REAL8 sequences for storing the phase, frequency and PN expansion parameter x of the 22 */
+    /*times = XLALCreateREAL8Sequence(length_coarse);
+    xorb = XLALCreateREAL8Sequence(length_coarse);
+    phiorb = XLALCreateREAL8Sequence(length_coarse);*/
+
+    REAL8 tt;
+    status = IMRPhenomTv2_times_x_phase(&phiorb, &xorb, &times, pWF, pPhase);
+
+    // Check time monotonicity
+    for(UINT4 idx = 0; idx < (times)->length - 1; idx++){
+      if ((times)->data[idx+1] < (times)->data[idx]) status = XLAL_FAILURE;
+    }
+    XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Times are not monotonic! Pathological reconstruction. Aborting.");
+
+
+    //interpolate phase
+
+    gsl_interp_accel *accel_xorb;
+  	gsl_spline *spline_xorb;
+
+  	accel_xorb = gsl_interp_accel_alloc();
+  	spline_xorb = gsl_spline_alloc(gsl_interp_cspline, (xorb)->length);
+ 	  gsl_spline_init(spline_xorb, (times)->data, (xorb)->data, (xorb)->length);
+
+    gsl_interp_accel *accel_phiorb;
+  	gsl_spline *spline_phiorb;
+
+  	accel_phiorb = gsl_interp_accel_alloc();
+  	spline_phiorb = gsl_spline_alloc(gsl_interp_cspline, (phiorb)->length);
+ 	  gsl_spline_init(spline_phiorb, (times)->data, (phiorb)->data, (phiorb)->length);
+
+    REAL8 phiref0 = IMRPhenomTv2_PhiofX_Calibrated(pPhase->xRef, pWF, pPhase);
+    pPhase->phOffHM = 2.0*(gsl_spline_eval( spline_phiorb, -150.0, accel_phiorb ) - phiref0);
+    REAL8 ph;
+
+    expPhiorb = XLALCreateCOMPLEX16Sequence(length);
+    for(UINT4 jdx = 0; jdx < length; jdx++){
+      tt = pPhase->tmin + jdx*pWF->dtM;
+      ph = gsl_spline_eval( spline_phiorb, tt, accel_phiorb );
+      expPhiorb->data[jdx] = cexp(-I*(ph - phiref0));
     }
 
-    for(UINT4 jdx = length_insp_early; jdx < length_insp; jdx++) // For times later than the early-late inspiral boundary, it computes phase, frequency and x with the extended TaylorT3 (with tt0=0)
-    {
-      t = pPhase->tmin + jdx*pWF->dtM;
-
-      thetabar = pow(-pWF->eta*t,-1./8);
-    
-      theta = factheta*thetabar;
-
-      w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
-      xorb->data[jdx] = pow(0.5*w22,2./3);
-
-      ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
-    
-      phi22->data[jdx] = ph22;
-    }
-  }
-
-  else // If default reconstruction, only one inspiral region with extended TaylorT3 (with tt0=0) is employed up to the inspiral-merger boundary time
-  {
-      for(UINT4 jdx = 0; jdx < length_insp; jdx++)
-      {
-        t = pPhase->tmin + jdx*pWF->dtM;
-
-        thetabar = pow(-pWF->eta*t,-1./8);
-    
-        theta = factheta*thetabar;
-
-        w22 = IMRPhenomTomega22(t, theta, pWF, pPhase);
-        xorb->data[jdx] = pow(0.5*w22,2./3);
-
-        ph22 = IMRPhenomTPhase22(t, thetabar, pWF, pPhase);
-    
-        phi22->data[jdx] = ph22;
-      }
-
-  }
-
-  /* During the 22 phase merger region, phase and x are also computed because the higher modes end the inspiral at a fixed time,
-  which can occur later than the end of the 22 inspiral. */
-  for(UINT4 jdx = length_insp; jdx < length; jdx++)
-  {
-    t = pPhase->tmin + jdx*pWF->dtM;
-
-    w22 = IMRPhenomTomega22(t, 0.0, pWF, pPhase);
-    xorb->data[jdx] = pow(0.5*w22,2./3);
-
-    ph22 = IMRPhenomTPhase22(t, 0.0, pWF, pPhase);
-    
-    phi22->data[jdx] = ph22;
-  }
+    gsl_spline_free(spline_phiorb);
+    gsl_interp_accel_free(accel_phiorb);
 
   /***** Loop over modes ******/
 
@@ -512,7 +751,9 @@ int LALSimIMRPhenomTHM_Modes(
 
       COMPLEX16TimeSeries *tmp_mode = NULL;
 
-      status = LALSimIMRPhenomTHM_OneMode(&tmp_mode, pWF, pPhase, phi22, xorb, ell, emm);
+
+      status = LALSimIMRPhenomTHM_OneMode_v2(&tmp_mode, pWF, pPhase, times, expPhiorb, spline_xorb, accel_xorb, ell, emm);
+
 
       if(posMode==1) /* Modes are generated only for positive m. If positive m is requested, simply add to the SphHarmTimeSeries structure */
       {
@@ -533,14 +774,18 @@ int LALSimIMRPhenomTHM_Modes(
 
   }
 
+  gsl_spline_free(spline_xorb);
+  gsl_interp_accel_free(accel_xorb);
+
   /*Free structures and destroy sequences and dict */
   XLALDestroyValue(ModeArray);
   LALFree(pPhase);
   LALFree(pWF);
 
-  XLALDestroyREAL8Sequence(phi22);
-
   XLALDestroyREAL8Sequence(xorb);
+  XLALDestroyREAL8Sequence(phiorb);
+  XLALDestroyCOMPLEX16Sequence(expPhiorb);
+  XLALDestroyREAL8Sequence(times);
 
   XLALDestroyDict(lalParams_aux);
 
@@ -616,9 +861,9 @@ int LALSimIMRPhenomTHM_OneMode(
   {
 
     memset( (*hlm)->data->data, 0.0, (*hlm)->data->length * sizeof(COMPLEX16) );
-        
+
   }
-	
+
   else // Higher modes
 	{
 		/* Initialize phase struct for desired mode */
@@ -629,7 +874,7 @@ int LALSimIMRPhenomTHM_OneMode(
     	XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
 
       /* Phase offset, as explained in eq 13 of PhenomTHM paper (https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf). */
-      
+
       REAL8 phoff = 0.0; // Constant phase offset employed for rotating PN amplitudes so much of the content is real.
       if(ell==2 && emm==1)
       {
@@ -655,9 +900,9 @@ int LALSimIMRPhenomTHM_OneMode(
         t = pPhase->tmin + jdx*pWF->dtM;
         x = (xorb)->data[jdx]; // 22 frequency, needed for evaluating inspiral amplitude
         amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
-        
+
         phi22 = (phase22)->data[jdx]; // 22 phase, needed for rescaling lm inspiral phase
-        
+
         philm = IMRPhenomTHMPhase(t, phi22, pPhaselm,pAmplm) - (emm/2.0)*phiref0 - phoff; // Phase construction
         wf = amplm*cexp(-I*philm); /* Mode construction. Note than amplitude is now complex during the inspiral, which will contribute to the phase of the mode */
 
@@ -672,6 +917,223 @@ int LALSimIMRPhenomTHM_OneMode(
 
   return status;
 }
+
+int LALSimIMRPhenomTHM_OneMode_v2(
+	COMPLEX16TimeSeries **hlm,
+	IMRPhenomTWaveformStruct *pWF,
+	IMRPhenomTPhase22Struct *pPhase,
+	REAL8Sequence *times,
+	COMPLEX16Sequence *expPhiorb,
+  gsl_spline *spline_xorb,
+  gsl_interp_accel *accel_xorb,
+	UINT4 ell,
+	UINT4 emm)
+{
+
+    /* Sanity checks were performed in XLALSimIMRPhenomTHM_Modes, from which this function is called. */
+    UINT4 status = XLAL_SUCCESS;
+
+    /*Length of the required sequence. Read it from 22 phase structure. */
+    size_t length = pPhase->wflength;
+    /*size_t length_insp_early = pPhase->wflength_insp_early;
+    size_t length_insp_late = pPhase->wflength_insp_late;
+    size_t length_insp = length_insp_early + length_insp_late;*/
+
+    //size_t length_insp_hm = floor((-150.0 - pPhase->tmin)/pWF->dtM) +1;
+
+    /*Declare time, amplitude and phase */
+    REAL8 t, x;
+    COMPLEX16 amplm;
+
+    /* Set LIGOTimeGPS */
+    LIGOTimeGPS ligotimegps_zero = LIGOTIMEGPSZERO; // = {0,0}
+    XLALGPSAdd(&ligotimegps_zero, pPhase->tminSec); /* By model construction, this implies that the 22 amplitude peaks exactly at t=0 */
+    //REAL8 phiref0 = IMRPhenomTv2_PhiofX_Calibrated(pPhase->xRef, pWF, pPhase);
+
+    /* Initialize time series for mode */
+    *hlm = XLALCreateCOMPLEX16TimeSeries("hlm: TD waveform",&ligotimegps_zero,0.0,pWF->deltaT,&lalStrainUnit,length);
+
+    /* Initialize variables for 22 phase and frequency */
+    COMPLEX16 amphm, expphi;
+    COMPLEX16 wf;
+    COMPLEX16 expPhoff; // Constant phase offset employed for rotating PN amplitudes so much of the content is real.
+    COMPLEX16 expPhiHM;
+
+    IMRPhenomTHMAmpStruct *pAmplm;
+    pAmplm = XLALMalloc(sizeof(IMRPhenomTHMAmpStruct));
+
+    IMRPhenomTHMPhaseStruct *pPhaselm;
+    pPhaselm = XLALMalloc(sizeof(IMRPhenomTHMPhaseStruct));
+
+    // Interpolate amplitudes
+
+    //REAL8Sequence *ampREHM = NULL;
+    //REAL8Sequence *ampIMHM = NULL;
+    REAL8Sequence *ampAbsHM = NULL;
+
+    pPhase->xCutPhaseHM = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
+    REAL8 dxcutHM = gsl_spline_eval_deriv( spline_xorb, -150.0, accel_xorb );
+    pPhase->domegaCutHM = 3.0*sqrt(pPhase->xCutPhaseHM)*dxcutHM;
+
+    pPhase->x1amp = gsl_spline_eval( spline_xorb, -2000.0, accel_xorb );
+    pPhase->x2amp = gsl_spline_eval( spline_xorb, -250.0, accel_xorb );
+    pPhase->x3amp = gsl_spline_eval( spline_xorb, -150.0, accel_xorb );
+    pPhase->xdAmp1 = gsl_spline_eval( spline_xorb, -150.0-0.000001, accel_xorb );
+
+    if(emm%2 != 0 && pWF->delta<1E-10 && fabs(pWF->chi1L-pWF->chi2L)<1E-10) // This is for not computing odd modes in the equal BH limit. Instead, they are set to 0 directly.
+    {
+      memset( (*hlm)->data->data, 0.0, (*hlm)->data->length * sizeof(COMPLEX16) );
+    }
+
+    else if(ell == 2 && emm == 2){
+      status   = IMRPhenomTSetHMAmplitudev2Coefficients(pAmplm, pPhase, pWF);
+      XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMAmplitudeCoefficients failed for %d,%d.\n",ell,emm);
+
+      gsl_interp_accel *accel_amp_abs;
+      gsl_spline *spline_amp_abs;
+
+      ampAbsHM = XLALCreateREAL8Sequence(times->length);
+      for(UINT4 jdx = 0; jdx < times->length; jdx++){
+        t = times->data[jdx];
+        x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+        amphm = IMRPhenomTHMAmpv2(t, x, pAmplm);
+        ampAbsHM->data[jdx] = creal(amphm);
+      }
+
+    	accel_amp_abs = gsl_interp_accel_alloc();
+    	spline_amp_abs = gsl_spline_alloc(gsl_interp_cspline, times->length);
+   	  gsl_spline_init(spline_amp_abs, times->data, ampAbsHM->data, times->length);
+
+      expPhoff = 1.0;
+
+      for(UINT4 jdx = 0; jdx < length; jdx++){
+        t = pPhase->tmin + jdx*pWF->dtM;
+        expPhiHM = (expPhiorb->data[jdx])*(expPhiorb->data[jdx]) ;
+        amplm = pWF->ampfac*gsl_spline_eval( spline_amp_abs, t, accel_amp_abs );
+        wf = amplm*expPhiHM;
+        ((*hlm)->data->data)[jdx] = wf;
+      }
+      gsl_spline_free(spline_amp_abs);
+      gsl_interp_accel_free(accel_amp_abs);
+    }
+    else{
+
+      status   = IMRPhenomTSetHMAmplitudeCoefficients(ell,emm,pAmplm, pPhase, pWF);
+      XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMAmplitudeCoefficients failed for %d,%d.\n",ell,emm);
+
+      /*gsl_interp_accel *accel_amp_real;
+    	gsl_spline *spline_amp_real;
+      gsl_interp_accel *accel_amp_imag;
+    	gsl_spline *spline_amp_imag;
+
+      ampREHM = XLALCreateREAL8Sequence(xorb->length);
+      ampIMHM = XLALCreateREAL8Sequence(xorb->length);
+
+      for(UINT4 jdx = 0; jdx < xorb->length; jdx++){
+        t = times->data[jdx];
+        x = xorb->data[jdx];
+        amphm = IMRPhenomTHMAmpTest(t, x, pWF->dtM, pAmplm);
+        ampREHM->data[jdx] = creal(amphm);
+        ampIMHM->data[jdx] = cimag(amphm);
+      }*/
+
+    	/*accel_amp_real = gsl_interp_accel_alloc();
+    	spline_amp_real = gsl_spline_alloc(gsl_interp_cspline, xorb->length);
+   	  gsl_spline_init(spline_amp_real, times->data, ampREHM->data, xorb->length);
+
+      accel_amp_imag = gsl_interp_accel_alloc();
+    	spline_amp_imag = gsl_spline_alloc(gsl_interp_cspline, xorb->length);
+   	  gsl_spline_init(spline_amp_imag, times->data, ampIMHM->data, xorb->length);*/
+
+      status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
+      XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
+
+      if(ell==2 && emm==1)
+      {
+
+        expPhoff = cexp(I*(0.5*LAL_PI));
+
+        for(UINT4 jdx = 0; jdx < length; jdx++){
+          t = pPhase->tmin + jdx*pWF->dtM;
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
+          wf = amplm*expPhiHM;
+          ((*hlm)->data->data)[jdx] = wf;
+        }
+
+      }
+      else if(ell==3 && emm==3)
+      {
+        status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
+        XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
+
+        expPhoff = cexp(-I*(0.5*LAL_PI));
+
+        for(UINT4 jdx = 0; jdx < length; jdx++){
+          t = pPhase->tmin + jdx*pWF->dtM;
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
+          wf = amplm*expPhiHM;
+          ((*hlm)->data->data)[jdx] = wf;
+        }
+
+      }
+      else if(ell==5 && emm==5)
+      {
+        status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
+        XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
+
+        expPhoff = cexp(I*(0.5*LAL_PI));
+
+        for(UINT4 jdx = 0; jdx < length; jdx++){
+          t = pPhase->tmin + jdx*pWF->dtM;
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
+          wf = amplm*expPhiHM;
+          ((*hlm)->data->data)[jdx] = wf;
+        }
+      }
+      else if(ell==4 && emm==4)
+      {
+        status   = IMRPhenomTSetHMPhaseCoefficients(ell,emm, pPhaselm, pPhase, pAmplm, pWF);
+        XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: IMRPhenomTSetHMPhaseCoefficients failed for %d,%d.\n",ell,emm);
+
+        expPhoff = cexp(I*(LAL_PI));
+
+        for(UINT4 jdx = 0; jdx < length; jdx++){
+          t = pPhase->tmin + jdx*pWF->dtM;
+          expphi = (expPhiorb->data[jdx]);
+          expPhiHM = IMRPhenomTHMPhasev2(t, expphi*expphi*expphi*expphi, pPhaselm,pAmplm)*expPhoff;
+          x = gsl_spline_eval( spline_xorb, t, accel_xorb );
+          amplm = pWF->ampfac*IMRPhenomTHMAmp(t, x, pAmplm);
+          wf = amplm*expPhiHM;
+          ((*hlm)->data->data)[jdx] = wf;
+        }
+      }
+
+      /*gsl_spline_free(spline_amp_real);
+      gsl_interp_accel_free(accel_amp_real);
+      gsl_spline_free(spline_amp_imag);
+      gsl_interp_accel_free(accel_amp_imag);*/
+    }
+
+    /* Phase offset, as explained in eq 13 of PhenomTHM paper (https://dcc.ligo.org/DocDB/0172/P2000524/001/PhenomTHM_SH-3.pdf). */
+    //printf("---------------\n");
+    LALFree(pAmplm);
+    LALFree(pPhaselm);
+
+    //XLALDestroyREAL8Sequence(ampREHM);
+    //XLALDestroyREAL8Sequence(ampIMHM);
+    XLALDestroyREAL8Sequence(ampAbsHM);
+
+    return status;
+  }
 
 /* Wrapper function for adding higher modes to the ModeArray, almost identical to IMRPhenomXHM_setup_mode_array */
 
@@ -711,16 +1173,16 @@ LALDict *IMRPhenomTHM_setup_mode_array(LALDict *lalParams)
 INT4 check_input_mode_array_THM(LALDict *lalParams)
 {
 	UINT4 flagTrue = 0;
-	
+
   if(lalParams == NULL) return XLAL_SUCCESS;
-  
+
   LALValue *ModeArray = XLALSimInspiralWaveformParamsLookupModeArray(lalParams);
-  
+
   if(ModeArray!=NULL)
   {
     INT4 larray[5] = {2, 2, 3, 4, 5};
     INT4 marray[5] = {2, 1, 3, 4, 5};
-    
+
     for(INT4 ell=2; ell<=LAL_SIM_L_MAX_MODE_ARRAY; ell++)
 		{
 			for(INT4 emm=0; emm<=ell; emm++)
@@ -740,14 +1202,14 @@ INT4 check_input_mode_array_THM(LALDict *lalParams)
 						XLALDestroyValue(ModeArray);
 						return XLAL_FAILURE;
 					}
-					flagTrue = 0;					
-				}				
+					flagTrue = 0;
+				}
 			}//End loop over emm
 		}//End loop over ell
   }//End of if block
-	
+
   XLALDestroyValue(ModeArray);
-	
+
   return XLAL_SUCCESS;
 }
 
@@ -755,38 +1217,92 @@ INT4 check_input_mode_array_THM(LALDict *lalParams)
 INT4 check_input_mode_array_22_THM(LALDict *lalParams)
 {
   UINT4 flagTrue = 0;
-  
+
   if(lalParams == NULL) return XLAL_SUCCESS;
-  
+
   LALValue *ModeArray = XLALSimInspiralWaveformParamsLookupModeArray(lalParams);
-  
+
   if(ModeArray!=NULL)
-  { 
+  {
     for(INT4 ell=2; ell<=LAL_SIM_L_MAX_MODE_ARRAY; ell++)
     {
       for(INT4 emm=0; emm<=ell; emm++)
       {
         if(XLALSimInspiralModeArrayIsModeActive(ModeArray, ell, emm)==1 || XLALSimInspiralModeArrayIsModeActive(ModeArray, ell, -1*emm)==1)
         {
-          
+
           if(ell==2 && abs(emm)==2)
           {
             flagTrue = 1;
           }
-          
+
           // If flagTrue !=1 means that the input mode array has a mode that is not supported by the model.
           if(flagTrue!=1){
             XLALPrintError ("Mode (%d,%d) is not available by the model.\n", ell, emm);
             XLALDestroyValue(ModeArray);
             return XLAL_FAILURE;
           }
-          flagTrue = 0;         
-        }       
+          flagTrue = 0;
+        }
       }//End loop over emm
     }//End loop over ell
   }//End of if block
-  
+
   XLALDestroyValue(ModeArray);
-  
+
   return XLAL_SUCCESS;
 }
+
+int XLALSimIMRPhenomT_time_phase_x(
+  REAL8Sequence **times, /**< [out] Dimensionless times */
+  REAL8Sequence **phaseorb, /**< [out] orbital phase */
+  REAL8Sequence **xorb, /**< [out] inverse separation */
+  REAL8 m1_SI,      /**< Mass of companion 1 (kg) */
+  REAL8 m2_SI,      /**< Mass of companion 2 (kg) */
+  REAL8 chi1L,      /**< Dimensionless aligned spin of companion 1 */
+  REAL8 chi2L,      /**< Dimensionless aligned spin of companion 2 */
+  REAL8 distance,   /**< Luminosity distance (m) */
+  REAL8 deltaT,     /**< sampling interval (s) */
+  REAL8 fmin,     /**< starting GW frequency (Hz) */
+  REAL8 fRef,     /**< reference GW frequency (Hz) */
+  REAL8 phiRef,     /**< reference orbital phase (rad) */
+  LALDict *lalParams  /**< LAL dictionary containing accessory parameters */
+  )
+{
+  INT4 status;
+  /* Initialise waveform struct and phase/frequency struct for the 22, needed for any mode */
+
+  IMRPhenomTWaveformStruct *pWF;
+  pWF    = XLALMalloc(sizeof(IMRPhenomTWaveformStruct));
+  status = IMRPhenomTSetWaveformVariables(pWF, m1_SI, m2_SI, chi1L, chi2L, distance, deltaT, fmin, fRef, phiRef, lalParams);
+  XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetWaveformVariables has failed.");
+
+
+  IMRPhenomTPhase22Struct *pPhase;
+  pPhase = XLALMalloc(sizeof(IMRPhenomTPhase22Struct));
+  status   = IMRPhenomTSetPhase22v2Coefficients(pPhase, pWF);
+  XLAL_CHECK(XLAL_SUCCESS == status, XLAL_EFUNC, "Error: Internal function IMRPhenomTSetPhase22Coefficients has failed.");
+
+  REAL8 dx = 0.0001;
+	REAL8 dt = 1.0;
+
+  size_t insp_length = floor((pPhase->xpeak - pPhase->xmin)/dx);
+  size_t rd_length = floor((tEnd)/dt);
+
+	size_t length_coarse = insp_length + rd_length;
+
+	// create sequences
+	*times = XLALCreateREAL8Sequence(length_coarse);
+  *xorb = XLALCreateREAL8Sequence(length_coarse);
+  *phaseorb = XLALCreateREAL8Sequence(length_coarse);
+
+  status = IMRPhenomTv2_times_x_phase(phaseorb, xorb, times, pWF, pPhase);
+
+  return status;
+}
+
+typedef struct tagInterpXOrb
+{
+   gsl_spline *spline_xorb;
+   gsl_interp_accel *accel_xorb;
+}tagInterpXOrb;
