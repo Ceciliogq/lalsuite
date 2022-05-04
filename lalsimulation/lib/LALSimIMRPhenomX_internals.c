@@ -200,6 +200,11 @@ int IMRPhenomXSetWaveformVariables(
 		{
 			break;
 		}
+		case 200:
+		case 210:
+		{
+			break;
+		}
 		// We must pass a recognised inspiral phase version. Otherwise fail.
 		default:
 		{
@@ -1434,13 +1439,6 @@ int IMRPhenomXGetPhaseCoefficients(
 				printf("a4 : %.6f\n",pPhase->a4);
 				printf("\n");
 			}
-
-			/* Tidy up in preparation for next GSL solve ... */
-			gsl_vector_free(b);
-			gsl_vector_free(x);
-			gsl_matrix_free(A);
-			gsl_permutation_free(p);
-
 		}
 		else if(pPhase->NPseudoPN == 5)
 		{
@@ -1569,6 +1567,7 @@ int IMRPhenomXGetPhaseCoefficients(
 				printf("a4 : %.6f\n",pPhase->a4);
 				printf("\n");
 			}		
+			
 		}
 		else
 		{
@@ -1592,13 +1591,13 @@ int IMRPhenomXGetPhaseCoefficients(
 		for (INT4 idx = pPhase->NCollocationPointsPhaseIns + 1; idx >=0; idx--){
 			pPhase->CollocationPointsPhaseIns[idx] = semisum + semidif * cos( idx * LAL_PI / pPhase->NCollocationPointsPhaseIns );
 		}
-		
+	
 		for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
 		{
-					
+	
 			// Set b vector
 			gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx]);
-			
+	
 			ff = pPhase->CollocationPointsPhaseIns[idx];
 			ff1 = cbrt(ff);
 			double fpower = pow(ff, 8/3.) * ff1;
@@ -1608,11 +1607,11 @@ int IMRPhenomXGetPhaseCoefficients(
               fpower *= ff1;
             }			
 		}
-		
+	
 		/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
 		gsl_linalg_LU_decomp(A, p, &s);
 		gsl_linalg_LU_solve(A, p, b, x);
-
+	
 		/* The solution corresponds to the coefficients of the ansatz */
 		for (UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++){
 			pPhase->CoefficientsPhaseIns[idx] = gsl_vector_get(x, idx);
@@ -1624,7 +1623,6 @@ int IMRPhenomXGetPhaseCoefficients(
 	gsl_vector_free(x);
 	gsl_matrix_free(A);
 	gsl_permutation_free(p);
-	
 
 	/* Initialize TaylorF2 PN coefficients  */
 	pPhase->dphi0  = 0.0;
