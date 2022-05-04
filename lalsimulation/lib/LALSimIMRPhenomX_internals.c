@@ -1279,6 +1279,20 @@ int IMRPhenomXGetPhaseCoefficients(
 			pPhase->NCollocationPointsPhaseIns = 5;
 			break;
 		}
+		case 200:
+		case 210:
+		{
+			//pPhase->fPhaseMatchIN  = pWF->fMECO;
+			pPhase->fPhaseInsMin  = 0.0016;
+			pPhase->NCollocationPointsPhaseIns = 6;
+			pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_p1(pWF);
+			pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_p2(pWF);
+			pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_p3(pWF);
+			pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_p4(pWF);
+			pPhase->CollocationValuesPhaseIns[4] = IMRPhenomX_Inspiral_Phase_22_p5(pWF);
+			pPhase->CollocationValuesPhaseIns[5] = IMRPhenomX_Inspiral_Phase_22_p6(pWF);
+			break;
+		}
 		default:
 		{
 			XLAL_ERROR_REAL8(XLAL_EINVAL, "Error: IMRPhenomXInspiralPhaseVersion is not valid.\n");
@@ -1298,280 +1312,319 @@ int IMRPhenomXGetPhaseCoefficients(
 	x = gsl_vector_alloc(pPhase->NCollocationPointsPhaseIns);
 	A = gsl_matrix_alloc(pPhase->NCollocationPointsPhaseIns,pPhase->NCollocationPointsPhaseIns);
 
-	/*
-	If we are using 4 pseudo-PN coefficients, call the routines below.
-	The inspiral phase version is still passed to the individual functions.
-	*/
-	if(pPhase->NPseudoPN == 4)
+	if(pWF->IMRPhenomXInspiralPhaseVersion < 200)
 	{
-		// By default all models implemented use the following GC points.
-		// If a new model is calibrated with different choice of collocation points, edit this.
-		for(i = 0; i < pPhase->NCollocationPointsPhaseIns; i++)
-		{
-			fi = gpoints4[i] * deltax + xmin;
-			pPhase->CollocationPointsPhaseIns[i] = fi;
-		}
-
-		// Calculate the value of the differences between the ith and 3rd collocation points at the GC nodes
-		pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_d13(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_d23(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_v3( pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_d43(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-
-		// Calculate the value of the collocation points at GC nodes via: v_i = d_i3 + v3
-		pPhase->CollocationValuesPhaseIns[0] = pPhase->CollocationValuesPhaseIns[0] + pPhase->CollocationValuesPhaseIns[2];
-		pPhase->CollocationValuesPhaseIns[1] = pPhase->CollocationValuesPhaseIns[1] + pPhase->CollocationValuesPhaseIns[2];
-		pPhase->CollocationValuesPhaseIns[3] = pPhase->CollocationValuesPhaseIns[3] + pPhase->CollocationValuesPhaseIns[2];
-
-		if(debug)
-		{
-			printf("\n");
-			printf("Inspiral Collocation Points and Values:\n");
-			printf("F1 : %.6f\n",pPhase->CollocationPointsPhaseIns[0]);
-			printf("F2 : %.6f\n",pPhase->CollocationPointsPhaseIns[1]);
-			printf("F3 : %.6f\n",pPhase->CollocationPointsPhaseIns[2]);
-			printf("F4 : %.6f\n",pPhase->CollocationPointsPhaseIns[3]);
-			printf("\n");
-			printf("V1 : %.6f\n",pPhase->CollocationValuesPhaseIns[0]);
-			printf("V2 : %.6f\n",pPhase->CollocationValuesPhaseIns[1]);
-			printf("V3 : %.6f\n",pPhase->CollocationValuesPhaseIns[2]);
-			printf("V4 : %.6f\n",pPhase->CollocationValuesPhaseIns[3]);
-			printf("\n");
-		}
-
-		gsl_vector_set(b,0,pPhase->CollocationValuesPhaseIns[0]);
-		gsl_vector_set(b,1,pPhase->CollocationValuesPhaseIns[1]);
-		gsl_vector_set(b,2,pPhase->CollocationValuesPhaseIns[2]);
-		gsl_vector_set(b,3,pPhase->CollocationValuesPhaseIns[3]);
-
-		/* A_{0,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[0];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff0 = 1.0;
-		gsl_matrix_set(A,0,0,1.0);
-		gsl_matrix_set(A,0,1,ff1);
-		gsl_matrix_set(A,0,2,ff2);
-		gsl_matrix_set(A,0,3,ff3);
-
-		/* A_{1,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[1];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff0 = 1.0;
-		gsl_matrix_set(A,1,0,1.0);
-		gsl_matrix_set(A,1,1,ff1);
-		gsl_matrix_set(A,1,2,ff2);
-		gsl_matrix_set(A,1,3,ff3);
-
-		/* A_{2,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[2];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff0 = 1.0;
-		gsl_matrix_set(A,2,0,1.0);
-		gsl_matrix_set(A,2,1,ff1);
-		gsl_matrix_set(A,2,2,ff2);
-		gsl_matrix_set(A,2,3,ff3);
-
-		/* A_{3,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[3];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff0 = 1.0;
-		gsl_matrix_set(A,3,0,1.0);
-		gsl_matrix_set(A,3,1,ff1);
-		gsl_matrix_set(A,3,2,ff2);
-		gsl_matrix_set(A,3,3,ff3);
-
-		/* We now solve the system A x = b via an LU decomposition */
-		gsl_linalg_LU_decomp(A,p,&s);
-		gsl_linalg_LU_solve(A,p,b,x);
-
-		/* Set inspiral phenomenological coefficients from solution to A x = b */
-		pPhase->a0 = gsl_vector_get(x,0); // x[0]; // alpha_0
-		pPhase->a1 = gsl_vector_get(x,1); // x[1]; // alpha_1
-		pPhase->a2 = gsl_vector_get(x,2); // x[2]; // alpha_2
-		pPhase->a3 = gsl_vector_get(x,3); // x[3]; // alpha_3
-		pPhase->a4 = 0.0;
-
 		/*
-				PSEUDO PN TERMS WORK:
-					- 104 works.
-					- 105 not tested.
-					- 114 not tested.
-					- 115 not tested.
+		If we are using 4 pseudo-PN coefficients, call the routines below.
+		The inspiral phase version is still passed to the individual functions.
 		*/
-		if(debug)
+		if(pPhase->NPseudoPN == 4)
 		{
-			printf("\n");
-			printf("3pPN\n");
-			printf("Inspiral Pseudo-PN Coefficients:\n");
-			printf("a0 : %.6f\n",pPhase->a0);
-			printf("a1 : %.6f\n",pPhase->a1);
-			printf("a2 : %.6f\n",pPhase->a2);
-			printf("a3 : %.6f\n",pPhase->a3);
-			printf("a4 : %.6f\n",pPhase->a4);
-			printf("\n");
+			// By default all models implemented use the following GC points.
+			// If a new model is calibrated with different choice of collocation points, edit this.
+			for(i = 0; i < pPhase->NCollocationPointsPhaseIns; i++)
+			{
+				fi = gpoints4[i] * deltax + xmin;
+				pPhase->CollocationPointsPhaseIns[i] = fi;
+			}
+
+			// Calculate the value of the differences between the ith and 3rd collocation points at the GC nodes
+			pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_d13(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_d23(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_v3( pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_d43(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+
+			// Calculate the value of the collocation points at GC nodes via: v_i = d_i3 + v3
+			pPhase->CollocationValuesPhaseIns[0] = pPhase->CollocationValuesPhaseIns[0] + pPhase->CollocationValuesPhaseIns[2];
+			pPhase->CollocationValuesPhaseIns[1] = pPhase->CollocationValuesPhaseIns[1] + pPhase->CollocationValuesPhaseIns[2];
+			pPhase->CollocationValuesPhaseIns[3] = pPhase->CollocationValuesPhaseIns[3] + pPhase->CollocationValuesPhaseIns[2];
+
+			if(debug)
+			{
+				printf("\n");
+				printf("Inspiral Collocation Points and Values:\n");
+				printf("F1 : %.6f\n",pPhase->CollocationPointsPhaseIns[0]);
+				printf("F2 : %.6f\n",pPhase->CollocationPointsPhaseIns[1]);
+				printf("F3 : %.6f\n",pPhase->CollocationPointsPhaseIns[2]);
+				printf("F4 : %.6f\n",pPhase->CollocationPointsPhaseIns[3]);
+				printf("\n");
+				printf("V1 : %.6f\n",pPhase->CollocationValuesPhaseIns[0]);
+				printf("V2 : %.6f\n",pPhase->CollocationValuesPhaseIns[1]);
+				printf("V3 : %.6f\n",pPhase->CollocationValuesPhaseIns[2]);
+				printf("V4 : %.6f\n",pPhase->CollocationValuesPhaseIns[3]);
+				printf("\n");
+			}
+
+			gsl_vector_set(b,0,pPhase->CollocationValuesPhaseIns[0]);
+			gsl_vector_set(b,1,pPhase->CollocationValuesPhaseIns[1]);
+			gsl_vector_set(b,2,pPhase->CollocationValuesPhaseIns[2]);
+			gsl_vector_set(b,3,pPhase->CollocationValuesPhaseIns[3]);
+
+			/* A_{0,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[0];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff0 = 1.0;
+			gsl_matrix_set(A,0,0,1.0);
+			gsl_matrix_set(A,0,1,ff1);
+			gsl_matrix_set(A,0,2,ff2);
+			gsl_matrix_set(A,0,3,ff3);
+
+			/* A_{1,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[1];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff0 = 1.0;
+			gsl_matrix_set(A,1,0,1.0);
+			gsl_matrix_set(A,1,1,ff1);
+			gsl_matrix_set(A,1,2,ff2);
+			gsl_matrix_set(A,1,3,ff3);
+
+			/* A_{2,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[2];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff0 = 1.0;
+			gsl_matrix_set(A,2,0,1.0);
+			gsl_matrix_set(A,2,1,ff1);
+			gsl_matrix_set(A,2,2,ff2);
+			gsl_matrix_set(A,2,3,ff3);
+
+			/* A_{3,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[3];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff0 = 1.0;
+			gsl_matrix_set(A,3,0,1.0);
+			gsl_matrix_set(A,3,1,ff1);
+			gsl_matrix_set(A,3,2,ff2);
+			gsl_matrix_set(A,3,3,ff3);
+
+			/* We now solve the system A x = b via an LU decomposition */
+			gsl_linalg_LU_decomp(A,p,&s);
+			gsl_linalg_LU_solve(A,p,b,x);
+
+			/* Set inspiral phenomenological coefficients from solution to A x = b */
+			pPhase->a0 = gsl_vector_get(x,0); // x[0]; // alpha_0
+			pPhase->a1 = gsl_vector_get(x,1); // x[1]; // alpha_1
+			pPhase->a2 = gsl_vector_get(x,2); // x[2]; // alpha_2
+			pPhase->a3 = gsl_vector_get(x,3); // x[3]; // alpha_3
+			pPhase->a4 = 0.0;
+
+			/*
+					PSEUDO PN TERMS WORK:
+						- 104 works.
+						- 105 not tested.
+						- 114 not tested.
+						- 115 not tested.
+			*/
+			if(debug)
+			{
+				printf("\n");
+				printf("3pPN\n");
+				printf("Inspiral Pseudo-PN Coefficients:\n");
+				printf("a0 : %.6f\n",pPhase->a0);
+				printf("a1 : %.6f\n",pPhase->a1);
+				printf("a2 : %.6f\n",pPhase->a2);
+				printf("a3 : %.6f\n",pPhase->a3);
+				printf("a4 : %.6f\n",pPhase->a4);
+				printf("\n");
+			}
+
+			/* Tidy up in preparation for next GSL solve ... */
+			gsl_vector_free(b);
+			gsl_vector_free(x);
+			gsl_matrix_free(A);
+			gsl_permutation_free(p);
+
 		}
+		else if(pPhase->NPseudoPN == 5)
+		{
+			// Using 5 pseudo-PN coefficients so set 5 collocation points
+			for(i = 0; i < 5; i++)
+			{
+				fi = gpoints5[i] * deltax + xmin;
+				pPhase->CollocationPointsPhaseIns[i] = fi;
+			}
+			pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_d13(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_d23(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_v3( pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_d43(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
+			pPhase->CollocationValuesPhaseIns[4] = IMRPhenomX_Inspiral_Phase_22_d53(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
 
-		/* Tidy up in preparation for next GSL solve ... */
-		gsl_vector_free(b);
-		gsl_vector_free(x);
-		gsl_matrix_free(A);
-		gsl_permutation_free(p);
+			/* v_j = d_j3 + v_3 */
+			pPhase->CollocationValuesPhaseIns[0] = pPhase->CollocationValuesPhaseIns[0] + pPhase->CollocationValuesPhaseIns[2];
+			pPhase->CollocationValuesPhaseIns[1] = pPhase->CollocationValuesPhaseIns[1] + pPhase->CollocationValuesPhaseIns[2];
+			pPhase->CollocationValuesPhaseIns[3] = pPhase->CollocationValuesPhaseIns[3] + pPhase->CollocationValuesPhaseIns[2];
+			pPhase->CollocationValuesPhaseIns[4] = pPhase->CollocationValuesPhaseIns[4] + pPhase->CollocationValuesPhaseIns[2];
 
+			if(debug)
+			{
+				printf("\n");
+				printf("Inspiral Collocation Points and Values:\n");
+				printf("F1 : %.6f\n",pPhase->CollocationPointsPhaseIns[0]);
+				printf("F2 : %.6f\n",pPhase->CollocationPointsPhaseIns[1]);
+				printf("F3 : %.6f\n",pPhase->CollocationPointsPhaseIns[2]);
+				printf("F4 : %.6f\n",pPhase->CollocationPointsPhaseIns[3]);
+				printf("F5 : %.6f\n",pPhase->CollocationPointsPhaseIns[4]);
+				printf("\n");
+				printf("V1 : %.6f\n",pPhase->CollocationValuesPhaseIns[0]);
+				printf("V2 : %.6f\n",pPhase->CollocationValuesPhaseIns[1]);
+				printf("V3 : %.6f\n",pPhase->CollocationValuesPhaseIns[2]);
+				printf("V4 : %.6f\n",pPhase->CollocationValuesPhaseIns[3]);
+				printf("V5 : %.6f\n",pPhase->CollocationValuesPhaseIns[4]);
+				printf("\n");
+			}
+
+			gsl_vector_set(b,0,pPhase->CollocationValuesPhaseIns[0]);
+			gsl_vector_set(b,1,pPhase->CollocationValuesPhaseIns[1]);
+			gsl_vector_set(b,2,pPhase->CollocationValuesPhaseIns[2]);
+			gsl_vector_set(b,3,pPhase->CollocationValuesPhaseIns[3]);
+			gsl_vector_set(b,4,pPhase->CollocationValuesPhaseIns[4]);
+
+			/* A_{0,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[0];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff4 = ff * ff1;
+			gsl_matrix_set(A,0,0,1.0);
+			gsl_matrix_set(A,0,1,ff1);
+			gsl_matrix_set(A,0,2,ff2);
+			gsl_matrix_set(A,0,3,ff3);
+			gsl_matrix_set(A,0,4,ff4);
+
+			/* A_{1,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[1];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff4 = ff * ff1;
+			gsl_matrix_set(A,1,0,1.0);
+			gsl_matrix_set(A,1,1,ff1);
+			gsl_matrix_set(A,1,2,ff2);
+			gsl_matrix_set(A,1,3,ff3);
+			gsl_matrix_set(A,1,4,ff4);
+
+			/* A_{2,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[2];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff4 = ff * ff1;
+			gsl_matrix_set(A,2,0,1.0);
+			gsl_matrix_set(A,2,1,ff1);
+			gsl_matrix_set(A,2,2,ff2);
+			gsl_matrix_set(A,2,3,ff3);
+			gsl_matrix_set(A,2,4,ff4);
+
+			/* A_{3,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[3];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff4 = ff * ff1;
+			gsl_matrix_set(A,3,0,1.0);
+			gsl_matrix_set(A,3,1,ff1);
+			gsl_matrix_set(A,3,2,ff2);
+			gsl_matrix_set(A,3,3,ff3);
+			gsl_matrix_set(A,3,4,ff4);
+
+			/* A_{4,i} */
+			ff  = pPhase->CollocationPointsPhaseIns[4];
+			ff1 = cbrt(ff);
+			ff2 = ff1 * ff1;
+			ff3 = ff;
+			ff4 = ff * ff1;
+			gsl_matrix_set(A,4,0,1.0);
+			gsl_matrix_set(A,4,1,ff1);
+			gsl_matrix_set(A,4,2,ff2);
+			gsl_matrix_set(A,4,3,ff3);
+			gsl_matrix_set(A,4,4,ff4);
+
+			/* We now solve the system A x = b via an LU decomposition */
+			gsl_linalg_LU_decomp(A,p,&s);
+			gsl_linalg_LU_solve(A,p,b,x);
+
+			/* Set inspiral phenomenological coefficients from solution to A x = b */
+			pPhase->a0 = gsl_vector_get(x,0); // x[0];
+			pPhase->a1 = gsl_vector_get(x,1); // x[1];
+			pPhase->a2 = gsl_vector_get(x,2); // x[2];
+			pPhase->a3 = gsl_vector_get(x,3); // x[3];
+			pPhase->a4 = gsl_vector_get(x,4); // x[4];
+
+			if(debug)
+			{
+				printf("\n");
+				printf("4pPN\n");
+				printf("Inspiral Pseudo-PN Coefficients:\n");
+				printf("a0 : %.6f\n",pPhase->a0);
+				printf("a1 : %.6f\n",pPhase->a1);
+				printf("a2 : %.6f\n",pPhase->a2);
+				printf("a3 : %.6f\n",pPhase->a3);
+				printf("a4 : %.6f\n",pPhase->a4);
+				printf("\n");
+			}		
+		}
+		else
+		{
+			XLALPrintError("Error in ComputeIMRPhenomXWaveformVariables: NPseudoPN requested is not valid.\n");
+		}
+		
+		/* The pseudo-PN coefficients are normalized such that: (dphase0 / eta) * f^{8/3} * a_j */
+		/* So we must re-scale these terms by an extra factor of f^{-8/3} in the PN phasing */
+		pPhase->sigma1 = (-5.0/3.0) * pPhase->a0;
+		pPhase->sigma2 = (-5.0/4.0) * pPhase->a1;
+		pPhase->sigma3 = (-5.0/5.0) * pPhase->a2;
+		pPhase->sigma4 = (-5.0/6.0) * pPhase->a3;
+		pPhase->sigma5 = (-5.0/7.0) * pPhase->a4;
+		
 	}
-	else if(pPhase->NPseudoPN == 5)
+	else // IMRPhenomXInspiralVersion >= 200
 	{
-		// Using 5 pseudo-PN coefficients so set 5 collocation points
-		for(i = 0; i < 5; i++)
-		{
-			fi = gpoints5[i] * deltax + xmin;
-			pPhase->CollocationPointsPhaseIns[i] = fi;
+		// Chebyshev nodes
+		REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pWF->fMECO);
+		REAL8 semidif = 0.5 * (pPhase->fPhaseInsMin - pWF->fMECO);
+		for (INT4 idx = pPhase->NCollocationPointsPhaseIns + 1; idx >=0; idx--){
+			pPhase->CollocationPointsPhaseIns[idx] = semisum + semidif * cos( idx * LAL_PI / pPhase->NCollocationPointsPhaseIns );
 		}
-		pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_d13(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_d23(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_v3( pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_d43(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-		pPhase->CollocationValuesPhaseIns[4] = IMRPhenomX_Inspiral_Phase_22_d53(pWF->eta,pWF->chiPNHat,pWF->dchi,pWF->delta,pWF->IMRPhenomXInspiralPhaseVersion);
-
-		/* v_j = d_j3 + v_3 */
-		pPhase->CollocationValuesPhaseIns[0] = pPhase->CollocationValuesPhaseIns[0] + pPhase->CollocationValuesPhaseIns[2];
-		pPhase->CollocationValuesPhaseIns[1] = pPhase->CollocationValuesPhaseIns[1] + pPhase->CollocationValuesPhaseIns[2];
-		pPhase->CollocationValuesPhaseIns[3] = pPhase->CollocationValuesPhaseIns[3] + pPhase->CollocationValuesPhaseIns[2];
-		pPhase->CollocationValuesPhaseIns[4] = pPhase->CollocationValuesPhaseIns[4] + pPhase->CollocationValuesPhaseIns[2];
-
-		if(debug)
+		
+		for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
 		{
-			printf("\n");
-			printf("Inspiral Collocation Points and Values:\n");
-			printf("F1 : %.6f\n",pPhase->CollocationPointsPhaseIns[0]);
-			printf("F2 : %.6f\n",pPhase->CollocationPointsPhaseIns[1]);
-			printf("F3 : %.6f\n",pPhase->CollocationPointsPhaseIns[2]);
-			printf("F4 : %.6f\n",pPhase->CollocationPointsPhaseIns[3]);
-			printf("F5 : %.6f\n",pPhase->CollocationPointsPhaseIns[4]);
-			printf("\n");
-			printf("V1 : %.6f\n",pPhase->CollocationValuesPhaseIns[0]);
-			printf("V2 : %.6f\n",pPhase->CollocationValuesPhaseIns[1]);
-			printf("V3 : %.6f\n",pPhase->CollocationValuesPhaseIns[2]);
-			printf("V4 : %.6f\n",pPhase->CollocationValuesPhaseIns[3]);
-			printf("V5 : %.6f\n",pPhase->CollocationValuesPhaseIns[4]);
-			printf("\n");
+					
+			// Set b vector
+			gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx]);
+			
+			ff = pPhase->CollocationPointsPhaseIns[idx];
+			ff1 = cbrt(ff);
+			double fpower = pow(ff, 8/3.) * ff1;
+			// Add equation for Point.
+            for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
+              gsl_matrix_set(A, idx, jdx, fpower);
+              fpower *= ff1;
+            }			
 		}
+		
+		/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
+		gsl_linalg_LU_decomp(A, p, &s);
+		gsl_linalg_LU_solve(A, p, b, x);
 
-		gsl_vector_set(b,0,pPhase->CollocationValuesPhaseIns[0]);
-		gsl_vector_set(b,1,pPhase->CollocationValuesPhaseIns[1]);
-		gsl_vector_set(b,2,pPhase->CollocationValuesPhaseIns[2]);
-		gsl_vector_set(b,3,pPhase->CollocationValuesPhaseIns[3]);
-		gsl_vector_set(b,4,pPhase->CollocationValuesPhaseIns[4]);
-
-		/* A_{0,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[0];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff4 = ff * ff1;
-		gsl_matrix_set(A,0,0,1.0);
-		gsl_matrix_set(A,0,1,ff1);
-		gsl_matrix_set(A,0,2,ff2);
-		gsl_matrix_set(A,0,3,ff3);
-		gsl_matrix_set(A,0,4,ff4);
-
-		/* A_{1,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[1];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff4 = ff * ff1;
-		gsl_matrix_set(A,1,0,1.0);
-		gsl_matrix_set(A,1,1,ff1);
-		gsl_matrix_set(A,1,2,ff2);
-		gsl_matrix_set(A,1,3,ff3);
-		gsl_matrix_set(A,1,4,ff4);
-
-		/* A_{2,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[2];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff4 = ff * ff1;
-		gsl_matrix_set(A,2,0,1.0);
-		gsl_matrix_set(A,2,1,ff1);
-		gsl_matrix_set(A,2,2,ff2);
-		gsl_matrix_set(A,2,3,ff3);
-		gsl_matrix_set(A,2,4,ff4);
-
-		/* A_{3,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[3];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff4 = ff * ff1;
-		gsl_matrix_set(A,3,0,1.0);
-		gsl_matrix_set(A,3,1,ff1);
-		gsl_matrix_set(A,3,2,ff2);
-		gsl_matrix_set(A,3,3,ff3);
-		gsl_matrix_set(A,3,4,ff4);
-
-		/* A_{4,i} */
-		ff  = pPhase->CollocationPointsPhaseIns[4];
-		ff1 = cbrt(ff);
-		ff2 = ff1 * ff1;
-		ff3 = ff;
-		ff4 = ff * ff1;
-		gsl_matrix_set(A,4,0,1.0);
-		gsl_matrix_set(A,4,1,ff1);
-		gsl_matrix_set(A,4,2,ff2);
-		gsl_matrix_set(A,4,3,ff3);
-		gsl_matrix_set(A,4,4,ff4);
-
-		/* We now solve the system A x = b via an LU decomposition */
-		gsl_linalg_LU_decomp(A,p,&s);
-		gsl_linalg_LU_solve(A,p,b,x);
-
-		/* Set inspiral phenomenological coefficients from solution to A x = b */
-		pPhase->a0 = gsl_vector_get(x,0); // x[0];
-		pPhase->a1 = gsl_vector_get(x,1); // x[1];
-		pPhase->a2 = gsl_vector_get(x,2); // x[2];
-		pPhase->a3 = gsl_vector_get(x,3); // x[3];
-		pPhase->a4 = gsl_vector_get(x,4); // x[4];
-
-		if(debug)
-		{
-			printf("\n");
-			printf("4pPN\n");
-			printf("Inspiral Pseudo-PN Coefficients:\n");
-			printf("a0 : %.6f\n",pPhase->a0);
-			printf("a1 : %.6f\n",pPhase->a1);
-			printf("a2 : %.6f\n",pPhase->a2);
-			printf("a3 : %.6f\n",pPhase->a3);
-			printf("a4 : %.6f\n",pPhase->a4);
-			printf("\n");
+		/* The solution corresponds to the coefficients of the ansatz */
+		for (UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++){
+			pPhase->CoefficientsPhaseIns[idx] = gsl_vector_get(x, idx);
 		}
-
-		/* Tidy up in preparation for next GSL solve ... */
-		gsl_vector_free(b);
-		gsl_vector_free(x);
-		gsl_matrix_free(A);
-		gsl_permutation_free(p);
-	}
-	else
-	{
-		XLALPrintError("Error in ComputeIMRPhenomXWaveformVariables: NPseudoPN requested is not valid.\n");
-	}
-
-	/* The pseudo-PN coefficients are normalized such that: (dphase0 / eta) * f^{8/3} * a_j */
-	/* So we must re-scale these terms by an extra factor of f^{-8/3} in the PN phasing */
-	pPhase->sigma1 = (-5.0/3.0) * pPhase->a0;
-	pPhase->sigma2 = (-5.0/4.0) * pPhase->a1;
-	pPhase->sigma3 = (-5.0/5.0) * pPhase->a2;
-	pPhase->sigma4 = (-5.0/6.0) * pPhase->a3;
-	pPhase->sigma5 = (-5.0/7.0) * pPhase->a4;
+	}	
+	
+	/* Tidy up in preparation for next GSL solve ... */
+	gsl_vector_free(b);
+	gsl_vector_free(x);
+	gsl_matrix_free(A);
+	gsl_permutation_free(p);
+	
 
 	/* Initialize TaylorF2 PN coefficients  */
 	pPhase->dphi0  = 0.0;
@@ -1724,7 +1777,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	}
 
 	/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
-	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115)
+	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
 	{
 		/* 3.5PN, Leading Order Spin-Spin Tail Term */
 		pPhase->phi7  += ( (5*(65*chi1L2*(1 + delta - 2*eta) + 252*chi1L2L*eta - 65*chi2L2*(-1 + delta + 2*eta))*LAL_PI)/4. ) * powers_of_lalpi.seven_thirds;
@@ -1793,7 +1846,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	pPhase->dphi8L  = ( ((chi1L*(1263141 - 1588150*eta + 94344*eta2 - 9*delta*(-140349 + 39674*eta)) +
        chi2L*(1263141 - 1588150*eta + 94344*eta2 + 9*delta*(-140349 + 39674*eta)))*LAL_PI)/3024. ) * powers_of_lalpi.eight_thirds;
 
-	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115)
+	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
 	{
 		/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
 		pPhase->dphi7 += ( ((-65*chi1L2*(1 + delta - 2*eta) - 252*chi1L2L*eta + 65*chi2L2*(-1 + delta + 2*eta))*
