@@ -409,6 +409,8 @@ static GSParams *parse_args(ssize_t argc, char **argv) {
             XLALSimInspiralWaveformParamsInsertPhenomXPFinalSpinMod(params->params, atoi(argv[++i]));
         }else if(strcmp(argv[i], "--phenomXHMReleaseVersion") == 0){
             XLALSimInspiralWaveformParamsInsertPhenomXHMReleaseVersion(params->params, atoi(argv[++i]));
+        }else if(strcmp(argv[i], "--phenomXInspiralPhaseVersion") == 0){
+            XLALSimInspiralWaveformParamsInsertPhenomXInspiralPhaseVersion(params->params, atoi(argv[++i]));
         }else {
             XLALPrintError("Error: invalid option: %s\n", argv[i]);
             goto fail;

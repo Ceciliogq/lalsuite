@@ -917,11 +917,12 @@ static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPo
   								+ pPhase->a2 * powers_of_Mf->eight_thirds * powers_of_Mf->two_thirds
   								+ pPhase->a3 * powers_of_Mf->eight_thirds * powers_of_Mf->itself
   								+ pPhase->a4 * powers_of_Mf->eight_thirds * powers_of_Mf->four_thirds
+                                + pPhase->CoefficientsPhaseIns[5] * powers_of_Mf->eight_thirds * powers_of_Mf->five_thirds
   							);
 
   	phaseIN  = phaseIN * powers_of_Mf->m_eight_thirds * (5.0 / (128.0 * powers_of_lalpi.five_thirds));
 
-    return phaseIN;
+    return phaseIN
 }
 
 /**
@@ -960,11 +961,12 @@ static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_Usefu
               + pPhase->sigma3 * powers_of_Mf->one_third  * powers_of_Mf->three
               + pPhase->sigma4 * powers_of_Mf->two_thirds * powers_of_Mf->three
               + pPhase->sigma5 * powers_of_Mf->itself     * powers_of_Mf->three
-            );
+              + (-5/8.) * pPhase->CoefficientsPhaseIns[5] * powers_of_Mf->four_thirds * powers_of_Mf->three
+          );
 
   // This completes the TaylorF2 PN phasing series
   phasing = phasing * pPhase->phiNorm * powers_of_Mf->m_five_thirds;
-
+  
   /* Add initial phasing: -pi/4 */
   //phasing += pPhase->phi_initial;
 

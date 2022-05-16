@@ -1588,19 +1588,22 @@ int IMRPhenomXGetPhaseCoefficients(
 		// Chebyshev nodes
 		REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pWF->fMECO);
 		REAL8 semidif = 0.5 * (pPhase->fPhaseInsMin - pWF->fMECO);
-		for (INT4 idx = pPhase->NCollocationPointsPhaseIns + 1; idx >=0; idx--){
-			pPhase->CollocationPointsPhaseIns[idx] = semisum + semidif * cos( idx * LAL_PI / pPhase->NCollocationPointsPhaseIns );
+		printf("fInsMin, fInsMax = %.6e %.6e\n", pPhase->fPhaseInsMin, pWF->fMECO);
+		for (INT4 idx = pPhase->NCollocationPointsPhaseIns; idx >0; idx--){
+			pPhase->CollocationPointsPhaseIns[idx-1] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * pPhase->NCollocationPointsPhaseIns ));
 		}
 	
 		for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
 		{
+			printf("f1, v1 = %.6e %.6e\n", pPhase->CollocationPointsPhaseIns[idx], pPhase->CollocationValuesPhaseIns[idx]);
 	
 			// Set b vector
 			gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx]);
 	
 			ff = pPhase->CollocationPointsPhaseIns[idx];
 			ff1 = cbrt(ff);
-			double fpower = pow(ff, 8/3.) * ff1;
+			//double fpower = pow(ff, 8/3.);
+			double fpower = pWF->dphase0/pWF->eta;
 			// Add equation for Point.
             for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
               gsl_matrix_set(A, idx, jdx, fpower);
@@ -1616,6 +1619,26 @@ int IMRPhenomXGetPhaseCoefficients(
 		for (UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++){
 			pPhase->CoefficientsPhaseIns[idx] = gsl_vector_get(x, idx);
 		}
+		pPhase->a0 = pPhase->CoefficientsPhaseIns[0];
+		pPhase->a1 = pPhase->CoefficientsPhaseIns[1];
+		pPhase->a2 = pPhase->CoefficientsPhaseIns[2];
+		pPhase->a3 = pPhase->CoefficientsPhaseIns[3];
+		pPhase->a4 = pPhase->CoefficientsPhaseIns[4];
+		pPhase->sigma1 = (-5.0/3.0) * pPhase->a0;
+		pPhase->sigma2 = (-5.0/4.0) * pPhase->a1;
+		pPhase->sigma3 = (-5.0/5.0) * pPhase->a2;
+		pPhase->sigma4 = (-5.0/6.0) * pPhase->a3;
+		pPhase->sigma5 = (-5.0/7.0) * pPhase->a4;
+		printf("\n");
+		printf("4pPN\n");
+		printf("Inspiral Pseudo-PN Coefficients:\n");
+		printf("a0 : %.6f\n",pPhase->a0);
+		printf("a1 : %.6f\n",pPhase->a1);
+		printf("a2 : %.6f\n",pPhase->a2);
+		printf("a3 : %.6f\n",pPhase->a3);
+		printf("a4 : %.6f\n",pPhase->a4);
+		printf("a4 : %.6f\n",pPhase->CoefficientsPhaseIns[5]);
+		printf("\n");
 	}	
 	
 	/* Tidy up in preparation for next GSL solve ... */
@@ -1904,12 +1927,14 @@ int IMRPhenomXGetPhaseCoefficients(
 	phaseIN += pPhase->dphi9  * powers_of_fmatchIN.three;																	// f^{9/3}
 	phaseIN += pPhase->dphi9L * powers_of_fmatchIN.three * powers_of_fmatchIN.log;				// f^{9/3}
 
+
 	// Add pseudo-PN Coefficient
 	phaseIN += ( 		pPhase->a0 * powers_of_fmatchIN.eight_thirds
 								+ pPhase->a1 * powers_of_fmatchIN.three
 								+ pPhase->a2 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.two_thirds
 								+ pPhase->a3 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.itself
 								+ pPhase->a4 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.four_thirds
+								+ pPhase->CoefficientsPhaseIns[5] * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.five_thirds
 							);
 
 	phaseIN  = phaseIN * powers_of_fmatchIN.m_eight_thirds * pWF->dphase0;
