@@ -922,7 +922,7 @@ static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPo
 
   	phaseIN  = phaseIN * powers_of_Mf->m_eight_thirds * (5.0 / (128.0 * powers_of_lalpi.five_thirds));
 
-    return phaseIN
+    return phaseIN;
 }
 
 /**
