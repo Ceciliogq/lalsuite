@@ -57,6 +57,12 @@ static double IMRPhenomX_Ringdown_Phase_22_d24(double eta, double S, double dchi
 static double IMRPhenomX_Ringdown_Phase_22_d34(double eta, double S, double dchi, double delta, int RDPhaseFlag);
 static double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi, double delta, int RDPhaseFlag);
 
+static double IMRPhenomX_Ringdown_Phase_22_p1(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Ringdown_Phase_22_p2(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Ringdown_Phase_22_p3(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Ringdown_Phase_22_p4(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Ringdown_Phase_22_p5(IMRPhenomXWaveformStruct *pWF);
+
 static double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 static double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 

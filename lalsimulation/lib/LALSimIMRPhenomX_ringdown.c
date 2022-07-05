@@ -426,6 +426,169 @@ static double IMRPhenomX_Ringdown_Phase_22_d54(double eta, double S, double dchi
 
 }
 
+
+static double IMRPhenomX_Ringdown_Phase_22_p1(IMRPhenomXWaveformStruct *pWF){
+    
+    double total = 0.;
+    switch (pWF->IMRPhenomXRingdownPhaseVersion)
+    {
+        case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double S1 = S;
+            double S2 = S * S1;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = -0.7154713589455659 + 3188.182246870565*eta1 - 198.04500522376267*eta2 - 0.5658215917574673*chidiff2*(-16.28832930311001 + 376.2500387589505*eta1 - 3220.5234825691355*eta2 + 11308.68415073939*eta3 - 13360.55106082806*eta4) + chidiff1*delta*(2.383047926771623 - 71.70020706350601*eta1 + 539.8445260756091*eta2 - 1286.9154407326084*eta3 - 2107.8225121912965*eta4) + chidiff1*S1*(delta*(209.48193912147255 - 5643.740906862388*eta1 + 54863.8705113207*eta2 - 229329.2022895001*eta3 + 345542.1501524114*eta4 + (-106.96535890977205 + 2863.1288869886466*eta1 - 27722.236560722322*eta2 + 113023.73599448193*eta3 - 165684.79492901434*eta4)*S1) + chidiff1*(1.1474298899998514*(155.61739828456894 - 3878.6528929792994*eta1 + 35323.30734646601*eta2 - 140177.2232472858*eta3 + 204187.70663551247*eta4) - 7.29940321159597*(36.65146889766404 - 1019.5286838324573*eta1 + 10170.067012967405*eta2 - 42814.01745375708*eta3 + 64658.0573350251*eta4)*S1)) + (S1*(8.884068571898368*(8.681771647621382 - 217.17823406833597*eta1 + 2010.0400019521016*eta2 - 7852.347108738571*eta3 + 11181.621842303084*eta4) + 0.44044185792942536*(33.260975350035466 - 876.7648072083045*eta1 + 8808.991755786416*eta2 - 37649.876546460226*eta3 + 57509.776064980666*eta4)*S1 + 0.02654026446344209*(-5348.589760488449 + 134514.49202306557*eta1 - 1.2137965059186488e6*eta2 + 4.741027414212128e6*eta3 - 6.782798072941286e6*eta4)*S2))/(-1.6138136545792003 + S1);
+            total /= eta;
+            break;
+        }
+        default:
+        {
+          XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Phase_22_p1: IMRPhenomXRingdownPhaseVersion is not valid.\n");
+        }
+    }
+    
+    return total;
+}
+
+static double IMRPhenomX_Ringdown_Phase_22_p2(IMRPhenomXWaveformStruct *pWF){
+    
+    double total = 0.;
+    switch (pWF->IMRPhenomXRingdownPhaseVersion)
+    {
+        case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double S1 = S;
+            double S2 = S * S1;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -1.220777087748521 + 3123.3024293498065*eta1 - 141.09969096403486*eta2 + chidiff3*delta*(-140.17548121201952*eta1 + 1711.4406137886388*eta2 - 4946.027675687024*eta3) + chidiff1*delta*(10.463499701456046*eta1 - 26.71494301594608*eta2 - 545.7970585908078*eta3) - 1.069520979579922*chidiff2*(52.622326797216836*eta1 - 629.4390934796253*eta2 + 1739.7991451630319*eta3) + chidiff1*S1*(chidiff1*(2.1825460791565106*(-3.7885895822594855*eta1 - 177.40815831787637*eta2 + 834.2500665876572*eta3) - 4.515508746628673*(38.69347981332969*eta1 - 263.7405356042848*eta2 + 499.86646540386414*eta3)*S1) + delta*(194.91376103065377*eta1 - 2071.2420037384136*eta2 + 4506.644086608331*eta3 + (132.6798501613574*eta1 - 1495.7881663125372*eta2 + 3208.3256725709666*eta3)*S1)) + (S1*(8.614093059057856*(-1.798833257826054*eta1 + 27.63551722440821*eta2 - 17.76073677241598*eta3) + 0.5755392271604451*(46.91599961130838*eta1 - 328.6996142396471*eta2 + 628.1424631776542*eta3)*S1 - 0.5935379653529882*(-84.83069576418909*eta1 + 219.21395570475832*eta2 + 544.4353094079921*eta3)*S2))/(-1.4711272344237742 + S1);
+            total /= eta;
+            break;
+        }
+        default:
+        {
+          XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Phase_22_p2: IMRPhenomXRingdownPhaseVersion is not valid.\n");
+        }
+    }
+    
+    return total;
+}
+
+static double IMRPhenomX_Ringdown_Phase_22_p3(IMRPhenomXWaveformStruct *pWF){
+    
+    double total = 0.;
+    switch (pWF->IMRPhenomXRingdownPhaseVersion)
+    {
+        case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->STotR;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double S4 = S * S3;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = -0.8800386807742558 + 3135.9734364962983*eta1 - 70.00792565013833*eta2 + chidiff1*(chidiff2*delta*(-24.061434842207067*eta1 + 406.0367284483452*eta2 - 1368.916943140096*eta3) + delta*(-27.731732879634457*eta1 + 373.8721374761949*eta2 - 1256.8588953512533*eta3) - 1.265281176714307*chidiff1*(39.430538773122166*eta1 - 499.087475727037*eta2 + 1429.4612825381932*eta3)) - 3.945702219319264*(3.6084278706532755*eta1 - 12.348657255695231*eta2 + 55.65978309232852*eta3)*S1 + chidiff1*S1*(chidiff1*(0.09401524830287142*(1311.7007848100118*eta1 - 13470.110402905373*eta2 + 32957.22905466131*eta3) - 2.720805080912394*(-45.15485529854672*eta1 + 467.7144519928622*eta2 - 1084.3801231947014*eta3)*S1) + delta*(43.605045508681755*eta1 - 640.5419964667012*eta2 + 1852.5435912087923*eta3 + (-24.263268121293656*eta1 - 71.29706262941365*eta2 + 946.8213377522869*eta3)*S1)) - 3.45833521133502*(11.829911387843287*eta1 - 127.46868715676864*eta2 + 384.596166421582*eta3)*S2 - 3.841661393321989*(2.527664260349137*eta1 + 23.015013176271555*eta2 - 68.5026808706724*eta3)*S3 - 1.839630718655606*(-10.540452345434025*eta1 + 292.0563753627558*eta2 - 935.5782639240787*eta3)*S4;
+            total /= eta;
+            break;
+        }
+        default:
+        {
+          XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Phase_22_p3: IMRPhenomXRingdownPhaseVersion is not valid.\n");
+        }
+    }
+    
+    return total;
+}
+
+static double IMRPhenomX_Ringdown_Phase_22_p4(IMRPhenomXWaveformStruct *pWF){
+    
+    double total = 0.;
+    switch (pWF->IMRPhenomXRingdownPhaseVersion)
+    {
+        case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double S1 = S;
+            double S2 = S * S1;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -1.0994230789955814 + 3150.5504573912544*eta1 - 167.50049860555023*eta2 + chidiff3*delta*(-138.91655406886275*eta1 + 1617.00289697218*eta2 - 4479.496026387817*eta3) + chidiff1*delta*(9.457244238912848*eta1 - 20.907217103273844*eta2 - 605.1904978351795*eta3) - 0.9511328679886638*chidiff2*(49.18092577957243*eta1 - 605.9791226321827*eta2 + 1701.0216780555718*eta3) + chidiff1*S1*(chidiff1*(1.2518734283762776*(59.645179580733924*eta1 - 890.4672426488014*eta2 + 2671.546097303463*eta3) - 5.283738717309116*(16.200666134332593*eta1 - 84.12035993887933*eta2 + 141.27078160619584*eta3)*S1) + delta*(150.2772146300981*eta1 - 1679.6966870367055*eta2 + 3728.2032564919127*eta3 + (65.47666453668265*eta1 - 904.7905031497907*eta2 + 2143.2683406253404*eta3)*S1)) + (S1*(8.901546596139827*(1.2123752874282472*eta1 + 3.5722398102246715*eta2 + 30.31303616024936*eta3) + 0.9502385555932538*(34.86520368028633*eta1 - 255.9064277897087*eta2 + 529.7824522742535*eta3)*S1 + 0.047590662613401*(40.414686334029*eta1 + 7411.190050536787*eta2 - 30227.39518349161*eta3)*S2))/(-1.5816704077428247 + S1);
+            total /= eta;
+            break;
+        }
+        default:
+        {
+          XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Phase_22_p4: IMRPhenomXRingdownPhaseVersion is not valid.\n");
+        }
+    }
+    
+    return total;
+}
+
+static double IMRPhenomX_Ringdown_Phase_22_p5(IMRPhenomXWaveformStruct *pWF){
+    
+    double total = 0.;
+    switch (pWF->IMRPhenomXRingdownPhaseVersion)
+    {
+      case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double S1 = S;
+            double S2 = S * S1;
+            double S3 = S * S2;
+            double S4 = S * S3;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            double chidiff3 = chidiff * chidiff2;
+            total = -1.0799075311708284 + 3124.9398782864146*eta1 - 105.62631799041482*eta2 + chidiff3*delta*(-410.9056244910241 + 9942.442774168592*eta1 - 87026.89426801802*eta2 + 328157.32387268*eta3 - 452060.857169561*eta4) - 1.194027303347719*chidiff2*(51.8504662287076 - 1150.8864207348076*eta1 + 9512.149325886849*eta2 - 35036.58956844062*eta3 + 48590.98063205145*eta4) + chidiff1*delta*(137.48693210652874 - 3284.2457332821036*eta1 + 28331.825935883237*eta2 - 104838.89322723444*eta3 + 139187.12379161408*eta4) + chidiff1*S1*(chidiff1*(2.1696576162718078*(158.06214170828684 - 3998.460891375529*eta1 + 36317.131242868156*eta2 - 141639.3200325214*eta3 + 201176.7690149076*eta4) + 0.799869931038294*(-608.1843234102304 + 14893.132666319545*eta1 - 131553.9617620937*eta2 + 493863.0649438038*eta3 - 667798.1754331479*eta4)*S1) + delta*(326.5350557885705 - 8098.78765169387*eta1 + 73108.23393302696*eta2 - 285651.77735942526*eta3 + 405226.9488087408*eta4 + (-459.899447806844 + 11565.044883403963*eta1 - 104914.51498142483*eta2 + 406289.3319143533*eta3 - 572043.6747429606*eta4)*S1)) + (S1*(5.9298657094347185*(6.362571629931565 - 161.2918636792157*eta1 + 1479.5142313439421*eta2 - 5652.927487579715*eta3 + 7889.343187023109*eta4) + 0.5283310322641784*(-97.01782628658486 + 1827.5328703250298*eta1 - 11923.50450060903*eta2 + 29735.543093185042*eta3 - 20035.640534431877*eta4)*S1 - 1.6009877190758646*(33.20546509754269 - 830.3057417753545*eta1 + 7291.389403740207*eta2 - 27762.622361858183*eta3 + 39283.22739624118*eta4)*S2 - 2.5132638446669797*(-68.2532182628927 + 1430.7297509125726*eta1 - 10988.239742023925*eta2 + 36190.11630506849*eta3 - 42786.50953099529*eta4)*S3 + 0.1666267650173507*(215.61943328241534 - 3442.6573080098165*eta1 + 16114.083400994716*eta2 - 21607.54157607043*eta3 - 6007.675319303817*eta4)*S4))/(-1.1529451100401995 + S1);
+            total /= eta;
+            break;
+        }
+        default:
+        {
+          XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Ringdown_Phase_22_p5: IMRPhenomXRingdownPhaseVersion is not valid.\n");
+        }
+    }
+    
+    return total;
+}
+
+
+
+
 /*
     Phenomenological ringdown phase derivative ansatz:
 
@@ -456,6 +619,7 @@ static double IMRPhenomX_Ringdown_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPo
 	{
     /* Canonical, 5 coefficients */
 		case 105:
+    case 20220705:
 		{
       phaseRD = ( pPhase->c0 + pPhase->c1*invf1o3 + pPhase->c2*invf2 + pPhase->c4*invf4 + ( pPhase->cL / (fda*fda + (ff - frd)*(ff - frd)) ) );
       break;
@@ -497,6 +661,7 @@ static double IMRPhenomX_Ringdown_Phase_22_AnsatzInt(double ff, IMRPhenomX_Usefu
 	{
     /* Canonical, 5 coefficients */
 		case 105:
+    case 20220705:
 		{
       phaseRDInt = ( c0*ff + 1.5*c1*f2o3 - c2*invf - c4ov3*invf3 + (cLovfda * atan( (ff - frd )/fda ) ) );
       break;

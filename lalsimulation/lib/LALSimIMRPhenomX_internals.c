@@ -182,6 +182,7 @@ int IMRPhenomXSetWaveformVariables(
 	{
 		// Canonical TaylorF2 up to 3.5PN with 4 pseudo-PN coefficients
 		case 104:
+		case 20220705:
 		{
 			break;
 		}
@@ -238,6 +239,7 @@ int IMRPhenomXSetWaveformVariables(
 	{
 		// 5 ringdown coefficients
 		case 105:
+		case 20220705:
 		{
 			break;
 		}
@@ -423,6 +425,7 @@ int IMRPhenomXSetWaveformVariables(
 	wf->chiPNHat  = XLALSimIMRPhenomXchiPNHat(eta,chi1L,chi2L);
 	wf->STotR     = XLALSimIMRPhenomXSTotR(eta,chi1L,chi2L);
 	wf->dchi      = XLALSimIMRPhenomXdchi(chi1L,chi2L);
+	wf->dchi_half = wf->dchi*0.5;
 
 	wf->SigmaL    = (wf->chi2L * wf->m2) - (wf->chi1L * wf->m1); 										// SigmaL = (M/m2)*(S2.L) - (M/m2)*(S1.L)
 	wf->SL        = wf->chi1L * (wf->m1 * wf->m1) + wf->chi2L * (wf->m2 * wf->m2);  // SL = S1.L + S2.L
@@ -1056,11 +1059,40 @@ int IMRPhenomXGetPhaseCoefficients(
 		printf("F5 : %.6f\n",pPhase->CollocationPointsPhaseRD[4]);
 	}
 
+  double RDv4 = 0;
 	switch(pWF->IMRPhenomXRingdownPhaseVersion)
 	{
 		case 105:
 		{
 			pPhase->NCollocationPointsRD = 5;
+			// Eq. 7.13 in arXiv:2001.11412
+			RDv4 = IMRPhenomX_Ringdown_Phase_22_v4(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
+			/* These are the calibrated collocation points, as per Eq. 7.13 */
+			pPhase->CollocationValuesPhaseRD[0] = IMRPhenomX_Ringdown_Phase_22_d12(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
+			pPhase->CollocationValuesPhaseRD[1] = IMRPhenomX_Ringdown_Phase_22_d24(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
+			pPhase->CollocationValuesPhaseRD[2] = IMRPhenomX_Ringdown_Phase_22_d34( pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
+			pPhase->CollocationValuesPhaseRD[3] = RDv4;
+			pPhase->CollocationValuesPhaseRD[4] = IMRPhenomX_Ringdown_Phase_22_d54(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
+
+			/* v_j = d_{j4} + v4 */
+			pPhase->CollocationValuesPhaseRD[4] = pPhase->CollocationValuesPhaseRD[4] + pPhase->CollocationValuesPhaseRD[3]; // v5 = d54  + v4
+			pPhase->CollocationValuesPhaseRD[2] = pPhase->CollocationValuesPhaseRD[2] + pPhase->CollocationValuesPhaseRD[3]; // v3 = d34  + v4
+			pPhase->CollocationValuesPhaseRD[1] = pPhase->CollocationValuesPhaseRD[1] + pPhase->CollocationValuesPhaseRD[3]; // v2 = d24  + v4
+			pPhase->CollocationValuesPhaseRD[0] = pPhase->CollocationValuesPhaseRD[0] + pPhase->CollocationValuesPhaseRD[1]; // v1 = d12  + v2
+			break;
+		}
+		case 20220705:{
+			pPhase->NCollocationPointsRD = 5;
+			pPhase->CollocationPointsPhaseRD[0] = pWF->fRING - pWF->fDAMP;
+			pPhase->CollocationPointsPhaseRD[1] = pWF->fRING;
+			pPhase->CollocationPointsPhaseRD[2] = pWF->fRING + pWF->fDAMP;
+			pPhase->CollocationPointsPhaseRD[3] = pWF->fRING - 0.5*pWF->fDAMP;
+			pPhase->CollocationPointsPhaseRD[4] = pWF->fRING + 0.5*pWF->fDAMP;
+			pPhase->CollocationValuesPhaseRD[0] = IMRPhenomX_Ringdown_Phase_22_p1(pWF);
+			pPhase->CollocationValuesPhaseRD[1] = IMRPhenomX_Ringdown_Phase_22_p2(pWF);
+			pPhase->CollocationValuesPhaseRD[2] = IMRPhenomX_Ringdown_Phase_22_p3(pWF);
+			pPhase->CollocationValuesPhaseRD[3] = IMRPhenomX_Ringdown_Phase_22_p4(pWF);
+			pPhase->CollocationValuesPhaseRD[4] = IMRPhenomX_Ringdown_Phase_22_p5(pWF);
 			break;
 		}
 		default:
@@ -1074,22 +1106,11 @@ int IMRPhenomXGetPhaseCoefficients(
 		printf("NCollRD = %d\n",pPhase->NCollocationPointsRD);
 	}
 
-	// Eq. 7.13 in arXiv:2001.11412
-	double RDv4 = IMRPhenomX_Ringdown_Phase_22_v4(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
-
-	/* These are the calibrated collocation points, as per Eq. 7.13 */
-	pPhase->CollocationValuesPhaseRD[0] = IMRPhenomX_Ringdown_Phase_22_d12(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
-	pPhase->CollocationValuesPhaseRD[1] = IMRPhenomX_Ringdown_Phase_22_d24(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
-	pPhase->CollocationValuesPhaseRD[2] = IMRPhenomX_Ringdown_Phase_22_d34( pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
-	pPhase->CollocationValuesPhaseRD[3] = RDv4;
-	pPhase->CollocationValuesPhaseRD[4] = IMRPhenomX_Ringdown_Phase_22_d54(pWF->eta,pWF->STotR,pWF->dchi,pWF->delta,pWF->IMRPhenomXRingdownPhaseVersion);
-
-	/* v_j = d_{j4} + v4 */
-	pPhase->CollocationValuesPhaseRD[4] = pPhase->CollocationValuesPhaseRD[4] + pPhase->CollocationValuesPhaseRD[3]; // v5 = d54  + v4
-	pPhase->CollocationValuesPhaseRD[2] = pPhase->CollocationValuesPhaseRD[2] + pPhase->CollocationValuesPhaseRD[3]; // v3 = d34  + v4
-	pPhase->CollocationValuesPhaseRD[1] = pPhase->CollocationValuesPhaseRD[1] + pPhase->CollocationValuesPhaseRD[3]; // v2 = d24  + v4
-	pPhase->CollocationValuesPhaseRD[0] = pPhase->CollocationValuesPhaseRD[0] + pPhase->CollocationValuesPhaseRD[1]; // v1 = d12  + v2
-
+	for(UINT2 idx = 0; idx < pPhase->NCollocationPointsRD; idx++){
+			printf("fRD[%i], v = %.6f %.6e\n", idx, pPhase->CollocationPointsPhaseRD[idx], pPhase->CollocationValuesPhaseRD[idx]);
+	}
+	
+	
 	// Debugging information. Leave for convenience later on.
 	if(debug)
 	{
@@ -1216,7 +1237,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	pPhase->cRD = gsl_vector_get(x,4);
 	pPhase->cL  = -(pWF->dphase0 * pPhase->cRD); // ~ x[4] // cL = - a_{RD} * dphase0
 
-	if(debug)
+	if(debug==0)
 	{
 		printf("\n");
 		printf("Ringdown Coefficients: \n");
@@ -1237,6 +1258,260 @@ int IMRPhenomXGetPhaseCoefficients(
 	gsl_vector_free(x);
 	gsl_matrix_free(A);
 	gsl_permutation_free(p);
+	
+	/* Initialize TaylorF2 PN coefficients  */
+	pPhase->dphi0  = 0.0;
+	pPhase->dphi1  = 0.0;
+	pPhase->dphi2  = 0.0;
+	pPhase->dphi3  = 0.0;
+	pPhase->dphi4  = 0.0;
+	pPhase->dphi5  = 0.0;
+	pPhase->dphi6  = 0.0;
+	pPhase->dphi7  = 0.0;
+	pPhase->dphi8  = 0.0;
+	pPhase->dphi9  = 0.0;
+	pPhase->dphi10 = 0.0;
+	pPhase->dphi11 = 0.0;
+	pPhase->dphi12 = 0.0;
+
+	pPhase->dphi5L = 0.0;
+	pPhase->dphi6L = 0.0;
+	pPhase->dphi8L = 0.0;
+	pPhase->dphi9L = 0.0;
+
+	pPhase->phi0   = 0.0;
+	pPhase->phi1   = 0.0;
+	pPhase->phi2   = 0.0;
+	pPhase->phi3   = 0.0;
+	pPhase->phi4   = 0.0;
+	pPhase->phi5   = 0.0;
+	pPhase->phi6   = 0.0;
+	pPhase->phi7   = 0.0;
+	pPhase->phi8   = 0.0;
+	pPhase->phi9   = 0.0;
+	pPhase->phi10  = 0.0;
+	pPhase->phi11  = 0.0;
+	pPhase->phi12  = 0.0;
+
+	pPhase->phi5L  = 0.0;
+	pPhase->phi6L  = 0.0;
+	pPhase->phi8L  = 0.0;
+	pPhase->phi9L  = 0.0;
+
+	/* **** TaylorF2 PN Coefficients: Phase **** */
+
+	/*
+			- These are the PN coefficients normalised by: 3 / (128 * eta * [pi M f]^{5/3} ).
+			- We add in powers of (M f)^{N/3} later but add powers of pi^{N/3} here
+			- The log terms are *always* in terms of log(v), so we multiply by log(v) when summing PN phasing series.
+			- We *do not* overwrite the PN phasing series with pseudo-PN terms. These are added separately.
+
+			PN terms can be found in:
+				- Marsat et al, CQG, 32, 085008, (2015)
+				- Bohe et al, CQG, 32, 195010, (2015)
+				- Bernard et al, PRD, 95, 044026, (2017)
+				- Bernard et al, PRD, 93, 084037, (2016)
+				- Damour et al, PRD, 89, 064058, (2014)
+				- Damour et al, PRD, 95, 084005, (2017)
+				- Bernard et al, PRD, 96, 104043, (2017)
+				- Marchand et al, PRD, 97, 044023, (2018)
+				- Marchand et al, CQG, 33, 244003, (2016)
+				- Nagar et al, PRD, 99, 044007, (2019)
+				- Messina et al, PRD, 97, 084016, (2018)
+	*/
+
+	/* Analytically known PN coefficients */
+	/* Newtonian */
+	pPhase->phi0   = 1.0 ;
+
+	/* 0.5 PN */
+	pPhase->phi1   = 0.0;
+
+	/* 1.0 PN, Non-Spinning */
+	pPhase->phi2   = (3715/756. + (55*eta)/9.) * powers_of_lalpi.two_thirds;
+
+	/* 1.5 PN, Non-Spinning */
+	pPhase->phi3   = - 16.0 * powers_of_lalpi.two;
+
+	/* 1.5 PN, Spin-Orbit */
+	pPhase->phi3 += ( (113*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 76*(chi1L + chi2L)*eta)/6. ) * powers_of_lalpi.itself;
+
+	/* 2.0 PN, Non-Spinning */
+	pPhase->phi4  = ( 15293365/508032. + (27145*eta)/504. + (3085*eta2)/72. ) * powers_of_lalpi.four_thirds ;
+
+	/* 2.0 PN, Spin-Spin */
+	pPhase->phi4 +=  ( (-5*(81*chi1L2*(1 + delta - 2*eta) + 316*chi1L2L*eta - 81*chi2L2*(-1 + delta + 2*eta)))/16. ) * powers_of_lalpi.four_thirds;
+
+	/* 2.5PN, Non-Spinning */
+	pPhase->phi5L  = ( (5*(46374 - 6552*eta)*LAL_PI)/4536. ) * powers_of_lalpi.five_thirds;
+
+	/* 2.5PN, Spin-Orbit */
+	pPhase->phi5L += ( (-732985*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 560*(-1213*(chi1L + chi2L) + 63*(chi1L - chi2L)*delta)*eta +
+     85680*(chi1L + chi2L)*eta2)/4536. ) * powers_of_lalpi.five_thirds;
+
+	pPhase->phi5   = 0.0;
+
+	/* 3.0 PN, Non-Spinning */
+	pPhase->phi6   = ( 11583231236531/4.69421568e9 - (5*eta*(3147553127 + 588*eta*(-45633 + 102260*eta)))/3.048192e6 - (6848*LAL_GAMMA)/21. -
+   (640*powers_of_lalpi.two)/3. + (2255*eta*powers_of_lalpi.two)/12. - (13696*log(2))/21. - (6848*powers_of_lalpi.log)/63. )  * powers_of_lalpi.two;
+
+	/* 3.0 PN, Spin-Orbit */
+	pPhase->phi6  += ( (5*(227*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 156*(chi1L + chi2L)*eta)*LAL_PI)/3. ) * powers_of_lalpi.two;
+
+	/* 3.0 PN, Spin-Spin  */
+	pPhase->phi6  += ( (5*(20*chi1L2L*eta*(11763 + 12488*eta) + 7*chi2L2*(-15103*(-1 + delta) + 2*(-21683 + 6580*delta)*eta - 9808*eta2) -
+       7*chi1L2*(-15103*(1 + delta) + 2*(21683 + 6580*delta)*eta + 9808*eta2)))/4032. ) * powers_of_lalpi.two;
+
+	/* 3.0 PN, Log Term */
+	pPhase->phi6L  = (-6848/63.) * powers_of_lalpi.two;
+
+	/* 3.5PN, Non-Spinning */
+	pPhase->phi7   = ( (5*(15419335 + 168*(75703 - 29618*eta)*eta)*LAL_PI)/254016. ) * powers_of_lalpi.seven_thirds;
+
+	/* 3.5PN, Spin-Orbit */
+	pPhase->phi7  += ( (5*(-5030016755*(chi1L + chi2L + chi1L*delta - chi2L*delta) + 4*(2113331119*(chi1L + chi2L) + 675484362*(chi1L - chi2L)*delta)*eta -
+       1008*(208433*(chi1L + chi2L) + 25011*(chi1L - chi2L)*delta)*eta2 + 90514368*(chi1L + chi2L)*eta3))/6.096384e6 ) * powers_of_lalpi.seven_thirds;
+
+	/* 3.5PN, Spin-Spin */
+	pPhase->phi7  += ( -5*(57*chi1L2*(1 + delta - 2*eta) + 220*chi1L2L*eta - 57*chi2L2*(-1 + delta + 2*eta))*LAL_PI ) * powers_of_lalpi.seven_thirds;
+
+	/* 3.5PN, Cubic-in-Spin */
+	pPhase->phi7  += ( (14585*(-(chi2L3*(-1 + delta)) + chi1L3*(1 + delta)) -
+     5*(chi2L3*(8819 - 2985*delta) + 8439*chi1L*chi2L2*(-1 + delta) - 8439*chi1L2*chi2L*(1 + delta) + chi1L3*(8819 + 2985*delta))*
+      eta + 40*(chi1L + chi2L)*(17*chi1L2 - 14*chi1L2L + 17*chi2L2)*eta2)/48. ) * powers_of_lalpi.seven_thirds;
+
+	/* 4.0PN, Non-Spinning */
+	pPhase->phi8   = 0.0;
+
+	/* 4.0PN, Spin-Orbit */
+	pPhase->phi8   = ( (-5*(1263141*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 2*(794075*(chi1L + chi2L) + 178533*(chi1L - chi2L)*delta)*eta +
+       94344*(chi1L + chi2L)*eta2)*LAL_PI*(-1 + powers_of_lalpi.log))/9072. ) * powers_of_lalpi.eight_thirds;
+
+	/* 4.0PN Log Terms */
+	pPhase->phi8L  = ((-5*(1263141*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 2*(794075*(chi1L + chi2L) + 178533*(chi1L - chi2L)*delta)*eta +
+       94344*(chi1L + chi2L)*eta2)*LAL_PI)/9072.) * powers_of_lalpi.eight_thirds ;
+
+	if(debug)
+	{
+		printf("TaylorF2 PN Coefficients: \n");
+		printf("phi0 : %.6f\n",pPhase->phi0);
+		printf("phi1 : %.6f\n",pPhase->phi1);
+		printf("phi2 : %.6f\n",pPhase->phi2);
+		printf("phi3 : %.6f\n",pPhase->phi3);
+		printf("phi4 : %.6f\n",pPhase->phi4);
+		printf("phi5 : %.6f\n",pPhase->phi5);
+		printf("phi6 : %.6f\n",pPhase->phi6);
+		printf("phi7 : %.6f\n",pPhase->phi7);
+		printf("phi8 : %.6f\n",pPhase->phi8);
+
+		printf("phi5L : %.6f\n",pPhase->phi5L);
+		printf("phi6L : %.6f\n",pPhase->phi6L);
+		printf("phi8L : %.6f\n",pPhase->phi8L);
+	}
+
+	/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
+	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
+	{
+		/* 3.5PN, Leading Order Spin-Spin Tail Term */
+		pPhase->phi7  += ( (5*(65*chi1L2*(1 + delta - 2*eta) + 252*chi1L2L*eta - 65*chi2L2*(-1 + delta + 2*eta))*LAL_PI)/4. ) * powers_of_lalpi.seven_thirds;
+
+		/* 4.5PN, Tail Term */
+		pPhase->phi9  += ( (5*(-256 + 451*eta)*powers_of_lalpi.three)/6. + (LAL_PI*(105344279473163 + 700*eta*(-298583452147 + 96*eta*(99645337 + 14453257*eta)) -
+        12246091038720*LAL_GAMMA - 24492182077440*log(2.0)))/1.877686272e10 - (13696*LAL_PI*powers_of_lalpi.log)/63. ) * powers_of_lalpi.three;
+
+		/* 4.5PN, Log Term */
+		pPhase->phi9L  = (  (-13696*LAL_PI)/63.0  ) * powers_of_lalpi.three;
+	}
+
+	/* Calibrated pseudo-PN coefficients: Note that these implicitly contain powers_of_lalpi in the calibration */
+	//pPhase->phi8  += pPhase->sigma1;     /* 4.5 PN */
+	//pPhase->phi9  += pPhase->sigma2;     /* 5.0 PN */
+	//pPhase->phi10 += pPhase->sigma3;     /* 5.5 PN */
+	//pPhase->phi11 += pPhase->sigma4;     /* 6.0 PN */
+	//pPhase->phi12 += pPhase->sigma5;     /* 6.5 PN */
+
+	if(debug)
+	{
+		printf("phi8P  : %.6f\n",pPhase->sigma1);
+		printf("phi9P  : %.6f\n",pPhase->sigma2);
+		printf("phi10P : %.6f\n",pPhase->sigma3);
+		printf("phi11P : %.6f\n",pPhase->sigma4);
+		printf("phi12P : %.6f\n",pPhase->sigma5);
+	}
+
+	pPhase->phi_initial = - LAL_PI_4;
+
+	/* **** TaylorF2 PN Coefficients: Normalized Phase Derivative **** */
+	pPhase->dphi0  = 1.0;
+	pPhase->dphi1  = 0.0;
+	pPhase->dphi2  = ( 743/252. + (11*eta)/3. )*powers_of_lalpi.two_thirds;
+	pPhase->dphi3  = ( (chi2L*(113 - 113*delta - 76*eta) + chi1L*(113*(1 + delta) - 76*eta) - 96*LAL_PI)/15. ) * powers_of_lalpi.itself;
+	pPhase->dphi4  = (  3058673/508032. - (81*chi1L2*(1 + delta))/16. - (79*chi1L2L*eta)/4. +
+   (81*chi2L2*(-1 + delta + 2*eta))/16. + (eta*(5429 + 5103*chi1L2 + 4319*eta))/504.  ) * powers_of_lalpi.four_thirds;
+	pPhase->dphi5  = ( (-146597*chi2L*delta + 146597*(chi1L + chi2L + chi1L*delta) +
+     112*(chi1L*(-1213 + 63*delta) - chi2L*(1213 + 63*delta))*eta -
+     17136*(chi1L + chi2L)*eta2 + 6*(-7729 + 1092*eta)*LAL_PI)/1512. ) * powers_of_lalpi.five_thirds;
+	pPhase->dphi6  = ( (-10052469856691 + 24236159077900*eta)/2.34710784e10 + (6848*LAL_GAMMA)/105. +
+   (-951489*chi1L2*(1 + delta) - 180*chi1L2L*eta*(11763 + 12488*eta) +
+      63*chi2L2*(15103*(-1 + delta) + 2*(21683 - 6580*delta)*eta + 9808*eta2) +
+      7*eta*(18*chi1L2*(21683 + 6580*delta + 4904*eta) + eta*(-45633 + 102260*eta)) -
+      12096*(chi2L*(227 - 227*delta - 156*eta) + chi1L*(227*(1 + delta) - 156*eta))*LAL_PI -
+      3024*(-512 + 451*eta)*powers_of_lalpi.two)/36288. + (13696*log(2))/105. + (6848*powers_of_lalpi.log)/315.0   ) * powers_of_lalpi.two;
+
+	// Log[f] term
+	pPhase->dphi6L = (  6848 / 315. ) * powers_of_lalpi.two;
+
+	pPhase->dphi7  = (-(chi1L2*chi2L*eta*(2813*(1 + delta) + 8*eta))/8. +
+   (chi1L3*(-2917*(1 + delta) + (8819 + 2985*delta)*eta - 136*eta2))/24. +
+   (chi2L*(-5030016755*(-1 + delta) + 4*(-2113331119 + 675484362*delta)*eta +
+        1008*(208433 - 25011*delta)*eta2 - 90514368*eta3))/3.048192e6 -
+   (chi2L3*(2917 + eta*(-8819 + 136*eta) + delta*(-2917 + 2985*eta)))/24. +
+   (chi1L*(5030016755 - 8453324476*eta +
+        1008*eta*((208433 - 89796*eta)*eta - 378*chi2L2*(2813 + 8*eta)) +
+        delta*(5030016755 + 504*eta*(-5360987 + 2126628*chi2L2 + 50022*eta))))/3.048192e6 +
+   (-15419335/127008. + 114*chi1L2*(1 + delta - 2*eta) - (75703*eta)/756. +
+      440*chi1L2L*eta + (14809*eta2)/378. - 114*chi2L2*(-1 + delta + 2*eta))*LAL_PI ) * powers_of_lalpi.seven_thirds;
+
+	pPhase->dphi8  = ( ((chi1L*(1263141 - 1588150*eta + 94344*eta2 - 9*delta*(-140349 + 39674*eta)) +
+       chi2L*(1263141 - 1588150*eta + 94344*eta2 + 9*delta*(-140349 + 39674*eta)))*LAL_PI)/3024. ) * powers_of_lalpi.eight_thirds * powers_of_lalpi.log;
+
+	// Log[f] term
+	pPhase->dphi8L  = ( ((chi1L*(1263141 - 1588150*eta + 94344*eta2 - 9*delta*(-140349 + 39674*eta)) +
+       chi2L*(1263141 - 1588150*eta + 94344*eta2 + 9*delta*(-140349 + 39674*eta)))*LAL_PI)/3024. ) * powers_of_lalpi.eight_thirds;
+
+	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
+	{
+		/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
+		pPhase->dphi7 += ( ((-65*chi1L2*(1 + delta - 2*eta) - 252*chi1L2L*eta + 65*chi2L2*(-1 + delta + 2*eta))*
+     LAL_PI)/2. ) * powers_of_lalpi.seven_thirds;
+
+		pPhase->dphi9 += ( (512/3. - (902*eta)/3.)*powers_of_lalpi.three + LAL_PI *
+    (-102282756713483/2.34710784e10 + (298583452147*eta)/3.3530112e7 - (9058667*eta2)/31752. -
+      (2064751*eta3)/49896. + (54784*LAL_GAMMA)/105. + (109568*log(2))/105. +
+      (54784*log(LAL_PI))/315.) ) * powers_of_lalpi.three;
+
+		pPhase->dphi9L = ( (54784*LAL_PI)/315. ) * powers_of_lalpi.three;
+	}
+
+	if(debug)
+	{
+		printf("\nTaylorF2 PN Derivative Coefficients\n");
+		printf("dphi0  : %.6f\n",pPhase->dphi0);
+		printf("dphi1  : %.6f\n",pPhase->dphi1);
+		printf("dphi2  : %.6f\n",pPhase->dphi2);
+		printf("dphi3  : %.6f\n",pPhase->dphi3);
+		printf("dphi4  : %.6f\n",pPhase->dphi4);
+		printf("dphi5  : %.6f\n",pPhase->dphi5);
+		printf("dphi6  : %.6f\n",pPhase->dphi6);
+		printf("dphi7  : %.6f\n",pPhase->dphi7);
+		printf("dphi8  : %.6f\n",pPhase->dphi8);
+		printf("dphi9  : %.6f\n",pPhase->dphi9);
+		printf("\n");
+		printf("dphi6L : %.6f\n",pPhase->dphi6L);
+		printf("dphi8L : %.6f\n",pPhase->dphi8L);
+		printf("dphi9L : %.6f\n",pPhase->dphi9L);
+	}
+	
 
 	/*
 	Inspiral phase collocation points:
@@ -1261,6 +1536,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	switch(pWF->IMRPhenomXInspiralPhaseVersion)
 	{
 		case 104:
+		case 20220705: 
 		{
 			pPhase->NPseudoPN = 4;
 			pPhase->NCollocationPointsPhaseIns = 4;
@@ -1294,8 +1570,6 @@ int IMRPhenomXGetPhaseCoefficients(
 			pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_p2(pWF);
 			pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_p3(pWF);
 			pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_p4(pWF);
-			pPhase->CollocationValuesPhaseIns[4] = IMRPhenomX_Inspiral_Phase_22_p5(pWF);
-			pPhase->CollocationValuesPhaseIns[5] = IMRPhenomX_Inspiral_Phase_22_p6(pWF);
 			break;
 		}
 		default:
@@ -1585,30 +1859,48 @@ int IMRPhenomXGetPhaseCoefficients(
 	}
 	else // IMRPhenomXInspiralVersion >= 200
 	{
+		for(UINT2 idx = 0; idx < 5; idx++){
+				pPhase->CoefficientsPhaseIns[idx] = 0;
+		}
+		
+		pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_p1(pWF);
+		pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_p2(pWF);
+		pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_p3(pWF);
+		pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_p4(pWF);
+		
+		
+		pPhase->fPhaseInsMax = pWF->fMECO;
 		// Chebyshev nodes
-		REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pWF->fMECO);
-		REAL8 semidif = 0.5 * (pPhase->fPhaseInsMin - pWF->fMECO);
-		printf("fInsMin, fInsMax = %.6e %.6e\n", pPhase->fPhaseInsMin, pWF->fMECO);
-		for (INT4 idx = pPhase->NCollocationPointsPhaseIns; idx >0; idx--){
-			pPhase->CollocationPointsPhaseIns[idx-1] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * pPhase->NCollocationPointsPhaseIns ));
+		REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pPhase->fPhaseInsMax);
+		REAL8 semidif = 0.5 * (pPhase->fPhaseInsMax - pPhase->fPhaseInsMin);
+		printf("fInsMin, fInsMax = %.6e %.6e\n", pPhase->fPhaseInsMin, pPhase->fPhaseInsMax);
+		
+		pPhase->CollocationPointsPhaseIns[0] = pPhase->fPhaseInsMin;
+		pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns-1] = pPhase->fPhaseInsMax;
+		
+		for (INT4 idx = 1; idx <= pPhase->NCollocationPointsPhaseIns-2; idx++){
+			pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns -1 - idx] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * (pPhase->NCollocationPointsPhaseIns-2) ));
 		}
 	
 		for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
 		{
-			printf("f1, v1 = %.6e %.6e\n", pPhase->CollocationPointsPhaseIns[idx], pPhase->CollocationValuesPhaseIns[idx]);
-	
-			// Set b vector
-			gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx]);
-	
-			ff = pPhase->CollocationPointsPhaseIns[idx];
-			ff1 = cbrt(ff);
-			//double fpower = pow(ff, 8/3.);
-			double fpower = pWF->dphase0/pWF->eta;
-			// Add equation for Point.
-            for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
-              gsl_matrix_set(A, idx, jdx, fpower);
-              fpower *= ff1;
-            }			
+				printf("f1, v1 = %.6e %.6e\n", pPhase->CollocationPointsPhaseIns[idx], pPhase->CollocationValuesPhaseIns[idx]);
+				ff = pPhase->CollocationPointsPhaseIns[idx];
+				
+				IMRPhenomX_UsefulPowers powers_of_ff;
+			  int status = IMRPhenomX_Initialize_Powers(&powers_of_ff, ff);
+			  XLAL_CHECK(XLAL_SUCCESS == status, status, "IMRPhenomX_Initialize_Powers failed.\n");
+
+				// Set b vector: Coll point - PN ansatz
+				gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx] - IMRPhenomX_Inspiral_Phase_22_Ansatz(ff, &powers_of_ff, pPhase)/pWF->eta);	
+				
+				ff1 = cbrt(ff);
+				double fpower =  (5.0 / (128.0 * powers_of_lalpi.five_thirds * pWF->eta));
+				// Add equation for Point.
+        for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
+          gsl_matrix_set(A, idx, jdx, fpower);
+          fpower *= ff1;
+        }			
 		}
 	
 		/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
@@ -1637,7 +1929,6 @@ int IMRPhenomXGetPhaseCoefficients(
 		printf("a2 : %.6f\n",pPhase->a2);
 		printf("a3 : %.6f\n",pPhase->a3);
 		printf("a4 : %.6f\n",pPhase->a4);
-		printf("a4 : %.6f\n",pPhase->CoefficientsPhaseIns[5]);
 		printf("\n");
 	}	
 	
@@ -1647,258 +1938,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	gsl_matrix_free(A);
 	gsl_permutation_free(p);
 
-	/* Initialize TaylorF2 PN coefficients  */
-	pPhase->dphi0  = 0.0;
-	pPhase->dphi1  = 0.0;
-	pPhase->dphi2  = 0.0;
-	pPhase->dphi3  = 0.0;
-	pPhase->dphi4  = 0.0;
-	pPhase->dphi5  = 0.0;
-	pPhase->dphi6  = 0.0;
-	pPhase->dphi7  = 0.0;
-	pPhase->dphi8  = 0.0;
-	pPhase->dphi9  = 0.0;
-	pPhase->dphi10 = 0.0;
-	pPhase->dphi11 = 0.0;
-	pPhase->dphi12 = 0.0;
-
-	pPhase->dphi5L = 0.0;
-	pPhase->dphi6L = 0.0;
-	pPhase->dphi8L = 0.0;
-	pPhase->dphi9L = 0.0;
-
-	pPhase->phi0   = 0.0;
-	pPhase->phi1   = 0.0;
-	pPhase->phi2   = 0.0;
-	pPhase->phi3   = 0.0;
-	pPhase->phi4   = 0.0;
-	pPhase->phi5   = 0.0;
-	pPhase->phi6   = 0.0;
-	pPhase->phi7   = 0.0;
-	pPhase->phi8   = 0.0;
-	pPhase->phi9   = 0.0;
-	pPhase->phi10  = 0.0;
-	pPhase->phi11  = 0.0;
-	pPhase->phi12  = 0.0;
-
-	pPhase->phi5L  = 0.0;
-	pPhase->phi6L  = 0.0;
-	pPhase->phi8L  = 0.0;
-	pPhase->phi9L  = 0.0;
-
-	/* **** TaylorF2 PN Coefficients: Phase **** */
-
-	/*
-			- These are the PN coefficients normalised by: 3 / (128 * eta * [pi M f]^{5/3} ).
-			- We add in powers of (M f)^{N/3} later but add powers of pi^{N/3} here
-			- The log terms are *always* in terms of log(v), so we multiply by log(v) when summing PN phasing series.
-			- We *do not* overwrite the PN phasing series with pseudo-PN terms. These are added separately.
-
-			PN terms can be found in:
-				- Marsat et al, CQG, 32, 085008, (2015)
-				- Bohe et al, CQG, 32, 195010, (2015)
-				- Bernard et al, PRD, 95, 044026, (2017)
-				- Bernard et al, PRD, 93, 084037, (2016)
-				- Damour et al, PRD, 89, 064058, (2014)
-				- Damour et al, PRD, 95, 084005, (2017)
-				- Bernard et al, PRD, 96, 104043, (2017)
-				- Marchand et al, PRD, 97, 044023, (2018)
-				- Marchand et al, CQG, 33, 244003, (2016)
-				- Nagar et al, PRD, 99, 044007, (2019)
-				- Messina et al, PRD, 97, 084016, (2018)
-	*/
-
-	/* Analytically known PN coefficients */
-	/* Newtonian */
-	pPhase->phi0   = 1.0 ;
-
-	/* 0.5 PN */
-	pPhase->phi1   = 0.0;
-
-	/* 1.0 PN, Non-Spinning */
-	pPhase->phi2   = (3715/756. + (55*eta)/9.) * powers_of_lalpi.two_thirds;
-
-	/* 1.5 PN, Non-Spinning */
-	pPhase->phi3   = - 16.0 * powers_of_lalpi.two;
-
-	/* 1.5 PN, Spin-Orbit */
-	pPhase->phi3 += ( (113*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 76*(chi1L + chi2L)*eta)/6. ) * powers_of_lalpi.itself;
-
-	/* 2.0 PN, Non-Spinning */
-	pPhase->phi4  = ( 15293365/508032. + (27145*eta)/504. + (3085*eta2)/72. ) * powers_of_lalpi.four_thirds ;
-
-	/* 2.0 PN, Spin-Spin */
-	pPhase->phi4 +=  ( (-5*(81*chi1L2*(1 + delta - 2*eta) + 316*chi1L2L*eta - 81*chi2L2*(-1 + delta + 2*eta)))/16. ) * powers_of_lalpi.four_thirds;
-
-	/* 2.5PN, Non-Spinning */
-	pPhase->phi5L  = ( (5*(46374 - 6552*eta)*LAL_PI)/4536. ) * powers_of_lalpi.five_thirds;
-
-	/* 2.5PN, Spin-Orbit */
-	pPhase->phi5L += ( (-732985*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 560*(-1213*(chi1L + chi2L) + 63*(chi1L - chi2L)*delta)*eta +
-     85680*(chi1L + chi2L)*eta2)/4536. ) * powers_of_lalpi.five_thirds;
-
-	pPhase->phi5   = 0.0;
-
-	/* 3.0 PN, Non-Spinning */
-	pPhase->phi6   = ( 11583231236531/4.69421568e9 - (5*eta*(3147553127 + 588*eta*(-45633 + 102260*eta)))/3.048192e6 - (6848*LAL_GAMMA)/21. -
-   (640*powers_of_lalpi.two)/3. + (2255*eta*powers_of_lalpi.two)/12. - (13696*log(2))/21. - (6848*powers_of_lalpi.log)/63. )  * powers_of_lalpi.two;
-
-	/* 3.0 PN, Spin-Orbit */
-	pPhase->phi6  += ( (5*(227*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 156*(chi1L + chi2L)*eta)*LAL_PI)/3. ) * powers_of_lalpi.two;
-
-	/* 3.0 PN, Spin-Spin  */
-	pPhase->phi6  += ( (5*(20*chi1L2L*eta*(11763 + 12488*eta) + 7*chi2L2*(-15103*(-1 + delta) + 2*(-21683 + 6580*delta)*eta - 9808*eta2) -
-       7*chi1L2*(-15103*(1 + delta) + 2*(21683 + 6580*delta)*eta + 9808*eta2)))/4032. ) * powers_of_lalpi.two;
-
-	/* 3.0 PN, Log Term */
-	pPhase->phi6L  = (-6848/63.) * powers_of_lalpi.two;
-
-	/* 3.5PN, Non-Spinning */
-	pPhase->phi7   = ( (5*(15419335 + 168*(75703 - 29618*eta)*eta)*LAL_PI)/254016. ) * powers_of_lalpi.seven_thirds;
-
-	/* 3.5PN, Spin-Orbit */
-	pPhase->phi7  += ( (5*(-5030016755*(chi1L + chi2L + chi1L*delta - chi2L*delta) + 4*(2113331119*(chi1L + chi2L) + 675484362*(chi1L - chi2L)*delta)*eta -
-       1008*(208433*(chi1L + chi2L) + 25011*(chi1L - chi2L)*delta)*eta2 + 90514368*(chi1L + chi2L)*eta3))/6.096384e6 ) * powers_of_lalpi.seven_thirds;
-
-	/* 3.5PN, Spin-Spin */
-	pPhase->phi7  += ( -5*(57*chi1L2*(1 + delta - 2*eta) + 220*chi1L2L*eta - 57*chi2L2*(-1 + delta + 2*eta))*LAL_PI ) * powers_of_lalpi.seven_thirds;
-
-	/* 3.5PN, Cubic-in-Spin */
-	pPhase->phi7  += ( (14585*(-(chi2L3*(-1 + delta)) + chi1L3*(1 + delta)) -
-     5*(chi2L3*(8819 - 2985*delta) + 8439*chi1L*chi2L2*(-1 + delta) - 8439*chi1L2*chi2L*(1 + delta) + chi1L3*(8819 + 2985*delta))*
-      eta + 40*(chi1L + chi2L)*(17*chi1L2 - 14*chi1L2L + 17*chi2L2)*eta2)/48. ) * powers_of_lalpi.seven_thirds;
-
-	/* 4.0PN, Non-Spinning */
-	pPhase->phi8   = 0.0;
-
-	/* 4.0PN, Spin-Orbit */
-	pPhase->phi8   = ( (-5*(1263141*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 2*(794075*(chi1L + chi2L) + 178533*(chi1L - chi2L)*delta)*eta +
-       94344*(chi1L + chi2L)*eta2)*LAL_PI*(-1 + powers_of_lalpi.log))/9072. ) * powers_of_lalpi.eight_thirds;
-
-	/* 4.0PN Log Terms */
-	pPhase->phi8L  = ((-5*(1263141*(chi1L + chi2L + chi1L*delta - chi2L*delta) - 2*(794075*(chi1L + chi2L) + 178533*(chi1L - chi2L)*delta)*eta +
-       94344*(chi1L + chi2L)*eta2)*LAL_PI)/9072.) * powers_of_lalpi.eight_thirds ;
-
-	if(debug)
-	{
-		printf("TaylorF2 PN Coefficients: \n");
-		printf("phi0 : %.6f\n",pPhase->phi0);
-		printf("phi1 : %.6f\n",pPhase->phi1);
-		printf("phi2 : %.6f\n",pPhase->phi2);
-		printf("phi3 : %.6f\n",pPhase->phi3);
-		printf("phi4 : %.6f\n",pPhase->phi4);
-		printf("phi5 : %.6f\n",pPhase->phi5);
-		printf("phi6 : %.6f\n",pPhase->phi6);
-		printf("phi7 : %.6f\n",pPhase->phi7);
-		printf("phi8 : %.6f\n",pPhase->phi8);
-
-		printf("phi5L : %.6f\n",pPhase->phi5L);
-		printf("phi6L : %.6f\n",pPhase->phi6L);
-		printf("phi8L : %.6f\n",pPhase->phi8L);
-	}
-
-	/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
-	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
-	{
-		/* 3.5PN, Leading Order Spin-Spin Tail Term */
-		pPhase->phi7  += ( (5*(65*chi1L2*(1 + delta - 2*eta) + 252*chi1L2L*eta - 65*chi2L2*(-1 + delta + 2*eta))*LAL_PI)/4. ) * powers_of_lalpi.seven_thirds;
-
-		/* 4.5PN, Tail Term */
-		pPhase->phi9  += ( (5*(-256 + 451*eta)*powers_of_lalpi.three)/6. + (LAL_PI*(105344279473163 + 700*eta*(-298583452147 + 96*eta*(99645337 + 14453257*eta)) -
-        12246091038720*LAL_GAMMA - 24492182077440*log(2.0)))/1.877686272e10 - (13696*LAL_PI*powers_of_lalpi.log)/63. ) * powers_of_lalpi.three;
-
-		/* 4.5PN, Log Term */
-		pPhase->phi9L  = (  (-13696*LAL_PI)/63.0  ) * powers_of_lalpi.three;
-	}
-
-	/* Calibrated pseudo-PN coefficients: Note that these implicitly contain powers_of_lalpi in the calibration */
-	//pPhase->phi8  += pPhase->sigma1;     /* 4.5 PN */
-	//pPhase->phi9  += pPhase->sigma2;     /* 5.0 PN */
-	//pPhase->phi10 += pPhase->sigma3;     /* 5.5 PN */
-	//pPhase->phi11 += pPhase->sigma4;     /* 6.0 PN */
-	//pPhase->phi12 += pPhase->sigma5;     /* 6.5 PN */
-
-	if(debug)
-	{
-		printf("phi8P  : %.6f\n",pPhase->sigma1);
-		printf("phi9P  : %.6f\n",pPhase->sigma2);
-		printf("phi10P : %.6f\n",pPhase->sigma3);
-		printf("phi11P : %.6f\n",pPhase->sigma4);
-		printf("phi12P : %.6f\n",pPhase->sigma5);
-	}
-
-	pPhase->phi_initial = - LAL_PI_4;
-
-	/* **** TaylorF2 PN Coefficients: Normalized Phase Derivative **** */
-	pPhase->dphi0  = 1.0;
-	pPhase->dphi1  = 0.0;
-	pPhase->dphi2  = ( 743/252. + (11*eta)/3. )*powers_of_lalpi.two_thirds;
-	pPhase->dphi3  = ( (chi2L*(113 - 113*delta - 76*eta) + chi1L*(113*(1 + delta) - 76*eta) - 96*LAL_PI)/15. ) * powers_of_lalpi.itself;
-	pPhase->dphi4  = (  3058673/508032. - (81*chi1L2*(1 + delta))/16. - (79*chi1L2L*eta)/4. +
-   (81*chi2L2*(-1 + delta + 2*eta))/16. + (eta*(5429 + 5103*chi1L2 + 4319*eta))/504.  ) * powers_of_lalpi.four_thirds;
-	pPhase->dphi5  = ( (-146597*chi2L*delta + 146597*(chi1L + chi2L + chi1L*delta) +
-     112*(chi1L*(-1213 + 63*delta) - chi2L*(1213 + 63*delta))*eta -
-     17136*(chi1L + chi2L)*eta2 + 6*(-7729 + 1092*eta)*LAL_PI)/1512. ) * powers_of_lalpi.five_thirds;
-	pPhase->dphi6  = ( (-10052469856691 + 24236159077900*eta)/2.34710784e10 + (6848*LAL_GAMMA)/105. +
-   (-951489*chi1L2*(1 + delta) - 180*chi1L2L*eta*(11763 + 12488*eta) +
-      63*chi2L2*(15103*(-1 + delta) + 2*(21683 - 6580*delta)*eta + 9808*eta2) +
-      7*eta*(18*chi1L2*(21683 + 6580*delta + 4904*eta) + eta*(-45633 + 102260*eta)) -
-      12096*(chi2L*(227 - 227*delta - 156*eta) + chi1L*(227*(1 + delta) - 156*eta))*LAL_PI -
-      3024*(-512 + 451*eta)*powers_of_lalpi.two)/36288. + (13696*log(2))/105. + (6848*powers_of_lalpi.log)/315.0   ) * powers_of_lalpi.two;
-
-	// Log[f] term
-	pPhase->dphi6L = (  6848 / 315. ) * powers_of_lalpi.two;
-
-	pPhase->dphi7  = (-(chi1L2*chi2L*eta*(2813*(1 + delta) + 8*eta))/8. +
-   (chi1L3*(-2917*(1 + delta) + (8819 + 2985*delta)*eta - 136*eta2))/24. +
-   (chi2L*(-5030016755*(-1 + delta) + 4*(-2113331119 + 675484362*delta)*eta +
-        1008*(208433 - 25011*delta)*eta2 - 90514368*eta3))/3.048192e6 -
-   (chi2L3*(2917 + eta*(-8819 + 136*eta) + delta*(-2917 + 2985*eta)))/24. +
-   (chi1L*(5030016755 - 8453324476*eta +
-        1008*eta*((208433 - 89796*eta)*eta - 378*chi2L2*(2813 + 8*eta)) +
-        delta*(5030016755 + 504*eta*(-5360987 + 2126628*chi2L2 + 50022*eta))))/3.048192e6 +
-   (-15419335/127008. + 114*chi1L2*(1 + delta - 2*eta) - (75703*eta)/756. +
-      440*chi1L2L*eta + (14809*eta2)/378. - 114*chi2L2*(-1 + delta + 2*eta))*LAL_PI ) * powers_of_lalpi.seven_thirds;
-
-	pPhase->dphi8  = ( ((chi1L*(1263141 - 1588150*eta + 94344*eta2 - 9*delta*(-140349 + 39674*eta)) +
-       chi2L*(1263141 - 1588150*eta + 94344*eta2 + 9*delta*(-140349 + 39674*eta)))*LAL_PI)/3024. ) * powers_of_lalpi.eight_thirds * powers_of_lalpi.log;
-
-	// Log[f] term
-	pPhase->dphi8L  = ( ((chi1L*(1263141 - 1588150*eta + 94344*eta2 - 9*delta*(-140349 + 39674*eta)) +
-       chi2L*(1263141 - 1588150*eta + 94344*eta2 + 9*delta*(-140349 + 39674*eta)))*LAL_PI)/3024. ) * powers_of_lalpi.eight_thirds;
-
-	if(pWF->IMRPhenomXInspiralPhaseVersion == 114 || pWF->IMRPhenomXInspiralPhaseVersion == 115 || pWF->IMRPhenomXInspiralPhaseVersion == 210)
-	{
-		/* This version of TaylorF2 contains an additional 4.5PN tail term and a LO-SS tail term at 3.5PN */
-		pPhase->dphi7 += ( ((-65*chi1L2*(1 + delta - 2*eta) - 252*chi1L2L*eta + 65*chi2L2*(-1 + delta + 2*eta))*
-     LAL_PI)/2. ) * powers_of_lalpi.seven_thirds;
-
-		pPhase->dphi9 += ( (512/3. - (902*eta)/3.)*powers_of_lalpi.three + LAL_PI *
-    (-102282756713483/2.34710784e10 + (298583452147*eta)/3.3530112e7 - (9058667*eta2)/31752. -
-      (2064751*eta3)/49896. + (54784*LAL_GAMMA)/105. + (109568*log(2))/105. +
-      (54784*log(LAL_PI))/315.) ) * powers_of_lalpi.three;
-
-		pPhase->dphi9L = ( (54784*LAL_PI)/315. ) * powers_of_lalpi.three;
-	}
-
-	if(debug)
-	{
-		printf("\nTaylorF2 PN Derivative Coefficients\n");
-		printf("dphi0  : %.6f\n",pPhase->dphi0);
-		printf("dphi1  : %.6f\n",pPhase->dphi1);
-		printf("dphi2  : %.6f\n",pPhase->dphi2);
-		printf("dphi3  : %.6f\n",pPhase->dphi3);
-		printf("dphi4  : %.6f\n",pPhase->dphi4);
-		printf("dphi5  : %.6f\n",pPhase->dphi5);
-		printf("dphi6  : %.6f\n",pPhase->dphi6);
-		printf("dphi7  : %.6f\n",pPhase->dphi7);
-		printf("dphi8  : %.6f\n",pPhase->dphi8);
-		printf("dphi9  : %.6f\n",pPhase->dphi9);
-		printf("\n");
-		printf("dphi6L : %.6f\n",pPhase->dphi6L);
-		printf("dphi8L : %.6f\n",pPhase->dphi8L);
-		printf("dphi9L : %.6f\n",pPhase->dphi9L);
-	}
+	
 
 	/*
 			Calculate phase at fmatchIN. This will be used as the collocation point for the intermediate fit.
@@ -1934,7 +1974,6 @@ int IMRPhenomXGetPhaseCoefficients(
 								+ pPhase->a2 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.two_thirds
 								+ pPhase->a3 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.itself
 								+ pPhase->a4 * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.four_thirds
-								+ pPhase->CoefficientsPhaseIns[5] * powers_of_fmatchIN.eight_thirds * powers_of_fmatchIN.five_thirds
 							);
 
 	phaseIN  = phaseIN * powers_of_fmatchIN.m_eight_thirds * pWF->dphase0;
