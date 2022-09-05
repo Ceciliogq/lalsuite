@@ -62,6 +62,11 @@ static double IMRPhenomX_Intermediate_Phase_22_v2mRDv4(double eta, double S, dou
 static double IMRPhenomX_Intermediate_Phase_22_v3mRDv4(double eta, double S, double dchi, double delta, int IntPhaseFlag);
 static double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double dchi, double delta, int IntPhaseFlag);
 
+static double IMRPhenomX_Intermediate_Phase_22_p1(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Intermediate_Phase_22_p2(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Intermediate_Phase_22_p3(IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Intermediate_Phase_22_p4(IMRPhenomXWaveformStruct *pWF);
+
 static double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 static double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRPhenomXWaveformStruct *pWF, IMRPhenomXPhaseCoefficients *pPhase);
 

@@ -38,7 +38,7 @@ extern "C" {
 
 /* Inherited from IMRPhenomD */
 #define N_MAX_COLLOCATION_POINTS_PHASE_RD 5
-#define N_MAX_COLLOCATION_POINTS_PHASE_INT 5
+#define N_MAX_COLLOCATION_POINTS_PHASE_INT 6
 #define N_MAX_COLLOCATION_POINTS_PHASE_INS 6
 
 #define N_MAX_COLLOCATION_POINTS_AMP_RD 5
@@ -233,7 +233,7 @@ typedef struct tagIMRPhenomXPhaseCoefficients
   REAL8 c0, c1, c2, c3, c4, cL, cRD;
 
   /* These are the intermediate phenomenological coefficients */
-  REAL8 b0, b1, b2, b3, b4;
+  REAL8 b0, b1, b2, b3, b4, b5;
 
   /* These are the inspiral phenomenological coefficients 		*/
   REAL8 a0, a1, a2, a3, a4;

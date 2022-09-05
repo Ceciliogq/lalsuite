@@ -622,7 +622,7 @@ int IMRPhenomXASGenerateFD(
       /* Construct phase */
       if(Mf < fPhaseIN)
       {
-        phi = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(Mf, &powers_of_Mf, pPhase22);
+        phi = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(Mf, &powers_of_Mf, pPhase22, pWF);
       }
       else if(Mf > fPhaseIM)
       {
@@ -634,7 +634,9 @@ int IMRPhenomXASGenerateFD(
       }
 
 	  /* Scale phase by 1/eta */
-	  phi  *= inveta;
+	  if(pWF->IMRPhenomXInspiralPhaseVersion != 20220705){
+       phi  *= inveta;
+     }
       phi  += linb*Mf + lina + pWF->phifRef;
 
 	  /* Construct amplitude */
@@ -1754,7 +1756,7 @@ int IMRPhenomXPGenerateFD(
       /* Get phase */
       if(Mf < fPhaseIN)
       {
-        phi = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(Mf, &powers_of_Mf, pPhase22);
+        phi = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(Mf, &powers_of_Mf, pPhase22, pWF);
       }
       else if(Mf > fPhaseIM)
       {

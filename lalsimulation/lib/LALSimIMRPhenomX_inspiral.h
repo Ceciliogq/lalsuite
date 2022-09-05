@@ -65,8 +65,8 @@ static double IMRPhenomX_Inspiral_Phase_22_p2(IMRPhenomXWaveformStruct *pWF);
 static double IMRPhenomX_Inspiral_Phase_22_p3(IMRPhenomXWaveformStruct *pWF);
 static double IMRPhenomX_Inspiral_Phase_22_p4(IMRPhenomXWaveformStruct *pWF);
 
-static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
-static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase);
+static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase, IMRPhenomXWaveformStruct *pWF);
+static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase, IMRPhenomXWaveformStruct *pWF);
 
 
 #ifdef __cplusplus

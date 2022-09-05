@@ -1312,6 +1312,134 @@ static double IMRPhenomX_Intermediate_Phase_22_d43(double eta, double S, double 
 }
 
 
+static double IMRPhenomX_Intermediate_Phase_22_p1(IMRPhenomXWaveformStruct *pWF){
+  
+  double total = 0.;
+  switch (pWF->IMRPhenomXIntermediatePhaseVersion)
+  {
+    case 20220705:{
+          double delta = pWF->delta;
+          double eta = pWF->eta;
+          double S = pWF->chiPNHat;
+          double chidiff = pWF->dchi_half;
+          double eta1 = eta;
+          double eta2 = eta * eta1;
+          double eta3 = eta * eta2;
+          double S1 = S;
+          double S2 = S * S1;
+          double S3 = S * S2;
+          double S4 = S * S3;
+          double S5 = S * S4;
+          double chidiff1 = chidiff;
+          total = 13.904438860640164 + 3670.7724599145786*eta1 - 962.9929038256486*eta2 + 1198.0155051377576*eta3 + chidiff1*(delta*(25.671632203119838 - 443.8498829462883*eta1 + 3458.0166489552253*eta2 - 6852.182642101237*eta3) - 1.003929763200282*chidiff1*(11.946379055723911 - 126.52330523043794*eta1 + 280.545763485492*eta2 + 201.6215701787088*eta3)) - 56.193249701787714*(-0.32778337568170646 + 9.174360634319866*eta1 - 25.785549543413833*eta2 + 41.33056406816668*eta3)*S1 + chidiff1*S1*(delta*(-50.866753591797895 + 1294.4863008696443*eta1 - 9293.822562117619*eta2 + 21106.459493577524*eta3 + (18.5561202530391 - 242.32032282015564*eta1 + 873.8536821757218*eta2 - 439.07122137593973*eta3)*S1) + chidiff1*(3.5716684565368833*(-31.215081598097516 + 531.9673375093763*eta1 - 2919.0471782121544*eta2 + 5226.476534976838*eta3) - 9.769147931034237*(-0.8054374255521909 + 47.4336493536935*eta1 - 458.3288792491963*eta2 + 1189.9251225730295*eta3)*S1)) + 2.473429183392059*(16.465590987917594 - 244.6187872145267*eta1 + 1344.52910075838*eta2 - 2454.0136308278193*eta3)*S2 + 3.0030142663517947*(6.00410693823777 - 38.07731939481301*eta1 - 101.29926083814347*eta2 + 694.1713096223647*eta3)*S3 - 2.6705333417683077*(17.298068295397442 - 298.44105709930045*eta1 + 1578.1826839639596*eta2 - 2580.7501931724673*eta3)*S4 - 5.075123964894656*(9.405660950168263 - 132.7732988547*eta1 + 532.6118125780002*eta2 - 544.03676944757*eta3)*S5;
+          total /= eta;
+          break;
+      }
+      default:
+      {
+        XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Intermediate_Phase_22_p1: IMRPhenomXIntermediatePhaseVersion is not valid.\n");
+      }
+  }
+  
+  return total;
+    
+}
+
+static double IMRPhenomX_Intermediate_Phase_22_p2(IMRPhenomXWaveformStruct *pWF){
+  
+  double total = 0.;
+  switch (pWF->IMRPhenomXIntermediatePhaseVersion)
+  {
+    case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double S1 = S;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = 2.9465042972626483 + 3354.1245087024768*eta1 - 262.1465356664379*eta2 + chidiff1*delta*(-3.5255086930641784*eta1 + 192.81363330419876*eta2 - 967.6800225065266*eta3) - 0.4588217977398727*chidiff2*(49.817225588151366*eta1 - 529.4546330296669*eta2 + 1384.7429227082457*eta3) + (S1*(13.04074144179292*(-0.05730008094886127*eta1 + 48.060307305282784*eta2 - 127.32442792594935*eta3) - 2.7215221282384228*(10.455060498864592*eta1 + 34.24076054355995*eta2 - 240.24401015607327*eta3)*S1))/(-1.7538879008712325 + S1) + chidiff1*S1*(chidiff1*(0.17368129529467008*(-175.92256405769547*eta1 + 957.5086416915027*eta2 - 951.2735418428833*eta3) - 6.6411835966273305*(21.008774824464346*eta1 - 227.93989898583996*eta2 + 639.6191987519303*eta3)*S1) + delta*(152.04802131987222*eta1 - 1644.2395201201161*eta2 + 4772.876296560792*eta3 + (148.9850190260242*eta1 - 1868.0884017199894*eta2 + 6174.040808275211*eta3)*S1));
+            total /= eta;
+            break;
+        }
+      default:
+      {
+        XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Intermediate_Phase_22_p2: IMRPhenomXIntermediatePhaseVersion is not valid.\n");
+      }
+  }
+  
+  return total;
+    
+}
+
+static double IMRPhenomX_Intermediate_Phase_22_p3(IMRPhenomXWaveformStruct *pWF){
+  
+  double total = 0.;
+  switch (pWF->IMRPhenomXIntermediatePhaseVersion)
+  {
+    case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double S1 = S;
+            double S2 = S * S1;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = 0.3534486914466006 + 3232.568653853001*eta1 - 151.59580985957015*eta2 + chidiff1*delta*(-9.29367002951963*eta1 + 171.7304052436057*eta2 - 918.3859093361914*eta3) - 0.5446154489890479*chidiff2*(61.73996809014121*eta1 - 718.2246360237738*eta2 + 1949.0590546528356*eta3) + chidiff1*S1*(chidiff1*(1.5448823303305008*(-36.023134695765975*eta1 + 207.4461072504323*eta2 - 189.41427386947362*eta3) - 6.663017593910879*(27.50651071743553*eta1 - 272.4968790063173*eta2 + 713.8833445463006*eta3)*S1) + delta*(153.46731110422564*eta1 - 1694.0384698299436*eta2 + 4438.480468462407*eta3 + (143.64968017860204*eta1 - 1729.0062409701304*eta2 + 5172.489874105645*eta3)*S1)) + (S1*(4.699732575737023*(-4.223616944750259*eta1 + 76.58743883078712*eta2 - 174.77188420714435*eta3) - 0.5558794036166408*(-2.2330031785387687*eta1 + 144.3496174188152*eta2 - 477.6704188186405*eta3)*S1 - 0.7277205931503673*(-72.70183411561604*eta1 + 598.8320811021583*eta2 - 1168.0989785587767*eta3)*S2))/(-1.4584888237349587 + S1);
+            total /= eta;
+            break;
+        }
+      default:
+      {
+        XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Intermediate_Phase_22_p3: IMRPhenomXIntermediatePhaseVersion is not valid.\n");
+      }
+  }
+  
+  return total;
+    
+}
+
+static double IMRPhenomX_Intermediate_Phase_22_p4(IMRPhenomXWaveformStruct *pWF){
+  
+  double total = 0.;
+  switch (pWF->IMRPhenomXIntermediatePhaseVersion)
+  {
+    case 20220705:{
+            double delta = pWF->delta;
+            double eta = pWF->eta;
+            double S = pWF->chiPNHat;
+            double chidiff = pWF->dchi_half;
+            double eta1 = eta;
+            double eta2 = eta * eta1;
+            double eta3 = eta * eta2;
+            double eta4 = eta * eta3;
+            double S1 = S;
+            double S2 = S * S1;
+            double chidiff1 = chidiff;
+            double chidiff2 = chidiff * chidiff1;
+            total = -0.5006207827078769 + 3191.1837077811147*eta1 - 179.76351423500822*eta2 - 0.5644492493225586*chidiff2*(-14.066488282973754 + 307.0919427896296*eta1 - 2517.6079511279468*eta2 + 8415.340030995752*eta3 - 9176.496244030877*eta4) + chidiff1*delta*(3.4443618829957487 - 103.3206235752028*eta1 + 881.4997637050773*eta2 - 2862.511510534138*eta3 + 790.611627017309*eta4) + chidiff1*S1*(delta*(205.2108386871098 - 5557.148282855391*eta1 + 54240.012298137204*eta2 - 227352.35602487563*eta3 + 343784.7283342855*eta4 + (-125.25933374755007 + 3294.472120190232*eta1 - 31410.557544863284*eta2 + 126792.263755109*eta3 - 183893.1128567363*eta4)*S1) + chidiff1*(1.1807291687510104*(154.8383734029125 - 3839.217733518044*eta1 + 34812.33477414657*eta2 - 137468.84947587422*eta3 + 199205.35287116095*eta4) - 6.998219602429323*(38.116551684620454 - 1062.661044973846*eta1 + 10617.74408881538*eta2 - 44815.44828746526*eta3 + 67886.35737587827*eta4)*S1)) + (S1*(8.081124405259146*(9.988450825326305 - 250.35712809960052*eta1 + 2315.9573271789895*eta2 - 9050.738606945924*eta3 + 12869.449980010764*eta4) + 0.4459244272289471*(40.57451426606374 - 1033.3043479023365*eta1 + 9919.42974897223*eta2 - 40880.98509707885*eta3 + 60813.46701839692*eta4)*S1 + 0.027698219170132102*(-5380.531958506969 + 135420.9660757813*eta1 - 1.2230804067407667e6*eta2 + 4.770688729886557e6*eta3 - 6.802738059166179e6*eta4)*S2))/(-1.6622412531886577 + S1);
+            total /= eta;
+            break;
+        }
+      default:
+      {
+        XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Intermediate_Phase_22_p4: IMRPhenomXIntermediatePhaseVersion is not valid.\n");
+      }
+  }
+  
+  return total;
+    
+}
+
+
+
 /*	
 	See section VII. B of arXiv:2001.11412. 
 
@@ -1362,6 +1490,11 @@ static double IMRPhenomX_Intermediate_Phase_22_Ansatz(double ff, IMRPhenomX_Usef
 
       break;
     }
+    case 20220705:
+    {
+      phaseOut = powers_of_f->m_eight_thirds / pWF->eta * (pPhase->b0 + pPhase->b1 * ff + pPhase->b2 * powers_of_f->two + pPhase->b3 * powers_of_f->three  + pPhase->b4 * powers_of_f->four  + pPhase->b5 * powers_of_f->five);
+      break;
+    }
     default:
     {
       XLAL_ERROR_REAL8(XLAL_EINVAL, "Error in IMRPhenomX_Intermediate_Phase_22_Ansatz: IMRPhenomXIntermediatePhaseVersion is not valid. Recommended flag is 104.\n");
@@ -1410,6 +1543,11 @@ static double IMRPhenomX_Intermediate_Phase_22_AnsatzInt(double f, IMRPhenomX_Us
     case 105:				/* Canonical, 5 coefficients */
     {
       phaseOut = b0*f + b1*logfv - b2*invff1 - b3*invff2/2.0 - (b4*invff3/3.0) + ( 2.0 * cL * atan( (f - frd) / (2.0 * fda) ) ) / fda ;
+      break;
+    }
+    case 20220705:
+    {
+      phaseOut = powers_of_f->m_five_thirds / pWF->eta * ( -3./5 * pPhase->b0 - 3/2. *pPhase->b1 * f + 3 * pPhase->b2 * powers_of_f->two + 3/4. * pPhase->b3 * powers_of_f->three  + 3/7. * pPhase->b4 * powers_of_f->four  + 3/10. * pPhase->b5 * powers_of_f->five);
       break;
     }
     default:

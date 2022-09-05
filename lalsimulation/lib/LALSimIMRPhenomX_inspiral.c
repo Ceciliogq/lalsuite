@@ -871,7 +871,7 @@ static double IMRPhenomX_Inspiral_Phase_22_p4(IMRPhenomXWaveformStruct *pWF)
 
 		Phase Derivative: TaylorF2 + pseudo-PN coefficients
 */
-static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
+static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase, IMRPhenomXWaveformStruct *pWF)
 {
     double phaseIN;
 
@@ -899,6 +899,8 @@ static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPo
   							);
 
   	phaseIN  = phaseIN * powers_of_Mf->m_eight_thirds * (5.0 / (128.0 * powers_of_lalpi.five_thirds));
+    
+    if (pWF->IMRPhenomXInspiralPhaseVersion == 20220705) phaseIN /= pWF->eta;
 
     return phaseIN;
 }
@@ -907,7 +909,7 @@ static double IMRPhenomX_Inspiral_Phase_22_Ansatz(double Mf, IMRPhenomX_UsefulPo
  * Ansatz for the inspiral phase.
  * The TaylorF2 coefficients are defined elsewhere.
  */
-static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase)
+static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_UsefulPowers *powers_of_Mf, IMRPhenomXPhaseCoefficients *pPhase, IMRPhenomXWaveformStruct *pWF)
 {
 
   // Assemble PN phasing series
@@ -943,6 +945,8 @@ static double IMRPhenomX_Inspiral_Phase_22_AnsatzInt(double Mf, IMRPhenomX_Usefu
 
   // This completes the TaylorF2 PN phasing series
   phasing = phasing * pPhase->phiNorm * powers_of_Mf->m_five_thirds;
+  
+  if (pWF->IMRPhenomXInspiralPhaseVersion == 20220705) phasing /= pWF->eta;
   
   /* Add initial phasing: -pi/4 */
   //phasing += pPhase->phi_initial;

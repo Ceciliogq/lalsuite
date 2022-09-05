@@ -227,6 +227,11 @@ int IMRPhenomXSetWaveformVariables(
 		{
 			break;
 		}
+		// 6 intermediate coefficients
+		case 20220705:
+		{
+			break;
+		}
 		default:
 		{
 			XLAL_ERROR(XLAL_EINVAL,"Error in IMRPhenomX_SetWaveformVariables: IMRPhenomXIntermediatePhaseVersion not recognized. Recommended flag is 105.\n");
@@ -976,6 +981,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	pPhase->b2 = 0.0;
 	pPhase->b3 = 0.0;
 	pPhase->b4 = 0.0;
+	pPhase->b5 = 0.0;
 
 	pPhase->c0 = 0.0;
 	pPhase->c1 = 0.0;
@@ -1082,6 +1088,9 @@ int IMRPhenomXGetPhaseCoefficients(
 			break;
 		}
 		case 20220705:{
+			pPhase->fPhaseRDMin = pWF->fRING - pWF->fDAMP;
+			pPhase->fPhaseMatchIN= pPhase->fPhaseInsMax;
+			pPhase->fPhaseMatchIM = pPhase->fPhaseRDMin;
 			pPhase->NCollocationPointsRD = 5;
 			pPhase->CollocationPointsPhaseRD[0] = pWF->fRING - pWF->fDAMP;
 			pPhase->CollocationPointsPhaseRD[1] = pWF->fRING;
@@ -1106,11 +1115,7 @@ int IMRPhenomXGetPhaseCoefficients(
 		printf("NCollRD = %d\n",pPhase->NCollocationPointsRD);
 	}
 
-	for(UINT2 idx = 0; idx < pPhase->NCollocationPointsRD; idx++){
-			printf("fRD[%i], v = %.6f %.6e\n", idx, pPhase->CollocationPointsPhaseRD[idx], pPhase->CollocationValuesPhaseRD[idx]);
-	}
-	
-	
+		
 	// Debugging information. Leave for convenience later on.
 	if(debug)
 	{
@@ -1237,7 +1242,7 @@ int IMRPhenomXGetPhaseCoefficients(
 	pPhase->cRD = gsl_vector_get(x,4);
 	pPhase->cL  = -(pWF->dphase0 * pPhase->cRD); // ~ x[4] // cL = - a_{RD} * dphase0
 
-	if(debug==0)
+	if(debug)
 	{
 		printf("\n");
 		printf("Ringdown Coefficients: \n");
@@ -1859,78 +1864,68 @@ int IMRPhenomXGetPhaseCoefficients(
 	}
 	else // IMRPhenomXInspiralVersion >= 200
 	{
-		for(UINT2 idx = 0; idx < 5; idx++){
-				pPhase->CoefficientsPhaseIns[idx] = 0;
-		}
+			for(UINT2 idx = 0; idx < 5; idx++){
+					pPhase->CoefficientsPhaseIns[idx] = 0;
+			}
+			
+			pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_p1(pWF);
+			pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_p2(pWF);
+			pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_p3(pWF);
+			pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_p4(pWF);
+			
+			
+			pPhase->fPhaseInsMax = pWF->fMECO;
+			// Chebyshev nodes
+			REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pPhase->fPhaseInsMax);
+			REAL8 semidif = 0.5 * (pPhase->fPhaseInsMax - pPhase->fPhaseInsMin);
+			
+			pPhase->CollocationPointsPhaseIns[0] = pPhase->fPhaseInsMin;
+			pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns-1] = pPhase->fPhaseInsMax;
+			
+			for (INT4 idx = 1; idx <= pPhase->NCollocationPointsPhaseIns-2; idx++){
+				pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns -1 - idx] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * (pPhase->NCollocationPointsPhaseIns-2) ));
+			}
 		
-		pPhase->CollocationValuesPhaseIns[0] = IMRPhenomX_Inspiral_Phase_22_p1(pWF);
-		pPhase->CollocationValuesPhaseIns[1] = IMRPhenomX_Inspiral_Phase_22_p2(pWF);
-		pPhase->CollocationValuesPhaseIns[2] = IMRPhenomX_Inspiral_Phase_22_p3(pWF);
-		pPhase->CollocationValuesPhaseIns[3] = IMRPhenomX_Inspiral_Phase_22_p4(pWF);
-		
-		
-		pPhase->fPhaseInsMax = pWF->fMECO;
-		// Chebyshev nodes
-		REAL8 semisum = 0.5 * (pPhase->fPhaseInsMin + pPhase->fPhaseInsMax);
-		REAL8 semidif = 0.5 * (pPhase->fPhaseInsMax - pPhase->fPhaseInsMin);
-		printf("fInsMin, fInsMax = %.6e %.6e\n", pPhase->fPhaseInsMin, pPhase->fPhaseInsMax);
-		
-		pPhase->CollocationPointsPhaseIns[0] = pPhase->fPhaseInsMin;
-		pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns-1] = pPhase->fPhaseInsMax;
-		
-		for (INT4 idx = 1; idx <= pPhase->NCollocationPointsPhaseIns-2; idx++){
-			pPhase->CollocationPointsPhaseIns[pPhase->NCollocationPointsPhaseIns -1 - idx] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * (pPhase->NCollocationPointsPhaseIns-2) ));
-		}
-	
-		for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
-		{
-				printf("f1, v1 = %.6e %.6e\n", pPhase->CollocationPointsPhaseIns[idx], pPhase->CollocationValuesPhaseIns[idx]);
-				ff = pPhase->CollocationPointsPhaseIns[idx];
-				
-				IMRPhenomX_UsefulPowers powers_of_ff;
-			  int status = IMRPhenomX_Initialize_Powers(&powers_of_ff, ff);
-			  XLAL_CHECK(XLAL_SUCCESS == status, status, "IMRPhenomX_Initialize_Powers failed.\n");
+			for(UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++)
+			{
+					ff = pPhase->CollocationPointsPhaseIns[idx];
+					
+					IMRPhenomX_UsefulPowers powers_of_ff;
+				  int status = IMRPhenomX_Initialize_Powers(&powers_of_ff, ff);
+				  XLAL_CHECK(XLAL_SUCCESS == status, status, "IMRPhenomX_Initialize_Powers failed.\n");
 
-				// Set b vector: Coll point - PN ansatz
-				gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx] - IMRPhenomX_Inspiral_Phase_22_Ansatz(ff, &powers_of_ff, pPhase)/pWF->eta);	
-				
-				ff1 = cbrt(ff);
-				double fpower =  (5.0 / (128.0 * powers_of_lalpi.five_thirds * pWF->eta));
-				// Add equation for Point.
-        for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
-          gsl_matrix_set(A, idx, jdx, fpower);
-          fpower *= ff1;
-        }			
-		}
-	
-		/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
-		gsl_linalg_LU_decomp(A, p, &s);
-		gsl_linalg_LU_solve(A, p, b, x);
-	
-		/* The solution corresponds to the coefficients of the ansatz */
-		for (UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++){
-			pPhase->CoefficientsPhaseIns[idx] = gsl_vector_get(x, idx);
-		}
-		pPhase->a0 = pPhase->CoefficientsPhaseIns[0];
-		pPhase->a1 = pPhase->CoefficientsPhaseIns[1];
-		pPhase->a2 = pPhase->CoefficientsPhaseIns[2];
-		pPhase->a3 = pPhase->CoefficientsPhaseIns[3];
-		pPhase->a4 = pPhase->CoefficientsPhaseIns[4];
-		pPhase->sigma1 = (-5.0/3.0) * pPhase->a0;
-		pPhase->sigma2 = (-5.0/4.0) * pPhase->a1;
-		pPhase->sigma3 = (-5.0/5.0) * pPhase->a2;
-		pPhase->sigma4 = (-5.0/6.0) * pPhase->a3;
-		pPhase->sigma5 = (-5.0/7.0) * pPhase->a4;
-		printf("\n");
-		printf("4pPN\n");
-		printf("Inspiral Pseudo-PN Coefficients:\n");
-		printf("a0 : %.6f\n",pPhase->a0);
-		printf("a1 : %.6f\n",pPhase->a1);
-		printf("a2 : %.6f\n",pPhase->a2);
-		printf("a3 : %.6f\n",pPhase->a3);
-		printf("a4 : %.6f\n",pPhase->a4);
-		printf("\n");
-	}	
+					// Set b vector: Coll point - PN ansatz
+					gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseIns[idx] - IMRPhenomX_Inspiral_Phase_22_Ansatz(ff, &powers_of_ff, pPhase, pWF));	
+					
+					ff1 = cbrt(ff);
+					double fpower =  (5.0 / (128.0 * powers_of_lalpi.five_thirds * pWF->eta));
+					// Add equation for Point.
+	        for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsPhaseIns; jdx++){
+	          gsl_matrix_set(A, idx, jdx, fpower);
+	          fpower *= ff1;
+	        }			
+			}
+		
+			/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
+			gsl_linalg_LU_decomp(A, p, &s);
+			gsl_linalg_LU_solve(A, p, b, x);
+		
+			/* The solution corresponds to the coefficients of the ansatz */
+			for (UINT2 idx = 0; idx < pPhase->NCollocationPointsPhaseIns; idx++){
+				pPhase->CoefficientsPhaseIns[idx] = gsl_vector_get(x, idx);
+			}
+			pPhase->a0 = pPhase->CoefficientsPhaseIns[0];
+			pPhase->a1 = pPhase->CoefficientsPhaseIns[1];
+			pPhase->a2 = pPhase->CoefficientsPhaseIns[2];
+			pPhase->a3 = pPhase->CoefficientsPhaseIns[3];
+			pPhase->a4 = pPhase->CoefficientsPhaseIns[4];
+			pPhase->sigma1 = (-5.0/3.0) * pPhase->a0;
+			pPhase->sigma2 = (-5.0/4.0) * pPhase->a1;
+			pPhase->sigma3 = (-5.0/5.0) * pPhase->a2;
+			pPhase->sigma4 = (-5.0/6.0) * pPhase->a3;
+			pPhase->sigma5 = (-5.0/7.0) * pPhase->a4;
+		
+	}	// IMRPhenomXInspiralVersion >= 200
 	
 	/* Tidy up in preparation for next GSL solve ... */
 	gsl_vector_free(b);
@@ -2004,6 +1999,12 @@ int IMRPhenomXGetPhaseCoefficients(
 		{
 			// Fifth order polynomial ansatz
 			pPhase->NCollocationPointsInt = 5;
+			break;
+		}
+		case 20220705:
+		{
+			// Fifth order polynomial ansatz
+			pPhase->NCollocationPointsInt = 6;
 			break;
 		}
 		default:
@@ -2299,6 +2300,62 @@ int IMRPhenomXGetPhaseCoefficients(
 		gsl_matrix_free(A);
 		gsl_permutation_free(p);
 	}
+	else if(pWF->IMRPhenomXIntermediatePhaseVersion == 20220705)
+	{	
+			/* The first and last collocation points for the intermediate region are set from the inspiral fit and ringdown respectively */
+			pPhase->CollocationPointsPhaseInt[0] = pPhase->fPhaseInsMax;
+			pPhase->CollocationPointsPhaseInt[pPhase->NCollocationPointsInt-1] = pPhase->fPhaseRDMin;
+			
+			// Chebyshev nodes
+			REAL8 semisum = 0.5 * (pPhase->fPhaseInsMax + pPhase->fPhaseRDMin);
+			REAL8 semidif = 0.5 * (pPhase->fPhaseRDMin - pPhase->fPhaseInsMax);
+			
+			for (INT4 idx = 1; idx <= pPhase->NCollocationPointsInt-2; idx++){
+				pPhase->CollocationPointsPhaseInt[pPhase->NCollocationPointsInt -1 - idx] = semisum + semidif * cos( (2 * idx - 1) * LAL_PI / (2 * (pPhase->NCollocationPointsInt-2) ));
+			}
+			
+			pPhase->CollocationValuesPhaseInt[0] = pPhase->CollocationValuesPhaseIns[pPhase->NCollocationPointsPhaseIns-1];
+			pPhase->CollocationValuesPhaseInt[pPhase->NCollocationPointsInt - 1] = pPhase->CollocationValuesPhaseRD[0]; 
+			pPhase->CollocationValuesPhaseInt[1] = IMRPhenomX_Intermediate_Phase_22_p1(pWF);
+			pPhase->CollocationValuesPhaseInt[2] = IMRPhenomX_Intermediate_Phase_22_p2(pWF);
+			pPhase->CollocationValuesPhaseInt[3] = IMRPhenomX_Intermediate_Phase_22_p3(pWF);
+			pPhase->CollocationValuesPhaseInt[4] = IMRPhenomX_Intermediate_Phase_22_p4(pWF);
+			
+
+			for(UINT2 idx = 0; idx < pPhase->NCollocationPointsInt; idx++)
+			{
+					ff = pPhase->CollocationPointsPhaseInt[idx];
+					
+					// Set b vector:
+					gsl_vector_set(b, idx, pPhase->CollocationValuesPhaseInt[idx]);	
+					
+					ff1 = ff;
+					double fpower = pow(ff, -8/3.)/pWF->eta;
+					// Add equation for Point.
+					for(INT4 jdx = 0; jdx < pPhase->NCollocationPointsInt; jdx++){
+						gsl_matrix_set(A, idx, jdx, fpower);
+						fpower *= ff1;
+					}			
+			}		
+			
+			/* We now solve the system A x = b via an LU decomposition. x is the solution vector */
+			gsl_linalg_LU_decomp(A, p, &s);
+			gsl_linalg_LU_solve(A, p, b, x);
+		
+			/* The solution corresponds to the coefficients of the ansatz */
+			pPhase->b0 = gsl_vector_get(x, 0);
+			pPhase->b1 = gsl_vector_get(x, 1);
+			pPhase->b2 = gsl_vector_get(x, 2);
+			pPhase->b3 = gsl_vector_get(x, 3);
+			pPhase->b4 = gsl_vector_get(x, 4);
+			pPhase->b5 = gsl_vector_get(x, 5);
+			
+			/* Tidy up */
+			gsl_vector_free(b);
+			gsl_vector_free(x);
+			gsl_matrix_free(A);
+			gsl_permutation_free(p);	
+	}
 	else
 	{
 		XLALPrintError("Error in ComputeIMRPhenomXWaveformVariables: IMRPhenomXIntermediatePhaseVersion is not valid.\n");
@@ -2345,12 +2402,12 @@ void IMRPhenomX_Phase_22_ConnectionCoefficients(IMRPhenomXWaveformStruct *pWF, I
 	IMRPhenomX_UsefulPowers powers_of_fIns;
   IMRPhenomX_Initialize_Powers(&powers_of_fIns,fIns);
 
-  double DPhiIns = IMRPhenomX_Inspiral_Phase_22_Ansatz(fIns,&powers_of_fIns,pPhase);
+  double DPhiIns = IMRPhenomX_Inspiral_Phase_22_Ansatz(fIns,&powers_of_fIns,pPhase,pWF);
   double DPhiInt = IMRPhenomX_Intermediate_Phase_22_Ansatz(fIns,&powers_of_fIns,pWF,pPhase);
 
   pPhase->C2Int = DPhiIns - DPhiInt;
 
-	double phiIN = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(fIns,&powers_of_fIns,pPhase);
+	double phiIN = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(fIns,&powers_of_fIns,pPhase,pWF);
 	double phiIM = IMRPhenomX_Intermediate_Phase_22_AnsatzInt(fIns,&powers_of_fIns,pWF,pPhase);
 
 	if(debug)
@@ -2392,6 +2449,13 @@ void IMRPhenomX_Phase_22_ConnectionCoefficients(IMRPhenomXWaveformStruct *pWF, I
 
 	pPhase->C2MRD = DPhiIntC - DPhiRD;
   pPhase->C1MRD = phiIMC - phiRD - pPhase->C2MRD*fInt;
+	
+	// if(pWF->IMRPhenomXInspiralPhaseVersion == 20220705){
+	// 		pPhase->C1Int = 0;
+	// 		pPhase->C2Int = 0;
+	// 		pPhase->C1MRD = 0;
+	// 		pPhase->C1MRD = 0;
+	// }
 
 	if(debug)
 	{
@@ -2448,7 +2512,7 @@ double IMRPhenomX_Phase_22(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMRP
 	// Inspiral region, f < fPhaseInsMax
   if (!IMRPhenomX_StepFuncBool(ff, pPhase->fPhaseMatchIN))
   {
-	  double PhiIns = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(ff, powers_of_f, pPhase);
+	  double PhiIns = IMRPhenomX_Inspiral_Phase_22_AnsatzInt(ff, powers_of_f, pPhase, pWF);
 	  return PhiIns;
   }
 
@@ -2477,7 +2541,7 @@ double IMRPhenomX_dPhase_22(double ff, IMRPhenomX_UsefulPowers *powers_of_f, IMR
 	// Inspiral region, f < fPhaseInsMax
   if (!IMRPhenomX_StepFuncBool(ff, pPhase->fPhaseMatchIN))
   {
-	  double dPhiIns = IMRPhenomX_Inspiral_Phase_22_Ansatz(ff, powers_of_f, pPhase);
+	  double dPhiIns = IMRPhenomX_Inspiral_Phase_22_Ansatz(ff, powers_of_f, pPhase, pWF);
 	  return dPhiIns;
   }
 

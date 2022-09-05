@@ -413,6 +413,8 @@ static GSParams *parse_args(ssize_t argc, char **argv) {
             XLALSimInspiralWaveformParamsInsertPhenomXInspiralPhaseVersion(params->params, atoi(argv[++i]));
         }else if(strcmp(argv[i], "--phenomXRingdownPhaseVersion") == 0){
             XLALSimInspiralWaveformParamsInsertPhenomXRingdownPhaseVersion(params->params, atoi(argv[++i]));
+        }else if(strcmp(argv[i], "--phenomXIntermediatePhaseVersion") == 0){
+            XLALSimInspiralWaveformParamsInsertPhenomXIntermediatePhaseVersion(params->params, atoi(argv[++i]));
         }else {
             XLALPrintError("Error: invalid option: %s\n", argv[i]);
             goto fail;
